@@ -1,0 +1,52 @@
+/* Design tokens. Light is default; dark follows the OS unless the user picks
+   a theme explicitly (data-theme on <html>). */
+:root {
+  --bg: #faf7f2;
+  --surface: #ffffff;
+  --surface-2: #f3eee6;
+  --border: #e6ded2;
+  --text: #2a2420;
+  --text-soft: #6e645b;
+  --accent: #e8573a;
+  --accent-soft: #fde8e1;
+  --accent-text: #ffffff;
+  --success: #2f9e6b;
+  --danger: #d23f3f;
+  --focus: #2f6fe8;
+  --canvas-bg: #ece6dc;
+  --shadow: 0 1px 2px rgb(42 36 32 / 6%), 0 4px 16px rgb(42 36 32 / 6%);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #1b1815;
+    --surface: #24201c;
+    --surface-2: #2e2924;
+    --border: #3b352e;
+    --text: #f3ede5;
+    --text-soft: #a99e92;
+    --accent: #ff7a5c;
+    --accent-soft: #43271f;
+    --canvas-bg: #141210;
+    --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 16px rgb(0 0 0 / 30%);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #1b1815;
+  --surface: #24201c;
+  --surface-2: #2e2924;
+  --border: #3b352e;
+  --text: #f3ede5;
+  --text-soft: #a99e92;
+  --accent: #ff7a5c;
+  --accent-soft: #43271f;
+  --canvas-bg: #141210;
+  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 16px rgb(0 0 0 / 30%);
+  color-scheme: dark;
+}

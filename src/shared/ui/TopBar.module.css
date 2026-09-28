@@ -1,0 +1,14 @@
+.bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  height: 64px; padding: 0 max(16px, calc((100% - 1160px) / 2));
+  border-bottom: 1px solid var(--border); background: var(--bg);
+  position: sticky; top: 0; z-index: 10;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--text); text-decoration: none; }
+.logo {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
+  background: var(--accent); color: var(--accent-text); font-size: 17px;
+}
+.nav { display: flex; align-items: center; gap: 6px; }
+.nav a { color: var(--text); text-decoration: none; font-weight: 500; padding: 6px 12px; border-radius: 999px; }
+.nav a:hover { background: var(--surface-2); }
