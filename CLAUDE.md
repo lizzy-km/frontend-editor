@@ -14,3 +14,4 @@ page builder.
 - Before touching `src/features/editor/model|store|actions|frame`, read
   `.claude/skills/editor-model/SKILL.md`.
 - After each feature, update `docs/HISTORY.md` (and ARCHITECTURE/README when relevant).
+- Commit messages: plain conventional commits, with no `Co-Authored-By` / AI attribution trailer.
