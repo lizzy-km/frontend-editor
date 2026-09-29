@@ -121,6 +121,23 @@ into nodes, so nothing the AI wrote gets lost.
 - `QuickActions` is the floating DOM toolbar for the selection. Buttons are
   chosen by element kind (text, picture or box).
 
+## Settings panel (`features/editor/inspector`)
+
+- `Inspector` shows, for the selected element: header, screen-size notice,
+  custom sections (Page, Words, Link, Picture file), the config-driven
+  `StyleSections`, Show or hide, and Advanced.
+- Style sections are **data** (`fields/*.ts`, `SectionConfig`/`StyleField`):
+  `prop`, everyday `label`, `control` (color | slider | select | segmented |
+  size | text | sides), an optional `read` for misleading computed values,
+  `when(context)` to decide where a section applies, and `more` for the
+  "More options" fields.
+- `FieldRow` value = the override on this breakpoint, else `read(computed)`,
+  else computed. Changes go through `setStyle`/`setStyles`, plus `companionStyles`.
+- `useComputedStyle(id)` snapshots `getComputedStyle` one frame after each
+  edit or screen-size change.
+- Text inputs use `useDraft` (prop → local draft; save on Enter or blur).
+  This avoids setState-in-effect.
+
 ## State (`features/editor/store`)
 
 | Store | Holds |

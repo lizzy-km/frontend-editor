@@ -12,6 +12,17 @@ code an AI gave them and change it by clicking. Every decision below serves that
 - `git checkout main && git checkout -b feature/<name>`, one branch per feature.
 - When it is done and verified: `git checkout main && git merge --no-ff feature/<name>`.
 
+**Commit after every logical change.** Make small focused commits inside
+the branch (e.g. controls, config, wiring, then each fix found in testing as
+its own `fix(...)`), and make sure each one passes `tsc` and `eslint`.
+
+### Adding a settings-panel control
+- Style property: add a `StyleField` in `src/features/editor/inspector/fields/*.ts`
+  with an everyday label. Put it under `more` unless people change it often.
+- If it does nothing alone (like border-width without a style), add a rule in `companionStyles.ts`.
+- If the computed value misleads (like flex-direction on a block), add `read`.
+- For anything that isn't a single CSS property, write a custom section in `inspector/sections/`.
+
 ## 2. Where code goes
 - `src/features/<name>/`: the feature's pages, components, hooks, store and API.
 - Shared UI goes in `src/shared/ui`, framework-free helpers in `src/lib`.
