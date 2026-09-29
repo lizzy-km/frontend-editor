@@ -42,7 +42,7 @@ const newSrc = 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=840'
 await page.mouse.move(img.x + 50, img.y + 50)
 await page.mouse.click(img.x + 50, img.y + 50)
 await page.getByRole('toolbar', { name: 'Quick actions' }).getByRole('button', { name: 'Change picture' }).click()
-await page.getByLabel('Picture address (link)').fill(newSrc)
+await page.getByLabel('…or paste a picture address (link)').fill(newSrc)
 await page.getByRole('button', { name: 'Use this picture' }).click()
 await page.waitForTimeout(500)
 check('picture replaced', (await frame.$eval('.hero img', (el) => el.getAttribute('src'))) === newSrc)
