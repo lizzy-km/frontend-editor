@@ -3,6 +3,16 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/my-pages-no-index — 2026-09-29
+- "My pages" failed with `failed-precondition` on a fresh Firebase project,
+  because the `ownerId + updatedAt` composite index was missing.
+- `listMyProjects` now filters on `ownerId` only and sorts newest-first in
+  the app. One person has at most a plan's worth of pages, so this is cheap,
+  and a single-field filter needs no custom index.
+- That index is removed from `firestore.indexes.json`. The only custom index
+  left is the public gallery's (`isPublic + updatedAt`).
+- There's an emulator test for the query (13 of 13 pass).
+
 ## feature/namespaced-collections — 2026-09-29
 - Collections were renamed so the app can't collide with another app in the
   same Firebase project:

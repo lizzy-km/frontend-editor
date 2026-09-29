@@ -48,6 +48,15 @@ Names live in `src/lib/collections.ts` (prefixed so a shared Firebase project ca
 8. **Public pages are untrusted code for the viewer.** Render them only in a
    sandbox WITHOUT `allow-same-origin`, like Preview does.
 
+## Indexes
+- Prefer queries that need **no custom index**. A missing index fails with
+  `failed-precondition` on every fresh project until someone deploys it.
+- Small per-user lists (such as My pages, capped by plan) filter on one
+  field and sort in the app.
+- A custom index is only for lists that must page through many documents
+  (the public gallery: `isPublic + updatedAt`). Keep `firestore.indexes.json`
+  in sync.
+
 ## Use Firestore Lite
 The app imports **`firebase/firestore/lite`**, never `firebase/firestore`.
 Lite uses plain HTTPS requests, so there is no WebChannel stream. The full
