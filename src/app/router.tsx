@@ -29,6 +29,8 @@ export const router = createBrowserRouter([
       { path: '/projects', element: privatePage(() => import('@/features/workspace/DashboardPage')) },
       { path: '/projects/new', element: privatePage(() => import('@/features/workspace/NewProjectPage')) },
       { path: '/edit/:projectId', element: privatePage(() => import('@/features/workspace/ProjectEditorPage')) },
+      { path: '/gallery', element: page(() => import('@/features/gallery/GalleryPage')) },
+      { path: '/p/:projectId', element: page(() => import('@/features/gallery/PublicPageView')) },
       { path: '*', element: page(() => import('./NotFoundPage')) },
     ],
   },
