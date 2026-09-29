@@ -30,6 +30,12 @@ its own `fix(...)`), and make sure each one passes `tsc` and `eslint`.
 - A toggleable or future feature gets a flag in `src/config/features.config.ts`
   (`enable_<name>`, with a comment). Future features ship with the flag `false`.
 
+- A route for a flagged feature goes through `flagged('enable_x', ...)` in
+  `src/app/router.tsx`, so it returns 404 while the flag is off. Links to it
+  check `features.enable_x` too.
+- Anything involving money (plans, marketplace orders) changes data only on a
+  trusted server. The browser starts the checkout; it never grants the result.
+
 ## 3. Size and shape rules (ESLint enforces the numbers)
 - A file is at most 150 lines; split it before it reaches that.
 - A function is at most 100 lines; aim for under 40. One responsibility each.

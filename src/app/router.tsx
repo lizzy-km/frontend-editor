@@ -1,11 +1,15 @@
-import { lazy, Suspense, type ComponentType } from 'react'
+import { lazy, Suspense, type ComponentType, type ReactElement } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
+import { features, type FeatureName } from '@/config/features.config'
 import { RequireAuth } from '@/features/auth/RequireAuth'
 import { PageSpinner } from '@/shared/ui'
 import { RouteError } from './RouteError'
 
 /** Same as page(), but only for signed-in people. */
 const privatePage = (load: () => Promise<{ default: ComponentType }>) => <RequireAuth>{page(load)}</RequireAuth>
+
+/** A page that only exists while its feature flag is on (404 otherwise). */
+const flagged = (flag: FeatureName, element: ReactElement) => (features[flag] ? element : page(() => import('./NotFoundPage')))
 
 /** Lazy-load a page so each screen is its own small JS chunk. */
 function page(load: () => Promise<{ default: ComponentType }>) {
@@ -31,6 +35,8 @@ export const router = createBrowserRouter([
       { path: '/edit/:projectId', element: privatePage(() => import('@/features/workspace/ProjectEditorPage')) },
       { path: '/gallery', element: page(() => import('@/features/gallery/GalleryPage')) },
       { path: '/p/:projectId', element: page(() => import('@/features/gallery/PublicPageView')) },
+      { path: '/plans', element: flagged('enable_billing', privatePage(() => import('@/features/billing/PlansPage'))) },
+      { path: '/market', element: flagged('enable_marketplace', page(() => import('@/features/marketplace/MarketplacePage'))) },
       { path: '*', element: page(() => import('./NotFoundPage')) },
     ],
   },
