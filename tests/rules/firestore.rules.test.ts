@@ -73,9 +73,10 @@ describe('projects', () => {
     await createBatch(alice(), 'p1').commit()
     await assertFails(getDoc(doc(bob(), 'projects/p1')))
     await assertFails(getDoc(doc(bob(), 'projectContent/p1')))
-    const publish = writeBatch(alice())
-    publish.update(doc(alice(), 'projects/p1'), { isPublic: true })
-    publish.update(doc(alice(), 'projectContent/p1'), { isPublic: true })
+    const db = alice() // one instance: a batch can't mix references from different instances
+    const publish = writeBatch(db)
+    publish.update(doc(db, 'projects/p1'), { isPublic: true })
+    publish.update(doc(db, 'projectContent/p1'), { isPublic: true })
     await assertSucceeds(publish.commit())
     await assertSucceeds(getDoc(doc(bob(), 'projectContent/p1')))
   })

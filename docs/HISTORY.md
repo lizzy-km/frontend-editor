@@ -3,6 +3,23 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/shared-project-profile — 2026-09-29
+- The real cause of "New page" `permission-denied`: the Firebase project
+  (`look-vince`) already had `users/{uid}` from another app, without
+  `projectCount` / `plan`. The app saw "profile exists" and skipped it, and
+  the counter update in the create batch then failed the rules.
+- `ensureUserProfile` now runs in a transaction. It creates a profile when
+  one is missing, or adds only `projectCount: 0` (plus `plan: 'free'` when
+  absent) to someone else's document. A new narrow `repairProfile()` rule
+  allows exactly that.
+- The rules tests finally ran, on the emulator with a portable JRE.
+  `tests/rules/appFlow.test.ts` runs the app's real Firestore Lite code and
+  covers a fresh profile, a missing profile, a foreign profile, and
+  concurrent checks. 12 of 12 pass. It also found a race (two profile
+  checks at once) and a bug in my own test.
+- **Needs a redeploy of the rules.** In a shared project, deploying the rules
+  replaces the other app's rules too.
+
 ## fix/missing-profile — 2026-09-29
 - "New page" failed with `Commit … permission-denied` after the rules were
   deployed. The first sign-in had happened under the default deny-all rules,

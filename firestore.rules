@@ -26,9 +26,20 @@ service cloud.firestore {
 
       // The counter may only move by one, together with the project it belongs
       // to (lastProjectOp) appearing or disappearing in the same batch.
-      allow update: if isUser(uid) && (profileEdit() || countUp(uid) || countDown(uid));
+      allow update: if isUser(uid) && (profileEdit() || repairProfile() || countUp(uid) || countDown(uid));
 
       function profileEdit() { return changedOnly(['displayName', 'photoURL']); }
+
+      // The profile doc may already exist from another app in the same Firebase
+      // project. Allow adding ONLY our counter (+ plan "free" when absent).
+      function repairProfile() {
+        return !('projectCount' in resource.data)
+          && request.resource.data.projectCount == 0
+          && (
+            (('plan' in resource.data) && changedOnly(['projectCount']))
+            || (!('plan' in resource.data) && changedOnly(['projectCount', 'plan']) && request.resource.data.plan == 'free')
+          );
+      }
       function opId() { return request.resource.data.lastProjectOp; }
 
       function countUp(uid) {
