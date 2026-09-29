@@ -138,6 +138,17 @@ into nodes, so nothing the AI wrote gets lost.
 - Text inputs use `useDraft` (prop → local draft; save on Enter or blur).
   This avoids setState-in-effect.
 
+## Import and saving
+
+- `features/import/PasteScreen` goes through `analyzePaste` (which calls
+  `parsePastedCode`) and hands `onOpen(doc)` to the page, which calls
+  `openDocument(doc)`.
+- `features/editor/persistence/useAutosave(save, where)` is the single
+  autosave loop, and every place a page is saved passes its own `save(doc)`:
+  - Try-it passes `saveLocalDraft` (localStorage, try/catch-safe).
+  - Account projects will pass a Firestore save.
+- `useSaveStore` holds the status that `SaveIndicator` shows.
+
 ## State (`features/editor/store`)
 
 | Store | Holds |

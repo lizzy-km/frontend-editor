@@ -1,7 +1,7 @@
 // Text editing (Quill) and quick actions (edit text, change picture).
-import { check, OUT, openPage } from './browser.mjs'
+import { check, openExample, OUT } from './browser.mjs'
 
-const { browser, page, frame, box, errors } = await openPage('/try')
+const { browser, page, frame, box, errors } = await openExample()
 
 // Double-click the heading, replace its text, Enter to finish
 const h1 = await box('h1')
@@ -28,7 +28,7 @@ await page.waitForSelector('.ql-editor')
 await page.keyboard.press('Control+Home')
 await page.keyboard.press('Shift+Control+ArrowRight')
 await page.keyboard.press('Control+b')
-await page.mouse.click(1380, 840)
+await page.mouse.click(12, 845) // empty canvas area, outside the page
 await page.waitForTimeout(300)
 check('bold is saved', (await frame.$eval('.hero p', (el) => el.innerHTML)).includes('<strong'))
 

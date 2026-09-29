@@ -1,7 +1,7 @@
 // Settings panel: text size, color, spacing, arrange, hide on phone, advanced CSS.
-import { check, OUT, openPage } from './browser.mjs'
+import { check, openExample, OUT } from './browser.mjs'
 
-const { browser, page, frame, box, errors } = await openPage('/try')
+const { browser, page, frame, box, errors } = await openExample()
 const css = (selector, prop) => frame.$eval(selector, (el, p) => getComputedStyle(el).getPropertyValue(p), prop)
 const panel = page.locator('aside').last()
 const selectAt = async (selector) => {
