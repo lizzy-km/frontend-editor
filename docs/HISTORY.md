@@ -3,6 +3,27 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/editor-inspector — 2026-09-29
+- Right-hand settings panel (`features/editor/inspector`) in everyday words:
+  - Config sections: Text, Picture, Arrange items, Background, Spacing,
+    Size, Corners & border, Shadow. Each shows 2–4 controls with the rest
+    under "More options".
+  - Custom sections: Link (address, new tab), Picture file (change, description),
+    Words (a box per text piece, for text the rich editor can't open), Show or
+    hide per screen size, Page title, and Advanced (element type, class, id,
+    raw CSS per screen size, undo all changes here).
+  - Values show the real computed style, a dot marks a user change, and ↺
+    resets it. A banner says which screen sizes an edit affects.
+- Companion styles (`companionStyles.ts`) keep a change visible: a border
+  needs a style; gap, alignment and direction need flex; a manual width
+  lifts `max-width`.
+- Show on a screen size uses `display: revert` when a bigger size or the page's CSS hid it.
+- Fixes found in the browser: Esc in a settings box now leaves the box; a
+  multi-column grid reads as "Side by side"; controls no longer overflow the
+  panel; colors are shown as #hex.
+- e2e: `e2e/inspector.mjs` (10 checks).
+- Process: from this branch on, commits are small, one per logical change.
+
 ## feature/editor-text — 2026-09-29
 - Inline text editing with Quill (bubble theme, lazy-loaded chunk):
   - Opens on double-click or Enter, right on top of the element, copying its

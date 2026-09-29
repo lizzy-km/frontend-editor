@@ -1,0 +1,58 @@
+.row { display: grid; grid-template-columns: 104px 1fr auto; align-items: center; gap: 8px; min-height: 36px; }
+.label { font-size: 13px; color: var(--text-soft); display: flex; align-items: center; gap: 6px; }
+.changed { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.reset {
+  border: 0; background: none; cursor: pointer; color: var(--text-soft); padding: 4px; border-radius: 6px;
+  display: grid; place-items: center; visibility: hidden;
+}
+.reset:hover { background: var(--surface-2); color: var(--text); }
+.row:hover .reset.visible { visibility: visible; }
+
+.input, .select {
+  width: 100%; min-width: 0; height: 32px; padding: 0 8px; font-size: 13px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface);
+}
+.input:focus, .select:focus { outline: none; border-color: var(--focus); }
+
+.color { display: flex; align-items: center; gap: 6px; }
+.swatch {
+  position: relative; width: 32px; height: 32px; flex-shrink: 0; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); overflow: hidden; cursor: pointer;
+  background-image: conic-gradient(#ddd 25%, #fff 0 50%, #ddd 0 75%, #fff 0); background-size: 10px 10px;
+}
+.swatch span { position: absolute; inset: 0; }
+.swatch input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+.slider { display: flex; align-items: center; gap: 8px; }
+.slider input[type='range'] { flex: 1; min-width: 0; accent-color: var(--accent); }
+.slider .number { width: 56px; flex-shrink: 0; }
+
+.segmented { display: flex; background: var(--surface-2); padding: 2px; border-radius: var(--radius-sm); gap: 2px; }
+.segment {
+  flex: 1; height: 28px; border: 0; background: transparent; border-radius: 6px; cursor: pointer;
+  font-size: 12px; font-weight: 600; color: var(--text-soft); display: grid; place-items: center;
+}
+.segment[aria-pressed='true'] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+
+.size { display: flex; gap: 4px; }
+.size .number { flex: 1; }
+.size .unit { width: 72px; }
+
+.sidesTop { display: flex; gap: 6px; align-items: center; }
+.sidesTop > div { flex: 1; min-width: 0; }
+.dimmed { opacity: 0.4; }
+.toggle {
+  border: 1px solid var(--border); background: var(--surface); cursor: pointer; color: var(--text-soft);
+  width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center; flex-shrink: 0;
+}
+.toggle[aria-pressed='true'] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.sidesGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+.sideLabel { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--text-soft); }
+
+/* Grid children must be allowed to shrink or they overflow the 300px panel. */
+.row > * { min-width: 0; }
+/* Label on top, control full width below (used for the 4-side spacing control). */
+.stacked { grid-template-columns: 1fr auto; grid-template-areas: 'label reset' 'control control'; row-gap: 4px; }
+.stacked > :nth-child(1) { grid-area: label; }
+.stacked > :nth-child(2) { grid-area: control; }
+.stacked > :nth-child(3) { grid-area: reset; }

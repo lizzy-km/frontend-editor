@@ -33,7 +33,12 @@ const SHORTCUTS: Shortcut[] = [
 export function useEditorShortcuts() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (isTyping(event.target)) return
+      if (isTyping(event.target)) {
+        // Esc leaves a settings box, so the next Esc/Delete acts on the page again.
+        const inPanel = !(event.target as HTMLElement).closest('.ql-editor')
+        if (event.key === 'Escape' && inPanel) (event.target as HTMLElement).blur()
+        return
+      }
       const shortcut = SHORTCUTS.find((item) => item.match(event))
       if (!shortcut) return
       event.preventDefault()

@@ -1,7 +1,7 @@
 import { htmlToChildNodes } from '../model/parse/domToNodes'
 import { getElement } from '../model/tree/queries'
-import { insertSubtree, replaceChildren } from '../model/tree/treeOps'
-import type { NodeMap } from '../model/types'
+import { insertSubtree, patchNode, replaceChildren } from '../model/tree/treeOps'
+import type { NodeMap, TextNode } from '../model/types'
 import { getDoc } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
 import { updateNodes } from './commit'
@@ -11,6 +11,11 @@ export function setInnerHtml(id: string, html: string) {
   const childNodes: NodeMap = {}
   const childIds = htmlToChildNodes(html, id, childNodes)
   updateNodes((nodes) => replaceChildren(nodes, id, childNodes, childIds))
+}
+
+/** Changes one piece of plain text in place (formatting around it is untouched). */
+export function setText(textId: string, text: string) {
+  updateNodes((nodes) => patchNode<TextNode>(nodes, textId, (node) => ({ ...node, text })), `text:${textId}`)
 }
 
 /** Tags that can hold other elements (where "Add" puts new things). */
