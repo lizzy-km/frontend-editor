@@ -3,6 +3,18 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/editor-sidebar — 2026-09-29
+- The left column has three tabs (`features/editor/sidebar`):
+  - **Layers:** a tree with friendly names, hover synced with the canvas,
+    and an eye to hide. It opens itself to the selection and scrolls it into
+    view. Rows subscribe to primitive selectors, so only the changed row re-renders.
+  - **Add:** 10 basic pieces (`blocks.ts`, data only) plus "Paste more code",
+    which takes a whole AI reply and inserts only its body.
+  - **Code:** the page's CSS and inline scripts, saved when you click away.
+- Fix: the toolbar used equal-width side columns, so the right side
+  overlapped the zoom controls. It is now `auto 1fr auto`.
+- e2e: `sidebar.mjs` (7 checks).
+
 ## feature/export — 2026-09-29
 - Download dialog (`features/export`) in plain words: Web page (.html),
   Picture (.png), Files for a developer (.zip), plus "Copy the code instead".

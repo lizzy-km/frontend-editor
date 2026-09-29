@@ -1,10 +1,10 @@
 .toolbar {
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px;
   height: 56px; padding: 0 12px; background: var(--surface); border-bottom: 1px solid var(--border);
 }
 .side { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .end { justify-content: flex-end; }
-.center { display: flex; align-items: center; gap: 10px; }
+.center { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
 .group { display: flex; align-items: center; gap: 2px; }
 
 .segmented { display: flex; padding: 3px; gap: 2px; border-radius: 999px; background: var(--surface-2); }
@@ -24,11 +24,9 @@
   .segmentLabel { display: none; }
 }
 @media (max-width: 720px) {
-  .toolbar { grid-template-columns: auto 1fr auto; }
-  .center { justify-content: center; }
   .center > .group:last-child { display: none; }
 }
 
 .saveStatus { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-soft); white-space: nowrap; }
 .saveError { color: var(--danger); font-weight: 600; }
-@media (max-width: 1100px) { .saveStatus { display: none; } .saveStatus.saveError { display: inline-flex; } }
+@media (max-width: 1320px) { .saveStatus { display: none; } .saveStatus.saveError { display: inline-flex; } }

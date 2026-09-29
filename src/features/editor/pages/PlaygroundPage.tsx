@@ -12,6 +12,7 @@ import { clearLocalDraft, loadLocalDraft, saveLocalDraft } from '../persistence/
 import { useAutosave } from '../persistence/useAutosave'
 import { WELCOME_HTML } from '../samples/welcomePage'
 import { EditorToolbar } from '../toolbar/EditorToolbar'
+import { Sidebar } from '../sidebar/Sidebar'
 import { SaveIndicator } from '../toolbar/SaveIndicator'
 
 /** The editor for "Try it": saves to this browser only. */
@@ -36,6 +37,7 @@ function PlaygroundEditor({ onStartOver }: { onStartOver: () => void }) {
           }
         />
       }
+      left={<Sidebar />}
       right={<Inspector />}
     />
   )
