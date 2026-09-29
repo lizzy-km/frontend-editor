@@ -11,6 +11,7 @@ export const EDITS_STYLE_ID = 'fe-edits-css'
 /** Editor-only helpers inside the frame (never exported). */
 const HELPER_CSS = `
 [data-fe-hidden] { opacity: 0.25 !important; filter: grayscale(1); }
+[data-fe-editing] { visibility: hidden !important; }
 html { scroll-behavior: auto !important; }
 `
 

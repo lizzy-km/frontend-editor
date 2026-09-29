@@ -65,6 +65,18 @@ export function setAttribute(id: string, name: string, value: string) {
   }), `attr:${id}:${name}`)
 }
 
+/** Several attributes as ONE undo step. Empty values remove the attribute (except alt). */
+export function setAttributes(id: string, values: Record<string, string>) {
+  updateNodes((nodes) => patchNode<ElementNode>(nodes, id, (node) => {
+    const attrs = { ...node.attrs }
+    for (const [name, value] of Object.entries(values)) {
+      if (value === '' && name !== 'alt') delete attrs[name]
+      else attrs[name] = value
+    }
+    return { ...node, attrs }
+  }))
+}
+
 export function toggleHidden(id: string) {
   updateNodes((nodes) => patchNode<ElementNode>(nodes, id, (node) => ({ ...node, hidden: !node.hidden })))
 }

@@ -5,3 +5,4 @@ dist
 *.local
 .wrangler
 .DS_Store
+e2e/screenshots
