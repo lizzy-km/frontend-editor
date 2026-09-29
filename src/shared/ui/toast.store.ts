@@ -13,7 +13,8 @@ export const useToastStore = create<ToastState>((set, get) => ({
   toasts: [],
   push: (message, tone = 'info') => {
     const id = createId()
-    set({ toasts: [...get().toasts, { id, message, tone }] })
+    // The same message again replaces the old one instead of stacking up.
+    set({ toasts: [...get().toasts.filter((item) => item.message !== message), { id, message, tone }] })
     setTimeout(() => get().dismiss(id), 4000)
   },
   dismiss: (id) => set({ toasts: get().toasts.filter((item) => item.id !== id) }),
