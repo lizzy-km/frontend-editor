@@ -6,11 +6,13 @@ description: frontend-editor's Firestore data model, security-rule invariants (p
 # Firebase data: rules that must hold
 
 ## Collections
+Names live in `src/lib/collections.ts` (prefixed so a shared Firebase project can't collide) and are repeated in `firestore.rules` + `firestore.indexes.json` — change all three together.
+
 | Path | Who can read | What |
 |---|---|---|
-| `users/{uid}` | owner | `displayName, email, photoURL, plan ('free'|'pro'), projectCount, lastProjectOp, createdAt` |
-| `projects/{id}` | owner, or anyone if `isPublic` | `ownerId, ownerName, name, isPublic, thumbnailUrl, remixOf, createdAt, updatedAt` |
-| `projectContent/{id}` | owner, or anyone if `isPublic` | `ownerId, isPublic (mirror), doc (JSON string of PageDoc), updatedAt` |
+| `tweak_users/{uid}` | owner | `displayName, email, photoURL, plan ('free'|'pro'), projectCount, lastProjectOp, createdAt` |
+| `tweaks_projects/{id}` | owner, or anyone if `isPublic` | `ownerId, ownerName, name, isPublic, thumbnailUrl, remixOf, createdAt, updatedAt` |
+| `tweaks_project_content/{id}` | owner, or anyone if `isPublic` | `ownerId, isPublic (mirror), doc (JSON string of PageDoc), updatedAt` |
 
 ## Invariants
 1. **The page counter only moves together with a project.** Create and delete are

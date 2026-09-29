@@ -3,6 +3,19 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/namespaced-collections — 2026-09-29
+- Collections were renamed so the app can't collide with another app in the
+  same Firebase project:
+  - `users` → `tweak_users`
+  - `projects` → `tweaks_projects`
+  - `projectContent` → `tweaks_project_content`
+- The names live in `src/lib/collections.ts`. `firestore.rules` and
+  `firestore.indexes.json` repeat them because they can't import code.
+- There was no data to migrate: every earlier save had been refused.
+- Needs a redeploy of the rules and indexes.
+- Checks: 12 of 12 rules tests pass on the emulator, along with tsc, lint,
+  unit tests and the build.
+
 ## fix/shared-project-profile — 2026-09-29
 - The real cause of "New page" `permission-denied`: the Firebase project
   (`look-vince`) already had `users/{uid}` from another app, without
