@@ -52,6 +52,12 @@ describe('projects', () => {
     await assertSucceeds(createBatch(alice(), 'p1').commit())
   })
 
+  it('refuses a new page when the profile is missing (the app creates it first)', async () => {
+    await assertFails(createBatch(alice(), 'p1').commit())
+    await setDoc(doc(alice(), 'users/alice'), { displayName: 'A', email: 'a@x', photoURL: null, plan: 'free', projectCount: 0, createdAt: serverTimestamp() })
+    await assertSucceeds(createBatch(alice(), 'p1').commit())
+  })
+
   it('refuses the 11th page on the free plan', async () => {
     await seedUser(10)
     await assertFails(createBatch(alice(), 'p11').commit())
