@@ -165,6 +165,15 @@ into nodes, so nothing the AI wrote gets lost.
   allow-popups allow-modals"`. **Never add allow-same-origin to Preview or
   to public page viewers.**
 
+## Accounts (`features/auth`)
+
+- `useAuthStore` holds `{ user, status }`, where status is
+  `loading | signedIn | signedOut | unconfigured`. `startAuth()` attaches the
+  Firebase listener once, lazily.
+- Call Firebase only through `authService()` (a dynamic import), never by
+  importing `firebase/*` in UI code, so bundles stay small.
+- `getIdToken()` is how other services, such as the uploads Worker, prove who the user is.
+
 ## State (`features/editor/store`)
 
 | Store | Holds |
