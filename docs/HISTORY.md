@@ -3,6 +3,15 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/missing-profile — 2026-09-29
+- "New page" failed with `Commit … permission-denied` after the rules were
+  deployed. The first sign-in had happened under the default deny-all rules,
+  so `users/{uid}` was never created. A restored session never retried it,
+  and the batch that bumps the page counter had nothing to update.
+- `ensureUserProfile` now also runs when a session is restored and right
+  before `createProject`.
+- There is a rules test for the missing-profile case.
+
 ## fix/firestore-lite — 2026-09-29
 - The console showed "Error processing response text: AbortError: signal is
   aborted without reason". It comes from the full Firestore SDK's WebChannel

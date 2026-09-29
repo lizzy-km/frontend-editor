@@ -1,5 +1,6 @@
 import { doc, getDoc, increment, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore/lite'
 import type { AppUser } from '@/features/auth/types'
+import { ensureUserProfile } from '@/features/auth/userProfile'
 import { planFor } from '@/features/billing/plans'
 import type { PageDoc } from '@/features/editor/model/types'
 import { firestore } from '@/lib/firebase'
@@ -12,6 +13,8 @@ import { ProjectLimitError } from './types'
  * count went up by exactly one for this project and stays within the plan.
  */
 export async function createProject(user: AppUser, pageDoc: PageDoc, remixOf: string | null = null): Promise<string> {
+  // The counter lives on the profile; without it the rules refuse the whole batch.
+  await ensureUserProfile(user)
   const profile = (await getDoc(userRef(user.uid))).data() ?? {}
   const plan = planFor(profile.plan as string | undefined)
   if (Number(profile.projectCount ?? 0) >= plan.maxProjects) throw new ProjectLimitError(plan.maxProjects)

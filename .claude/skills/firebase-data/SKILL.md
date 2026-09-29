@@ -30,7 +30,12 @@ description: frontend-editor's Firestore data model, security-rule invariants (p
    `ProjectTooBigError` gives the user a friendly message. If pages outgrow
    that, move content to R2 behind the same `loadProjectContent` /
    `saveProjectContent` functions.
-6. **Public pages are untrusted code for the viewer.** Render them only in a
+6. **The profile must exist before any counted write.** Without
+   `users/{uid}`, the counter update in the create batch has nothing to
+   update, and the rules refuse the whole batch with `permission-denied`.
+   `ensureUserProfile` runs at sign-in, when a session is restored
+   (`watchAuth`), and inside `createProject`. Keep all three.
+7. **Public pages are untrusted code for the viewer.** Render them only in a
    sandbox WITHOUT `allow-same-origin`, like Preview does.
 
 ## Use Firestore Lite
