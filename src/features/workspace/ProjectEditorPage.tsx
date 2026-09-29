@@ -17,6 +17,7 @@ import { Button, EmptyState, Icon, PageSpinner } from '@/shared/ui'
 import { loadProjectContent, saveProjectContent } from './api/projectContent'
 import { getProjectMeta } from './api/projectQueries'
 import { ShareDialog } from './components/ShareDialog'
+import { useThumbnail } from './useThumbnail'
 import styles from './components/Workspace.module.css'
 
 /** Loads meta + content and opens it in the editor (owners only). */
@@ -30,9 +31,16 @@ async function loadForEditing(id: string, uid: string) {
 }
 
 function Editor({ id, initialPublic }: { id: string; initialPublic: boolean }) {
-  const save = useCallback((doc: PageDoc) => saveProjectContent(id, doc), [id])
+  const refreshThumbnail = useThumbnail(id)
+  const save = useCallback(async (doc: PageDoc) => {
+    await saveProjectContent(id, doc)
+    void refreshThumbnail() // throttled, runs in the background
+  }, [id, refreshThumbnail])
   useAutosave(save, 'to your account')
-  const saveNow = useSaveNow(save)
+  const saveNow = useSaveNow(async (doc) => {
+    await saveProjectContent(id, doc)
+    void refreshThumbnail(true)
+  })
   useSaveShortcut(saveNow)
   const title = useDocStore((state) => state.doc.title)
   const [isPublic, setIsPublic] = useState(initialPublic)
