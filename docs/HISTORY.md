@@ -3,6 +3,18 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/firestore-lite — 2026-09-29
+- The console showed "Error processing response text: AbortError: signal is
+  aborted without reason". It comes from the full Firestore SDK's WebChannel
+  stream being cut on navigation or StrictMode remounts.
+- The app now uses `firebase/firestore/lite`, which sends plain HTTPS
+  requests with no stream. The Firebase chunk went from 552 kB to 199 kB
+  (162 → 59 kB gzipped).
+- Found while checking a real project: it still had Firebase's default
+  deny-all rules, so gallery, saving and My pages were refused. The fix is
+  `firebase deploy --only firestore`, as in the README.
+- Opt-in live smoke test: `e2e/live/firestore.mjs`.
+
 ## feature/future-features — 2026-09-29
 - Billing (flag `enable_billing`, off): a `/plans` page (Free / Pro) and a
   pluggable `PaymentProvider` in `billing/payments.ts` with a `crypto` stub.

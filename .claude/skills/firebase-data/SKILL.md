@@ -33,6 +33,19 @@ description: frontend-editor's Firestore data model, security-rule invariants (p
 6. **Public pages are untrusted code for the viewer.** Render them only in a
    sandbox WITHOUT `allow-same-origin`, like Preview does.
 
+## Use Firestore Lite
+The app imports **`firebase/firestore/lite`**, never `firebase/firestore`.
+Lite uses plain HTTPS requests, so there is no WebChannel stream. The full
+SDK's stream threw "AbortError: signal is aborted" on every navigation or
+remount. Lite is also about 350 kB smaller.
+
+It supports every call the app makes: get, query, writeBatch, increment and
+serverTimestamp. If a feature ever truly needs live updates (`onSnapshot`),
+use the full SDK only in that feature's lazy module.
+
+The rules tests in `tests/rules` use the full SDK, and that is fine; they
+never ship.
+
 ## Bundle rule
 - `@/lib/firebase` (the SDK) may only be imported from lazily-loaded code:
   `features/auth/authService.ts`, `userProfile.ts`, `features/workspace/api/*`
