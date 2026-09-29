@@ -27,10 +27,15 @@ src/
   styles/         tokens.css (light/dark) + base.css
   features/
     home/         public landing page
+    import/       paste screen (the front door)
+    export/       download html / zip / png, preview
     editor/
       model/      page model: types, parse (paste -> nodes), tree ops, serialize (nodes -> html/css)
       store/      doc (with undo), selection, view
       actions/    user-level edits (setStyle, deleteNode, insertHtml...) — UI calls these
+      canvas/     Konva overlay (select, drag, resize)   text/  Quill   quick/  floating actions
+      inspector/  right settings panel                  sidebar/  Layers / Add / Code
+      persistence/ autosave + local draft               toolbar/  top bar pieces
       frame/      iframe renderer that mirrors the model into real DOM
 ```
 
