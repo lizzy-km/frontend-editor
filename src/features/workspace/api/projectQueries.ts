@@ -1,4 +1,4 @@
-import { getDoc, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore'
+import { getDoc, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore/lite'
 import { projectRef, projectsCol, toProjectMeta, userRef } from './refs'
 import type { ProjectMeta } from './types'
 

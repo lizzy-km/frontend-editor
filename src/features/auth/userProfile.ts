@@ -1,4 +1,4 @@
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore/lite'
 import { firestore } from '@/lib/firebase'
 import type { AppUser } from './types'
 

@@ -16,7 +16,8 @@ await page.getByRole('link', { name: 'Explore other pages' }).click()
 await page.waitForTimeout(500)
 check('links back to Explore', page.url().endsWith('/gallery'))
 
-// Without Firebase config, calls fail and are caught; nothing else should be logged.
-const unexpected = errors.filter((error) => !/Firebase is not configured/.test(error))
+// Expected noise: no Firebase config at all, or the browser logging the 403
+// that rules return for a private/missing page. Anything else is a real error.
+const unexpected = errors.filter((error) => !/Firebase is not configured|status of 403/.test(error))
 check('no unexpected console errors', unexpected.length === 0, unexpected.join(' | '))
 await browser.close()

@@ -1,4 +1,4 @@
-import { getDoc, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore'
+import { getDoc, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore/lite'
 import type { PageDoc } from '@/features/editor/model/types'
 import { firestore } from '@/lib/firebase'
 import { contentRef, projectRef } from './refs'
