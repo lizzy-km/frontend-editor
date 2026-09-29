@@ -32,6 +32,7 @@ export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => 
     try {
       await action()
       toast(done, 'success')
+      onClose()
     } catch (error) {
       toast(`Sorry — ${(error as Error).message}`, 'error')
     } finally {
