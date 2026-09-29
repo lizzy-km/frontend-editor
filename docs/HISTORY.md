@@ -3,6 +3,24 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/import — 2026-09-29
+- `features/import/PasteScreen`: one big box for the whole AI reply (code
+  fences and chatter are fine). There is an optional split HTML / CSS / JS
+  mode, and you can drop an `.html` file.
+- `analyzePaste` gives plain-words feedback: a problem ("doesn't look like
+  web page code…") or a summary ("5 elements · Tailwind · 1 script (they run
+  in Preview)"). Parsing is deferred so typing stays smooth.
+- `/try` is now paste-first, with "Try an example page" and "Continue my last page".
+- Autosave (`editor/persistence`):
+  - `useAutosave(save, where)` is debounced, flushes when leaving, and warns
+    on `beforeunload`. It doesn't care where the page is saved, so Firestore
+    projects will reuse it.
+  - `SaveIndicator` shows the status in the toolbar, and `localDraft` keeps
+    the Try-it page in this browser.
+- `openDocument()` clears selection and undo history when opening a page.
+- e2e: `paste.mjs` covers the AI reply, the summary, Tailwind rendering live
+  while page scripts stay off, and the draft after a reload.
+
 ## feature/editor-inspector — 2026-09-29
 - Right-hand settings panel (`features/editor/inspector`) in everyday words:
   - Config sections: Text, Picture, Arrange items, Background, Spacing,
