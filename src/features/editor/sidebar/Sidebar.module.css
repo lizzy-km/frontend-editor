@@ -1,0 +1,44 @@
+.sidebar { display: flex; flex-direction: column; height: 100%; }
+.tabs { display: flex; gap: 2px; padding: 8px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
+.tab {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; height: 32px; border: 0;
+  border-radius: 8px; background: none; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text-soft);
+}
+.tab[aria-selected='true'] { background: var(--accent-soft); color: var(--accent); }
+.panel { flex: 1; min-height: 0; }
+
+.tree { padding: 6px 0 24px; }
+.layer {
+  display: flex; align-items: center; gap: 4px; height: 30px; padding-right: 6px; cursor: pointer;
+  font-size: 13px; border-left: 2px solid transparent;
+}
+.layer:hover, .hovered { background: var(--surface-2); }
+.selected { background: var(--accent-soft) !important; border-left-color: var(--accent); font-weight: 600; }
+.hiddenLayer .layerName, .hiddenLayer .layerIcon { opacity: 0.45; }
+.twisty, .eye {
+  display: grid; place-items: center; width: 20px; height: 20px; border: 0; background: none;
+  border-radius: 5px; cursor: pointer; color: var(--text-soft); flex-shrink: 0; padding: 0;
+}
+.eye { visibility: hidden; margin-left: auto; }
+.layer:hover .eye, .hiddenLayer .eye { visibility: visible; }
+.twisty:hover, .eye:hover { background: var(--border); }
+.layerIcon { color: var(--text-soft); flex-shrink: 0; }
+.layerName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.emptyNote { padding: 20px 16px; color: var(--text-soft); font-size: 13px; }
+
+.add, .code { padding: 12px 14px 24px; display: flex; flex-direction: column; gap: 10px; }
+.addHint { font-size: 12.5px; color: var(--text-soft); }
+.blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.block {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 6px; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface); font-size: 12.5px; font-weight: 600;
+  color: var(--text); transition: border-color 120ms, background-color 120ms;
+}
+.block:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.addLabel, .codeLabel { font-weight: 600; font-size: 13px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+.addCode, .codeArea {
+  width: 100%; min-height: 110px; resize: vertical; padding: 8px 10px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface-2); font: 12px/1.5 ui-monospace, Consolas, monospace;
+}
+.codeArea { min-height: 220px; font-weight: 400; }
+.addCode:focus, .codeArea:focus { outline: none; border-color: var(--focus); background: var(--surface); }
