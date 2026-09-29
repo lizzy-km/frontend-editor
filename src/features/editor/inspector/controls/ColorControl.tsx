@@ -5,8 +5,10 @@ import { useDraft } from './useDraft'
 
 /** Color swatch (opens the system picker) + a text box for exact values. */
 export function ColorControl({ value, onChange, label }: ControlProps) {
-  const [draft, setDraft] = useDraft(value)
   const empty = !value || isTransparent(value)
+  // Opaque rgb() reads nicer as #hex; keep rgba()/named colors as they are.
+  const shown = /^rgb\(/.test(value) ? toHexColor(value) : value
+  const [draft, setDraft] = useDraft(shown)
 
   return (
     <div className={styles.color}>
@@ -20,7 +22,7 @@ export function ColorControl({ value, onChange, label }: ControlProps) {
       <input
         className={styles.input} value={empty ? '' : draft} placeholder="None" aria-label={`${label} value`}
         onChange={(event) => setDraft(event.target.value)}
-        onBlur={() => draft !== value && onChange(draft)}
+        onBlur={() => draft !== shown && onChange(draft)}
         onKeyDown={(event) => event.key === 'Enter' && onChange(draft)}
       />
     </div>

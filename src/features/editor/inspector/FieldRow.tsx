@@ -54,7 +54,7 @@ export function FieldRow(props: Props) {
   const reset = () => setStyles(id, Object.fromEntries(changedProps.map((prop) => [prop, ''])))
 
   return (
-    <div className={styles.row} title={field.hint}>
+    <div className={`${styles.row} ${field.control.type === 'sides' ? styles.stacked : ''}`} title={field.hint}>
       <span className={styles.label}>
         {changed && <span className={styles.changed} aria-label="Changed" />}
         {field.label}

@@ -48,3 +48,11 @@
 .toggle[aria-pressed='true'] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
 .sidesGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
 .sideLabel { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--text-soft); }
+
+/* Grid children must be allowed to shrink or they overflow the 300px panel. */
+.row > * { min-width: 0; }
+/* Label on top, control full width below (used for the 4-side spacing control). */
+.stacked { grid-template-columns: 1fr auto; grid-template-areas: 'label reset' 'control control'; row-gap: 4px; }
+.stacked > :nth-child(1) { grid-area: label; }
+.stacked > :nth-child(2) { grid-area: control; }
+.stacked > :nth-child(3) { grid-area: reset; }
