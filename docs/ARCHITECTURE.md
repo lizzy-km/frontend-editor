@@ -149,6 +149,17 @@ into nodes, so nothing the AI wrote gets lost.
   - Account projects will pass a Firestore save.
 - `useSaveStore` holds the status that `SaveIndicator` shows.
 
+## Export (`features/export`)
+
+- Every format starts from `buildPageParts(doc, onlyId?)` in `editor/model/serialize`:
+  - `partsToSingleFile` makes the .html, copy, and Preview.
+  - `partsToSplitFiles` + `zipFiles` make the .zip.
+  - `capturePng(id | null)` takes the picture from the live iframe.
+- `exportActions.ts` has one function per button, so new formats plug in there.
+- `PreviewOverlay` runs the page in `sandbox="allow-scripts allow-forms
+  allow-popups allow-modals"`. **Never add allow-same-origin to Preview or
+  to public page viewers.**
+
 ## State (`features/editor/store`)
 
 | Store | Holds |

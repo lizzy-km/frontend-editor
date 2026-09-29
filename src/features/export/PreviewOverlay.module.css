@@ -1,0 +1,9 @@
+.overlay { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; background: var(--canvas-bg); }
+.bar {
+  display: flex; align-items: center; gap: 16px; height: 56px; padding: 0 12px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.hint { margin-left: auto; font-size: 13px; color: var(--text-soft); }
+.stage { flex: 1; display: flex; justify-content: center; padding: 16px; min-height: 0; }
+.frame { height: 100%; max-width: 100%; border: 0; border-radius: 10px; background: #fff; box-shadow: 0 18px 48px rgb(0 0 0 / 14%); }
+@media (max-width: 720px) { .hint { display: none; } }

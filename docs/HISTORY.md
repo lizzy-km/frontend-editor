@@ -3,6 +3,24 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/export — 2026-09-29
+- Download dialog (`features/export`) in plain words: Web page (.html),
+  Picture (.png), Files for a developer (.zip), plus "Copy the code instead".
+  It works on the whole page or "Only <selected part>", and closes after a
+  successful download.
+- `.zip` holds `index.html` + `styles.css` + `script.js` / `module.js`
+  (fflate). External and data scripts stay in the HTML.
+- `.png` is captured from the live iframe with a lazily loaded
+  html-to-image: 2x, solid backdrop, faded hidden parts left out, and fonts
+  from the page itself.
+- Preview runs the page's JavaScript in a sandbox with `allow-scripts` but
+  never `allow-same-origin`, and has its own screen-size switch. Editor
+  shortcuts are off while it's open.
+- Color helpers moved to `lib/color.ts`. A repeated toast now replaces the old one.
+- e2e: `export.mjs`; the whole suite is 34 checks.
+- Known limit: Esc can't close Preview while focus is inside the page
+  (cross-origin iframe), so "Back to editing" is always visible.
+
 ## feature/import — 2026-09-29
 - `features/import/PasteScreen`: one big box for the whole AI reply (code
   fences and chatter are fine). There is an optional split HTML / CSS / JS
