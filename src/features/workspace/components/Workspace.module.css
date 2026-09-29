@@ -35,3 +35,13 @@
 
 .limit { padding: 16px 18px; border-radius: 16px; background: var(--accent-soft); display: flex; flex-direction: column; gap: 6px; }
 .error { color: var(--danger); }
+
+.share { display: flex; flex-direction: column; gap: 14px; }
+.shareNote { color: var(--text-soft); font-size: 14px; }
+.shareLink { display: flex; gap: 8px; }
+.shareLink input {
+  flex: 1; min-width: 0; height: 38px; padding: 0 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface-2); font-size: 13px;
+}
+.form { display: flex; flex-direction: column; gap: 16px; }
+.projectName { font-weight: 700; font-size: 14px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
