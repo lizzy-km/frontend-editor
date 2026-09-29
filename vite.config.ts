@@ -8,6 +8,9 @@ export default defineConfig({
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   build: {
+    // The Firebase chunk is ~550 kB (160 kB gzipped) and only loads on account
+    // pages. Anything else this big should be split — so the limit sits just above it.
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         // Heavy libraries get their own chunks so the dashboard loads fast.
