@@ -42,5 +42,8 @@ export function getTextContent(nodes: NodeMap, id: string): string {
   const node = nodes[id]
   if (!node) return ''
   if (node.kind === 'text') return node.text
-  return node.children.map((childId) => getTextContent(nodes, childId)).join('').replace(/\s+/g, ' ').trim()
+  // Elements are joined with a space so "<h3>A</h3><p>B</p>" reads "A B", not "AB".
+  return node.children
+    .map((childId) => (nodes[childId]?.kind === 'element' ? ` ${getTextContent(nodes, childId)} ` : getTextContent(nodes, childId)))
+    .join('').replace(/\s+/g, ' ').trim()
 }

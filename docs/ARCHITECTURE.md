@@ -84,6 +84,32 @@ into nodes, so nothing the AI wrote gets lost.
   Everything runs in Preview, which is a separate sandbox with no same-origin access.
 - The iframe has `pointer-events: none`; the Konva overlay handles all pointer input.
 
+## Canvas and overlay (`features/editor/canvas`)
+
+```
+.canvas (container, measured with ResizeObserver)
+ ├─ .page  → EditorFrame (iframe, width = breakpoint width, CSS-scaled)
+ └─ Konva Stage (same size as the container, on top, gets all pointer input)
+```
+
+- `Canvas` works out `scale` (Fit = the page width fills the area) and the
+  frame's `left`/`top`. Together these are a `FramePlacement`, used for every
+  coordinate conversion (`geometry.ts`).
+- `nodeIdAt(x, y)` maps overlay pixels to frame pixels, calls
+  `elementFromPoint` inside the iframe, and reads `data-fe-id`.
+- `useTrackedBox(id)` measures the hovered and selected element on every
+  animation frame. It is cheap, and it follows scrolling, loading images and
+  animations without extra wiring.
+- `DraggableBox` is a Konva Rect whose position is set **imperatively**, so
+  Konva's drag and resize never fight React props; it snaps back to the
+  measured box afterwards.
+- `useBoxDrag` handles flow elements with `findDropTarget` (blue line) and
+  `moveNodeTo`; absolute or fixed elements get `left`/`top` styles instead.
+- `SelectionBox` adds a Konva Transformer; `resize.ts` turns the active
+  handle into width and/or height styles.
+- The editor screen is `layout/EditorLayout`, with slots for the toolbar and
+  the left, right and overlay areas, so pages plug in their own panels.
+
 ## State (`features/editor/store`)
 
 | Store | Holds |

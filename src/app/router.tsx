@@ -18,6 +18,7 @@ export const router = createBrowserRouter([
     errorElement: <RouteError />,
     children: [
       { path: '/', element: page(() => import('@/features/home/HomePage')) },
+      { path: '/try', element: page(() => import('@/features/editor/pages/PlaygroundPage')) },
       { path: '*', element: page(() => import('./NotFoundPage')) },
     ],
   },
