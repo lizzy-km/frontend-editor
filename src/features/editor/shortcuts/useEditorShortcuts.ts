@@ -3,6 +3,7 @@ import { deleteNode, duplicateNode, nudgeNode, selectParent } from '../actions/n
 import { isTextEditable } from '../model/tree/textRules'
 import { getDoc, useDocStore } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
+import { useViewStore } from '../store/view.store'
 
 /** Typing in a field must never trigger editor shortcuts. */
 function isTyping(target: EventTarget | null): boolean {
@@ -33,6 +34,7 @@ const SHORTCUTS: Shortcut[] = [
 export function useEditorShortcuts() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (useViewStore.getState().preview) return // preview has its own keys (Esc)
       if (isTyping(event.target)) {
         // Esc leaves a settings box, so the next Esc/Delete acts on the page again.
         const inPanel = !(event.target as HTMLElement).closest('.ql-editor')
