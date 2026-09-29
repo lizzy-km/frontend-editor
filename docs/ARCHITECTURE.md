@@ -189,6 +189,16 @@ rule invariants.
 - `ProjectEditorPage` reuses the same editor pieces as Try-it and only swaps
   the save function (`useAutosave(save, 'to your account')`).
 
+## Code tab (`features/editor/sidebar/code`)
+
+- `CodeEditor` wraps CodeMirror 6 (css / javascript) and is `lazy()`-loaded,
+  so the `codemirror` chunk downloads only when the Code tab opens.
+- It has one-way sync: typing calls `onChange` (debounced 400 ms in
+  `CodePanel`) and then `updateDoc` with a coalesce key. When the doc changes
+  elsewhere (undo), the new text is dispatched into CodeMirror.
+- CodeMirror's `.cm-content` is `contenteditable`, so the global editor
+  shortcuts ignore keys typed in it, and Ctrl+Z inside it is CodeMirror's own undo.
+
 ## Pictures and thumbnails (`features/assets`, `workers/assets`)
 
 ```
