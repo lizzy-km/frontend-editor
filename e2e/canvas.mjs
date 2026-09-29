@@ -1,7 +1,7 @@
 // Canvas: select, drag to reorder, undo, resize, phone view.
-import { check, OUT, openPage } from './browser.mjs'
+import { check, openExample, OUT } from './browser.mjs'
 
-const { browser, page, frame, box, errors } = await openPage('/try')
+const { browser, page, frame, box, errors } = await openExample()
 const cardTitles = () => frame.$$eval('.card h3', (els) => els.map((el) => el.textContent))
 
 // Select the heading
