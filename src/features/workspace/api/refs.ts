@@ -1,4 +1,4 @@
-import { collection, doc, Timestamp, type DocumentData, type DocumentSnapshot } from 'firebase/firestore'
+import { collection, doc, Timestamp, type DocumentData, type DocumentSnapshot } from 'firebase/firestore/lite'
 import { firestore } from '@/lib/firebase'
 import type { ProjectMeta } from './types'
 

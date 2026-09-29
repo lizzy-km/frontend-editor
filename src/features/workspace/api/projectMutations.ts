@@ -1,4 +1,4 @@
-import { doc, getDoc, increment, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore'
+import { doc, getDoc, increment, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore/lite'
 import type { AppUser } from '@/features/auth/types'
 import { planFor } from '@/features/billing/plans'
 import type { PageDoc } from '@/features/editor/model/types'
