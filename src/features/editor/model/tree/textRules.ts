@@ -1,0 +1,35 @@
+import { isElement, type NodeMap } from '../types'
+
+/** Formatting tags allowed inside editable text (what the text editor can produce). */
+const INLINE_TAGS = new Set(['b', 'strong', 'i', 'em', 'u', 's', 'span', 'a', 'br', 'small', 'sup', 'sub', 'mark', 'code'])
+
+/** Tags that hold text even when they are empty. */
+const TEXT_TAGS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'a', 'button', 'span', 'label',
+  'blockquote', 'figcaption', 'td', 'th', 'small', 'strong', 'em', 'dt', 'dd'])
+
+function onlyInlineInside(nodes: NodeMap, id: string): boolean {
+  const node = nodes[id]
+  if (!isElement(node)) return true
+  return node.children.every((childId) => {
+    const child = nodes[childId]
+    return !isElement(child) || (INLINE_TAGS.has(child.tag) && onlyInlineInside(nodes, childId))
+  })
+}
+
+function hasText(nodes: NodeMap, id: string): boolean {
+  const node = nodes[id]
+  if (!node) return false
+  if (node.kind === 'text') return node.text.trim().length > 0
+  return node.children.some((childId) => hasText(nodes, childId))
+}
+
+/**
+ * Can this element's words be edited with the text editor?
+ * Yes when it contains only text and simple formatting (no pictures, boxes...).
+ */
+export function isTextEditable(nodes: NodeMap, id: string): boolean {
+  const node = nodes[id]
+  if (!isElement(node) || node.tag === 'body') return false
+  if (!onlyInlineInside(nodes, id)) return false
+  return hasText(nodes, id) || TEXT_TAGS.has(node.tag)
+}
