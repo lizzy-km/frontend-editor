@@ -28,7 +28,7 @@ export function VisibilitySection({ node, computedDisplay }: { node: ElementNode
   }
 
   return (
-    <Section title="Show or hide" icon="eye" defaultOpen={!visible}>
+    <Section title="Show or hide" icon="eye">
       <Switch label={SHOW_LABEL[breakpoint]} checked={visible} onChange={toggle} />
       {!visible && <p className={styles.note}>Hidden here. It still exists — switch on to bring it back.</p>}
     </Section>

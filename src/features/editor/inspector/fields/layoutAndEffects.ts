@@ -1,8 +1,10 @@
 import type { SectionConfig } from '../fieldTypes'
 
-/** Stacked vs side by side, read from the real layout (block = stacked). */
+/** Stacked vs side by side, read from the real layout (block = stacked, multi-column grid = side by side). */
 const readDirection = (computed: Record<string, string>) => {
-  if (!(computed.display ?? '').includes('flex')) return 'column'
+  const display = computed.display ?? ''
+  if (display.includes('grid')) return (computed['grid-template-columns'] ?? '').trim().split(/\s+/).length > 1 ? 'row' : 'column'
+  if (!display.includes('flex')) return 'column'
   return (computed['flex-direction'] ?? '').startsWith('column') ? 'column' : 'row'
 }
 
