@@ -3,6 +3,32 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/workspace — 2026-09-29
+- Firestore data: `users/{uid}` holds the plan and `projectCount`,
+  `projects/{id}` the metadata, and `projectContent/{id}` the page as a JSON
+  string (`features/workspace/api`).
+- The 10-page limit: clicking "New page" creates the project and adds 1 to
+  the count in one batch, and deleting gives the slot back. `firestore.rules`
+  only let the counter move by one together with the project it belongs to
+  (`lastProjectOp`), so it can't be tampered with or bypassed. Plans (free
+  10 / pro 100) are in `billing/plans.ts` and mirrored in the rules.
+- Public or private per page. Public pages can be read by anyone, and the
+  flag is mirrored on the content doc for cheap rules.
+- Pages:
+  - `/projects` shows cards, the usage meter and a limit notice, with
+    rename, make public/private, and delete (with a warning).
+  - `/projects/new` is the paste screen, plus "Save the page from Try it".
+  - `/edit/:id` is owner-only, autosaves to the account, and has Ctrl+S and
+    a Share dialog with the public link.
+- Try-it's "Save to an account" goes to signup and then back to `/projects/new`.
+  The home page shows "My pages" to returning users through a storage hint.
+- Perf fix: Firebase was being preloaded on every page through `RequireAuth`.
+  The config is now split into `lib/firebaseConfig.ts`.
+- `firebase.json`, `firestore.rules`, `firestore.indexes.json`. The rules test
+  suite (`npm run test:rules`) is written but **not run yet**: this machine
+  has no Java for the emulator.
+- New skill: `.claude/skills/firebase-data`.
+
 ## feature/auth — 2026-09-29
 - Firebase Auth (`features/auth`): email and password, Google and GitHub
   popups (flag `enable_oauth`), password reset, sign out.

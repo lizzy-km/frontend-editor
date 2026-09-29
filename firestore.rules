@@ -1,0 +1,86 @@
+rules_version = '2';
+
+// Security for Tweak. The client is never trusted: plan limits, ownership and
+// who-can-see-what are all enforced here.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isUser(uid) { return signedIn() && request.auth.uid == uid; }
+    function userPath(uid) { return /databases/$(database)/documents/users/$(uid); }
+    function projectPath(id) { return /databases/$(database)/documents/projects/$(id); }
+    function changedOnly(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+
+    // Keep in sync with src/features/billing/plans.ts
+    function maxProjects(plan) { return plan == 'pro' ? 100 : 10; }
+
+    // ---- users/{uid}: profile + page counter -------------------------------
+    match /users/{uid} {
+      allow read: if isUser(uid);
+
+      allow create: if isUser(uid)
+        && request.resource.data.keys().hasOnly(['displayName', 'email', 'photoURL', 'plan', 'projectCount', 'createdAt'])
+        && request.resource.data.plan == 'free'
+        && request.resource.data.projectCount == 0
+        && request.resource.data.createdAt == request.time;
+
+      // The counter may only move by one, together with the project it belongs
+      // to (lastProjectOp) appearing or disappearing in the same batch.
+      allow update: if isUser(uid) && (profileEdit() || countUp(uid) || countDown(uid));
+
+      function profileEdit() { return changedOnly(['displayName', 'photoURL']); }
+      function opId() { return request.resource.data.lastProjectOp; }
+
+      function countUp(uid) {
+        return changedOnly(['projectCount', 'lastProjectOp'])
+          && request.resource.data.projectCount == resource.data.projectCount + 1
+          && request.resource.data.projectCount <= maxProjects(resource.data.plan)
+          && !exists(projectPath(opId()))
+          && existsAfter(projectPath(opId()))
+          && getAfter(projectPath(opId())).data.ownerId == uid;
+      }
+
+      function countDown(uid) {
+        return changedOnly(['projectCount', 'lastProjectOp'])
+          && request.resource.data.projectCount == resource.data.projectCount - 1
+          && exists(projectPath(opId()))
+          && get(projectPath(opId())).data.ownerId == uid
+          && !existsAfter(projectPath(opId()));
+      }
+    }
+
+    // ---- projects/{id}: listable metadata ----------------------------------
+    match /projects/{projectId} {
+      allow read: if resource.data.isPublic == true || isUser(resource.data.ownerId);
+
+      allow create: if isUser(request.resource.data.ownerId)
+        && request.resource.data.isPublic == false
+        && getAfter(userPath(request.auth.uid)).data.lastProjectOp == projectId
+        && getAfter(userPath(request.auth.uid)).data.projectCount == get(userPath(request.auth.uid)).data.projectCount + 1;
+
+      allow update: if isUser(resource.data.ownerId)
+        && changedOnly(['name', 'isPublic', 'thumbnailUrl', 'updatedAt'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 200;
+
+      allow delete: if isUser(resource.data.ownerId)
+        && getAfter(userPath(request.auth.uid)).data.lastProjectOp == projectId
+        && getAfter(userPath(request.auth.uid)).data.projectCount == get(userPath(request.auth.uid)).data.projectCount - 1;
+    }
+
+    // ---- projectContent/{id}: the page itself ------------------------------
+    match /projectContent/{projectId} {
+      allow read: if resource.data.isPublic == true || isUser(resource.data.ownerId);
+
+      allow create: if isUser(request.resource.data.ownerId)
+        && request.resource.data.isPublic == false
+        && getAfter(projectPath(projectId)).data.ownerId == request.auth.uid;
+
+      // isPublic is a mirror of the project's flag and must match it.
+      allow update: if isUser(resource.data.ownerId)
+        && changedOnly(['doc', 'updatedAt', 'isPublic'])
+        && request.resource.data.isPublic == getAfter(projectPath(projectId)).data.isPublic;
+
+      allow delete: if isUser(resource.data.ownerId);
+    }
+  }
+}

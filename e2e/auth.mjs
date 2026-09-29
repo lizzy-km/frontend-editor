@@ -19,5 +19,10 @@ if (configured) {
   check('points to Try it', page.url().endsWith('/try'))
 }
 
+// Protected pages send you to sign in and remember where you were going
+await page.goto(page.url().replace(/\/[^/]*$/, '/projects'))
+await page.waitForTimeout(800)
+check('protected page redirects to login with next', /\/login\?next=%2Fprojects/.test(page.url()), page.url())
+
 check('no console errors', errors.length === 0, errors.join(' | '))
 await browser.close()

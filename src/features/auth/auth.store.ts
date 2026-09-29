@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { isFirebaseConfigured } from '@/lib/firebase'
+import { isFirebaseConfigured } from '@/lib/firebaseConfig'
 import type { AppUser, AuthStatus } from './types'
 
 type AuthState = {
@@ -12,6 +12,20 @@ export const useAuthStore = create<AuthState>(() => ({
   status: isFirebaseConfigured ? 'loading' : 'unconfigured',
 }))
 
+const HINT_KEY = 'tweak:signed-in'
+
+/** Cheap "was signed in last time" flag, so light pages (home) can say "My pages" without Firebase. */
+export function wasSignedIn(): boolean {
+  try { return localStorage.getItem(HINT_KEY) === '1' } catch { return false }
+}
+
+function rememberSignedIn(signedIn: boolean) {
+  try {
+    if (signedIn) localStorage.setItem(HINT_KEY, '1')
+    else localStorage.removeItem(HINT_KEY)
+  } catch { /* storage blocked: the hint is optional */ }
+}
+
 let started = false
 
 /**
@@ -22,7 +36,10 @@ export function startAuth() {
   if (started || !isFirebaseConfigured) return
   started = true
   void import('./authService').then(({ watchAuth }) =>
-    watchAuth((user) => useAuthStore.setState({ user, status: user ? 'signedIn' : 'signedOut' })),
+    watchAuth((user) => {
+      rememberSignedIn(Boolean(user))
+      useAuthStore.setState({ user, status: user ? 'signedIn' : 'signedOut' })
+    }),
   )
 }
 

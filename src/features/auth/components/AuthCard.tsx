@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { isFirebaseConfigured } from '@/lib/firebase'
+import { isFirebaseConfigured } from '@/lib/firebaseConfig'
 import { TopBar } from '@/shared/ui'
 import styles from './AuthCard.module.css'
 

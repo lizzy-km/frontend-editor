@@ -9,6 +9,8 @@ page builder.
   branch per feature, files of at most 150 lines, functions of at most 100
   lines, plain-language UI, and verification with
   `npx tsc -b && npx eslint . && npx vitest run && npx vite build`.
+- Before touching Firestore code, auth or `firestore.rules`, read
+  `.claude/skills/firebase-data/SKILL.md`.
 - Before touching `src/features/editor/model|store|actions|frame`, read
   `.claude/skills/editor-model/SKILL.md`.
 - After each feature, update `docs/HISTORY.md` (and ARCHITECTURE/README when relevant).

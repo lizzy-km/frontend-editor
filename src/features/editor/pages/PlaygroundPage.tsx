@@ -32,7 +32,7 @@ function PlaygroundEditor({ onStartOver }: { onStartOver: () => void }) {
             <>
               <SaveIndicator />
               <ExportButtons />
-              <Link to="/signup"><Button size="small" variant="primary">Save to an account</Button></Link>
+              <Link to="/signup?next=%2Fprojects%2Fnew"><Button size="small" variant="primary">Save to an account</Button></Link>
             </>
           }
         />

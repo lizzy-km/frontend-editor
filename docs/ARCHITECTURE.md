@@ -174,6 +174,16 @@ into nodes, so nothing the AI wrote gets lost.
   importing `firebase/*` in UI code, so bundles stay small.
 - `getIdToken()` is how other services, such as the uploads Worker, prove who the user is.
 
+## Workspace (`features/workspace`) and data
+
+See `.claude/skills/firebase-data/SKILL.md` for the collections and the
+rule invariants.
+
+- `api/projectQueries` (reads), `api/projectMutations` (batched writes),
+  `api/projectContent` (the page JSON and autosave).
+- `ProjectEditorPage` reuses the same editor pieces as Try-it and only swaps
+  the save function (`useAutosave(save, 'to your account')`).
+
 ## State (`features/editor/store`)
 
 | Store | Holds |
