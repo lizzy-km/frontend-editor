@@ -17,7 +17,13 @@ export const toAppUser = (user: User): AppUser => ({
 })
 
 export function watchAuth(onChange: (user: AppUser | null) => void): () => void {
-  return onAuthStateChanged(firebaseAuth(), (user) => onChange(user ? toAppUser(user) : null))
+  return onAuthStateChanged(firebaseAuth(), (firebaseUser) => {
+    const user = firebaseUser ? toAppUser(firebaseUser) : null
+    // Self-heal: a restored session may have no profile yet (e.g. the first
+    // sign-in happened while the security rules refused the write).
+    if (user) ensureUserProfile(user).catch((error) => console.warn('Profile check failed:', error))
+    onChange(user)
+  })
 }
 
 export async function signInWithEmail(email: string, password: string) {
