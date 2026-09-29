@@ -3,6 +3,17 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/future-features — 2026-09-29
+- Billing (flag `enable_billing`, off): a `/plans` page (Free / Pro) and a
+  pluggable `PaymentProvider` in `billing/payments.ts` with a `crypto` stub.
+  Upgrades must be applied by a trusted server (payment webhook → Firebase
+  Admin SDK). The rules already refuse plan changes from the browser.
+- Marketplace (flag `enable_marketplace`, off): the `Listing` / `Order` model
+  and the planned Firestore shape in `marketplace/types.ts`, plus a
+  "coming soon" `/market` page.
+- `flagged(flag, element)` in the router makes these routes 404 while their flag is off.
+- e2e: `flags.mjs`.
+
 ## feature/gallery — 2026-09-29
 - `/gallery` (Explore) shows public pages with thumbnail, name, author and
   date, 24 at a time ("Show more"). It has friendly empty states, including
