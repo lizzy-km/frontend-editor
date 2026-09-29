@@ -28,3 +28,7 @@
   .center { justify-content: center; }
   .center > .group:last-child { display: none; }
 }
+
+.saveStatus { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-soft); white-space: nowrap; }
+.saveError { color: var(--danger); font-weight: 600; }
+@media (max-width: 1100px) { .saveStatus { display: none; } .saveStatus.saveError { display: inline-flex; } }
