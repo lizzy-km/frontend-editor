@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { wasSignedIn } from '@/features/auth/auth.store'
 import { Icon, TopBar, type IconName } from '@/shared/ui'
 import styles from './HomePage.module.css'
 
@@ -13,7 +14,7 @@ export default function HomePage() {
     <>
       <TopBar>
         <Link to="/gallery" className="hideOnPhone">Explore</Link>
-        <Link to="/login">Sign in</Link>
+        {wasSignedIn() ? <Link to="/projects">My pages</Link> : <Link to="/login">Sign in</Link>}
       </TopBar>
       <main className={styles.main}>
         <section className={styles.hero}>
