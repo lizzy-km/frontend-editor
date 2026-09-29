@@ -2,10 +2,14 @@ import { getDoc, getDocs, limit, orderBy, query, startAfter, where } from 'fireb
 import { projectRef, projectsCol, toProjectMeta, userRef } from './refs'
 import type { ProjectMeta } from './types'
 
-/** The signed-in person's pages, newest change first. */
+/**
+ * The signed-in person's pages, newest change first.
+ * Sorted here, not by Firestore: someone has at most a plan's worth of pages,
+ * and a plain filter needs no custom index (one less setup step).
+ */
 export async function listMyProjects(uid: string): Promise<ProjectMeta[]> {
-  const snapshot = await getDocs(query(projectsCol(), where('ownerId', '==', uid), orderBy('updatedAt', 'desc')))
-  return snapshot.docs.map(toProjectMeta)
+  const snapshot = await getDocs(query(projectsCol(), where('ownerId', '==', uid)))
+  return snapshot.docs.map(toProjectMeta).sort((a, b) => b.updatedAt - a.updatedAt)
 }
 
 export type PublicPage = { projects: ProjectMeta[]; nextCursor: number | null }
