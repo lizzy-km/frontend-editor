@@ -3,6 +3,21 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/auth — 2026-09-29
+- Firebase Auth (`features/auth`): email and password, Google and GitHub
+  popups (flag `enable_oauth`), password reset, sign out.
+- `authService.ts` is the only file that imports `firebase/auth`, and it
+  loads lazily through `startAuth()` / `authService()`. The home page and
+  Try-it never download Firebase.
+- `ensureUserProfile` creates `users/{uid}` on first sign-in (`plan: 'free'`,
+  `projectCount: 0`). The workspace limit lives there.
+- Pages: `/login`, `/signup`, `/reset`, with plain-words errors
+  (`authErrors.ts`). `?next=` return paths accept same-site paths only, so
+  there are no open redirects. Signed-in visitors skip these pages.
+- `RequireAuth` guards pages that need an account.
+- Without Firebase keys the pages say "Accounts aren't switched on yet" and point to Try it.
+- e2e: `auth.mjs`.
+
 ## feature/editor-sidebar — 2026-09-29
 - The left column has three tabs (`features/editor/sidebar`):
   - **Layers:** a tree with friendly names, hover synced with the canvas,

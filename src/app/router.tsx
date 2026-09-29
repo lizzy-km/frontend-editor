@@ -19,6 +19,9 @@ export const router = createBrowserRouter([
     children: [
       { path: '/', element: page(() => import('@/features/home/HomePage')) },
       { path: '/try', element: page(() => import('@/features/editor/pages/PlaygroundPage')) },
+      { path: '/login', element: page(() => import('@/features/auth/LoginPage')) },
+      { path: '/signup', element: page(() => import('@/features/auth/SignupPage')) },
+      { path: '/reset', element: page(() => import('@/features/auth/ResetPasswordPage')) },
       { path: '*', element: page(() => import('./NotFoundPage')) },
     ],
   },
