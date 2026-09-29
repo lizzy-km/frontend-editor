@@ -110,6 +110,17 @@ into nodes, so nothing the AI wrote gets lost.
 - The editor screen is `layout/EditorLayout`, with slots for the toolbar and
   the left, right and overlay areas, so pages plug in their own panels.
 
+## Text editing (`features/editor/text`) and quick actions (`features/editor/quick`)
+
+- `isTextEditable` (`model/tree/textRules.ts`) is true when an element holds
+  only text plus simple formatting. Pictures, boxes and icon fonts mean no.
+- `TextEditorLayer` lazy-loads `QuillEditor` when `selection.editingTextId` is set.
+- Flow: `childrenToHtml` goes into Quill, then `getSemanticHTML`, then
+  `quillToInlineHtml` (paragraphs become `<br>`), then `setInnerHtml`
+  (which parses back into nodes).
+- `QuickActions` is the floating DOM toolbar for the selection. Buttons are
+  chosen by element kind (text, picture or box).
+
 ## State (`features/editor/store`)
 
 | Store | Holds |

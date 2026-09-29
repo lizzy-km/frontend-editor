@@ -47,6 +47,9 @@ code an AI gave them and change it by clicking. Every decision below serves that
 2. `npx eslint .`
 3. `npx vitest run` (add tests for any new pure logic)
 4. `npx vite build`
+5. For UI or canvas changes: `npx vite --port 5317` in the background, then
+   `npm run e2e`, and add or adjust a check in `e2e/` for the new behavior.
+   Look at the screenshots in `e2e/screenshots/`.
 
 ## 7. Update the records (every feature)
 - `docs/HISTORY.md`: new entry at the top covering the branch, date, what changed and key decisions.

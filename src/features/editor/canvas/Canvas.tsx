@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useElementSize } from '@/shared/hooks/useElementSize'
 import { EditorFrame } from '../frame/EditorFrame'
+import { QuickActions } from '../quick/QuickActions'
+import { TextEditorLayer } from '../text/TextEditorLayer'
 import { BREAKPOINTS } from '../model/breakpoints'
 import { useViewStore } from '../store/view.store'
 import styles from './Canvas.module.css'
@@ -43,7 +45,13 @@ export function Canvas() {
       <div className={styles.page} style={{ left: layout.left, top: layout.top, width: layout.scaledWidth, height: layout.visibleHeight }}>
         <EditorFrame width={layout.frameWidth} height={layout.visibleHeight / layout.scale} scale={layout.scale} />
       </div>
-      {size.width > 0 && <Overlay width={size.width} height={size.height} placement={placement} clip={clip} onPan={pan} />}
+      {size.width > 0 && (
+        <>
+          <Overlay width={size.width} height={size.height} placement={placement} clip={clip} onPan={pan} />
+          <QuickActions placement={placement} />
+          <TextEditorLayer placement={placement} />
+        </>
+      )}
     </div>
   )
 }

@@ -34,10 +34,15 @@ that break things if you ignore them.
 11. **Drop rules** (`canvas/dropTarget.ts`): over a sibling, reorder; over a
     container, nest; over a leaf, go before or after it. Change them there
     only, and check them in the browser.
-12. **Browser check:** tsc/vitest can't see canvas bugs. For canvas changes,
-    run the app (`npx vite --port 5317`) and drive `/try` with playwright-core
-    against the local Chrome. Both real canvas bugs so far were only visible
-    there.
+12. **Browser check:** tsc/vitest can't see canvas bugs. For canvas or text
+    changes, start `npx vite --port 5317` and run `npm run e2e` (playwright-core
+    on the local Chrome, scripts in `e2e/`). Add a check there for new canvas
+    behavior. Every real canvas bug so far was only visible there.
+13. **Konva events:** don't rely on Konva `dblclick`, because the target
+    shape changes between clicks. Use `event.evt.detail >= 2` in `onClick`.
+14. **Quill:** only elements passing `isTextEditable` may open in Quill.
+    Save only when the output differs from Quill's first output. Keep
+    `classSpan` registered or colored words lose their class.
 
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or

@@ -3,6 +3,27 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/editor-text — 2026-09-29
+- Inline text editing with Quill (bubble theme, lazy-loaded chunk):
+  - Opens on double-click or Enter, right on top of the element, copying its
+    font, size, color and alignment scaled to the zoom. The real element is
+    hidden meanwhile (`data-fe-editing`).
+  - Enter finishes on one-line elements (headings, buttons, links);
+    Shift+Enter adds a line break; Esc cancels; clicking outside saves.
+  - A custom `classSpan` blot keeps `<span class>` (for example Tailwind
+    colored words), and elements containing icon fonts are not opened in Quill.
+  - It only saves when the text really changed (compared with Quill's first
+    output), so untouched text is never rewritten.
+- Quick-actions bar above the selection: Edit text / Change picture, move
+  up/down, select the box around it, duplicate, delete.
+- Change picture dialog (paste an image address, description for screen
+  readers); `srcset` is removed so the new picture shows. It is one undo step
+  (`setAttributes`).
+- `e2e/`: browser checks on the local Chrome (`npm run e2e`, dev server on port 5317).
+- Fixes: double-click now uses the native click count (Konva's dblclick needs
+  the same shape twice). Dev dependencies realigned to eslint 9 +
+  @eslint/js 9; `parchment` added explicitly.
+
 ## feature/editor-canvas — 2026-09-29
 - Konva overlay on top of the iframe (`features/editor/canvas`):
   - Hover outline and click to select, each with a friendly name tag such as

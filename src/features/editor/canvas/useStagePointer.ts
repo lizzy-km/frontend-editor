@@ -35,16 +35,14 @@ export function useStagePointer({ placement, dragging, onPan }: Options) {
     selection().hover(point ? nodeIdAt(point.x, point.y, placement) : null)
   }
 
+  // Double-click is read from the native click count: Konva's own dblclick needs
+  // both clicks on the same shape, but the first click swaps hover box -> selection box.
   const onClick = (event: Konva.KonvaEventObject<MouseEvent>) => {
     if (event.target.getParent()?.className === 'Transformer') return // clicked a resize handle
     const point = pointer(event)
-    selection().select(point ? nodeIdAt(point.x, point.y, placement) : null)
-  }
-
-  const onDblClick = (event: Konva.KonvaEventObject<MouseEvent>) => {
-    const point = pointer(event)
     const id = point ? nodeIdAt(point.x, point.y, placement) : null
-    if (id && isTextEditable(getDoc().nodes, id)) selection().editText(id)
+    if (event.evt.detail >= 2 && id && isTextEditable(getDoc().nodes, id)) selection().editText(id)
+    else selection().select(id)
   }
 
   const onWheel = (event: Konva.KonvaEventObject<WheelEvent>) => {
@@ -67,5 +65,5 @@ export function useStagePointer({ placement, dragging, onPan }: Options) {
     selection().hover(null)
   }
 
-  return { onMouseMove, onMouseDown, onClick, onDblClick, onWheel, onMouseLeave }
+  return { onMouseMove, onMouseDown, onClick, onWheel, onMouseLeave }
 }
