@@ -38,6 +38,14 @@ describe('app flow with Firestore Lite', () => {
     expect(id).toBeTruthy()
   })
 
+  it('My pages lists the new page (plain filter, no custom index needed)', async () => {
+    const { createProject } = await import('@/features/workspace/api/projectMutations')
+    const { listMyProjects } = await import('@/features/workspace/api/projectQueries')
+    const id = await createProject(alice, page as never)
+    const mine = await listMyProjects('alice')
+    expect(mine.map((project) => project.id)).toEqual([id])
+  })
+
   it('New page works even when the profile was never created', async () => {
     const { createProject } = await import('@/features/workspace/api/projectMutations')
     await expect(createProject(alice, page as never)).resolves.toBeTruthy()
