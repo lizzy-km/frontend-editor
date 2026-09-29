@@ -34,6 +34,3 @@ export async function downloadPng(scope: ExportScope) {
 export async function copyHtml(scope: ExportScope) {
   await navigator.clipboard.writeText(partsToSingleFile(partsFor(scope)))
 }
-
-/** The full page as one HTML string (used by Preview). */
-export const pageHtml = () => partsToSingleFile(buildPageParts(getDoc()))

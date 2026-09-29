@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react'
 import { BREAKPOINTS } from '@/features/editor/model/breakpoints'
+import { getDoc } from '@/features/editor/store/doc.store'
 import { useViewStore } from '@/features/editor/store/view.store'
 import { DeviceSwitch } from '@/features/editor/toolbar/DeviceSwitch'
 import { Button } from '@/shared/ui'
-import { pageHtml } from './exportActions'
 import styles from './PreviewOverlay.module.css'
+import { SafePageFrame } from './SafePageFrame'
 
 /**
- * Shows the page exactly as visitors will see it, with its JavaScript running.
- * The sandbox has NO allow-same-origin: the page can't touch the editor or
- * the user's account, even if the pasted code is hostile.
+ * Shows the page exactly as visitors will see it, with its JavaScript running
+ * inside SafePageFrame (no same-origin: the page can't touch the editor).
  */
 export function PreviewOverlay() {
   const breakpoint = useViewStore((state) => state.breakpoint)
   const setPreview = useViewStore((state) => state.setPreview)
-  const [html] = useState(pageHtml)
+  const [doc] = useState(getDoc) // snapshot taken when Preview opens
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setPreview(false)
@@ -30,10 +30,9 @@ export function PreviewOverlay() {
         <span className={styles.hint}>Buttons, menus and animations work here</span>
       </header>
       <div className={styles.stage}>
-        <iframe
-          title="Preview of your page" srcDoc={html} className={styles.frame}
-          style={{ width: breakpoint === 'desktop' ? '100%' : BREAKPOINTS[breakpoint].frameWidth }}
-          sandbox="allow-scripts allow-forms allow-popups allow-modals"
+        <SafePageFrame
+          doc={doc} title="Preview of your page" className={styles.frame}
+          width={breakpoint === 'desktop' ? '100%' : BREAKPOINTS[breakpoint].frameWidth}
         />
       </div>
     </div>
