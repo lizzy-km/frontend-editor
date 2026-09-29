@@ -35,13 +35,25 @@ await sidebar.getByRole('button', { name: 'Add this code' }).click()
 await page.waitForTimeout(300)
 check('pasted section added', (await count('.pricing h2')) === 1)
 
-// Code tab: edit page CSS
+// Code tab: CodeMirror editor, CSS applies live (no click-away needed)
 await sidebar.getByRole('tab', { name: 'Code' }).click()
-const cssBox = sidebar.getByLabel('Styles (CSS)')
-await cssBox.fill((await cssBox.inputValue()) + '\nfooter { color: rgb(255, 0, 0); }')
-await sidebar.getByRole('tab', { name: 'Layers' }).click() // blur -> save
-await page.waitForTimeout(300)
-check('page CSS edit applies', (await frame.$eval('footer', (el) => getComputedStyle(el).color)) === 'rgb(255, 0, 0)')
+const cssEditor = sidebar.getByLabel('Styles (CSS)')
+await cssEditor.waitFor({ timeout: 8000 }) // CodeMirror loads on demand
+check('code editor has line numbers', await sidebar.locator('.cm-lineNumbers').first().isVisible())
+await cssEditor.click()
+await page.keyboard.press('Control+End')
+await page.keyboard.press('Enter')
+await page.keyboard.type('footer { color: rgb(255, 0, 0); }')
+await page.waitForTimeout(900) // typing pause -> applied
+check('page CSS edit applies while typing', (await frame.$eval('footer', (el) => getComputedStyle(el).color)) === 'rgb(255, 0, 0)')
+
+// Undo from the page (outside the editor) also updates the editor's text
+await page.mouse.click(12, 845)
+await page.keyboard.press('Control+z')
+await page.waitForTimeout(400)
+check('undo reverts the CSS', (await frame.$eval('footer', (el) => getComputedStyle(el).color)) !== 'rgb(255, 0, 0)')
+check('editor text follows undo', !(await cssEditor.textContent()).includes('rgb(255, 0, 0)'))
+await page.screenshot({ path: OUT + 'sidebar-code.png' })
 
 check('no console errors', errors.length === 0, errors.join(' | '))
 await browser.close()

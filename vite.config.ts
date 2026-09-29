@@ -18,6 +18,7 @@ export default defineConfig({
           if (id.includes('node_modules/firebase') || id.includes('node_modules/@firebase')) return 'firebase'
           if (id.includes('node_modules/konva') || id.includes('node_modules/react-konva')) return 'konva'
           if (id.includes('node_modules/quill')) return 'quill'
+          if (id.includes('node_modules/@codemirror') || id.includes('node_modules/codemirror') || id.includes('node_modules/@lezer')) return 'codemirror'
           return undefined
         },
       },
