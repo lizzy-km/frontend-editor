@@ -3,6 +3,20 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/codemirror — 2026-09-29
+- The Code tab (page CSS and inline scripts) now uses CodeMirror 6, with
+  syntax colors, line numbers, brackets, search (Ctrl/⌘+F) and its own undo.
+- Its theme uses the app's CSS variables, so light and dark mode follow automatically.
+- CSS applies to the page as you type, after a 400 ms pause. Each typing
+  burst is one app undo step (coalesce key `code:css`).
+- Undo from the page updates the editor text (the value is synced into CodeMirror).
+- CodeMirror is lazy-loaded as its own chunk (181 kB gzipped), only when
+  the Code tab opens. Nothing else downloads it.
+- The left column widens (`min(520px, 40vw)`) while the Code tab is open.
+- The paste box on the front page stays a plain text box: it's for
+  non-coders pasting large replies.
+- e2e: `sidebar.mjs` types into CodeMirror and checks live CSS and undo sync.
+
 ## fix/my-pages-no-index — 2026-09-29
 - "My pages" failed with `failed-precondition` on a fresh Firebase project,
   because the `ownerId + updatedAt` composite index was missing.
