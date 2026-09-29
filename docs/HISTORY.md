@@ -3,6 +3,23 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/assets — 2026-09-29
+- `workers/assets` is a Cloudflare Worker backed by R2:
+  - It checks Firebase ID tokens with jose and Google's JWKS.
+  - It accepts PNG, JPG, WebP, GIF and AVIF up to 5 MB, and refuses SVG.
+  - Keys are per user; CORS is limited to the app's origins; files are
+    served with `nosniff` and a locked CSP.
+  - `npm run check` runs tsc plus `wrangler deploy --dry-run`.
+- "Use a picture from my computer" in Change picture uploads to R2 when
+  signed in with `VITE_ASSETS_URL` set. Otherwise pictures under 400 KB are
+  embedded in the page and bigger ones get a friendly message.
+- Project thumbnails: a small top-of-page PNG is uploaded after saves (at
+  most every 2 minutes, always on Ctrl+S) and shown on the dashboard cards.
+  Failures are silent.
+- `capturePng` gains `pixelRatio` / `topOnly` options.
+- Tests: `uploadImage.test.ts` and e2e `assets.mjs`.
+- Not tested live: the deployed Worker and R2, which need a Cloudflare account.
+
 ## feature/workspace — 2026-09-29
 - Firestore data: `users/{uid}` holds the plan and `projectCount`,
   `projects/{id}` the metadata, and `projectContent/{id}` the page as a JSON

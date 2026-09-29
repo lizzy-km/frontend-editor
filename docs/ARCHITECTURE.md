@@ -184,6 +184,21 @@ rule invariants.
 - `ProjectEditorPage` reuses the same editor pieces as Try-it and only swaps
   the save function (`useAutosave(save, 'to your account')`).
 
+## Pictures and thumbnails (`features/assets`, `workers/assets`)
+
+```
+browser ──POST /upload (Bearer Firebase ID token, raw image)──▶ Worker ──▶ R2
+        ◀──────────── { url: https://<worker>/a/<key> } ─────────────┘
+page <img src> ──GET /a/<key>──▶ Worker (nosniff, CSP default-src 'none')
+```
+
+- `pictureFromFile(file)` uploads when `canUpload()` is true (the flag
+  `enable_uploads` = `VITE_ASSETS_URL` is set, and the user is signed in).
+  Otherwise it embeds a picture under 400 KB as a data address.
+- `useThumbnail(projectId)` is called after saves. It runs
+  `capturePng(null, { pixelRatio: 0.35, topOnly: true })`, uploads the result
+  as a `thumbnail`, and stores it with `setProjectThumbnail`.
+
 ## State (`features/editor/store`)
 
 | Store | Holds |
