@@ -26,6 +26,19 @@ that break things if you ignore them.
 8. **Export and the editor share the serializers** in `model/serialize`.
    Don't write a second HTML serializer.
 
+9. **Canvas coordinates:** always convert through `canvas/geometry.ts` with a
+   `FramePlacement`. Never mix iframe and overlay pixels by hand.
+10. **Konva shapes that follow elements are positioned imperatively**
+    (`DraggableBox`). Don't pass x/y/width/height as React props, because it
+    breaks drag and resize.
+11. **Drop rules** (`canvas/dropTarget.ts`): over a sibling, reorder; over a
+    container, nest; over a leaf, go before or after it. Change them there
+    only, and check them in the browser.
+12. **Browser check:** tsc/vitest can't see canvas bugs. For canvas changes,
+    run the app (`npx vite --port 5317`) and drive `/try` with playwright-core
+    against the local Chrome. Both real canvas bugs so far were only visible
+    there.
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

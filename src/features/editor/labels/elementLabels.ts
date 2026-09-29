@@ -57,7 +57,7 @@ function isIconFont(node: ElementNode): boolean {
 
 /** A link styled as a button (class "btn", "button", "cta"...) is a button to a normal person. */
 function looksLikeButton(node: ElementNode): boolean {
-  return node.tag === 'a' && /(btn|button|cta)/i.test(node.attrs.class ?? '')
+  return node.tag === 'a' && /\b(btn|button|cta)\b/i.test(node.attrs.class ?? '')
 }
 
 /** Friendly name + icon for an element, looking at its tag and classes. */
