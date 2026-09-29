@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Icon } from '@/shared/ui'
+import { Inspector } from '../inspector/Inspector'
 import { EditorLayout } from '../layout/EditorLayout'
 import { parseHtmlDocument } from '../model/parse/parseDocument'
 import { WELCOME_HTML } from '../samples/welcomePage'
@@ -20,6 +21,7 @@ export default function PlaygroundPage() {
           start={<Link to="/" aria-label="Back to home"><Icon name="arrowLeft" /></Link>}
         />
       }
+      right={<Inspector />}
     />
   )
 }
