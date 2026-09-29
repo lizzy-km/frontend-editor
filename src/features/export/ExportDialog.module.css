@@ -1,0 +1,20 @@
+.scope { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface-2); margin-bottom: 16px; }
+.scope button {
+  flex: 1; border: 0; background: none; padding: 8px 12px; border-radius: 999px; cursor: pointer;
+  font-weight: 600; font-size: 13px; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.scope button[aria-checked='true'] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+
+.choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.choice {
+  display: flex; gap: 14px; align-items: center; text-align: left; padding: 14px 16px; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 16px; background: var(--surface); transition: border-color 120ms, background-color 120ms;
+}
+.choice:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.choice:disabled { opacity: 0.6; cursor: wait; }
+.choice strong { display: block; font-size: 15px; }
+.choice small { display: block; color: var(--text-soft); font-size: 13px; margin-top: 2px; }
+.icon {
+  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+  background: var(--accent-soft); color: var(--accent);
+}

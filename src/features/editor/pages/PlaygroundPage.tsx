@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ExportButtons } from '@/features/export/ExportButtons'
 import { PasteScreen } from '@/features/import/PasteScreen'
 import { Button, Icon, TopBar } from '@/shared/ui'
 import { openDocument } from '../actions/documentActions'
@@ -29,6 +30,7 @@ function PlaygroundEditor({ onStartOver }: { onStartOver: () => void }) {
           end={
             <>
               <SaveIndicator />
+              <ExportButtons />
               <Link to="/signup"><Button size="small" variant="primary">Save to an account</Button></Link>
             </>
           }
