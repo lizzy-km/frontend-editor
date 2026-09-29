@@ -35,7 +35,15 @@ description: frontend-editor's Firestore data model, security-rule invariants (p
    update, and the rules refuse the whole batch with `permission-denied`.
    `ensureUserProfile` runs at sign-in, when a session is restored
    (`watchAuth`), and inside `createProject`. Keep all three.
-7. **Public pages are untrusted code for the viewer.** Render them only in a
+7. **The Firebase project may be shared with another app.** `users/{uid}`
+   can already exist without our fields. `ensureUserProfile` runs in a
+   transaction and only *adds* `projectCount: 0` (plus `plan: 'free'` when
+   absent), and the `repairProfile()` rule allows exactly that. Never
+   overwrite another app's fields. Also remember that
+   `firebase deploy --only firestore` REPLACES the whole project's rules;
+   in a shared project that can break the other app. A dedicated project is
+   strongly preferred.
+8. **Public pages are untrusted code for the viewer.** Render them only in a
    sandbox WITHOUT `allow-same-origin`, like Preview does.
 
 ## Use Firestore Lite
@@ -64,3 +72,11 @@ never ship.
 `npm run test:rules` runs `tests/rules/*.test.ts` against the Firestore
 emulator (it needs Java and `firebase-tools`). Add a case for every rule
 change. Rules can't be checked with tsc or unit tests.
+
+- `tests/rules/appFlow.test.ts` runs the app's REAL code (Firestore Lite,
+  `ensureUserProfile`, `createProject`) against the emulator. That is how the
+  shared-project bug was found, since hand-written batches passed.
+- Without Java installed: download a portable JRE (Adoptium) and
+  `firebase-tools` into a scratch folder, put the JRE's `bin` on PATH
+  (in Git Bash use `/c/...`, not `C:/...`), then run
+  `firebase emulators:exec --only firestore --project demo-tweak "npx vitest run --config vitest.rules.config.ts"`.
