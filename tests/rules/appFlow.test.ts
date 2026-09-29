@@ -43,10 +43,10 @@ describe('app flow with Firestore Lite', () => {
     await expect(createProject(alice, page as never)).resolves.toBeTruthy()
   })
 
-  it('New page works when users/{uid} already exists from ANOTHER app (no plan/projectCount)', async () => {
+  it('New page works when tweak_users/{uid} already exists from ANOTHER app (no plan/projectCount)', async () => {
     await env.withSecurityRulesDisabled(async (context) => {
       const { doc, setDoc } = await import('firebase/firestore')
-      await setDoc(doc(context.firestore(), 'users/alice'), { name: 'Alice', role: 'customer' })
+      await setDoc(doc(context.firestore(), 'tweak_users/alice'), { name: 'Alice', role: 'customer' })
     })
     const { createProject } = await import('@/features/workspace/api/projectMutations')
     await expect(createProject(alice, page as never)).resolves.toBeTruthy()

@@ -1,7 +1,7 @@
 {
   "indexes": [
     {
-      "collectionGroup": "projects",
+      "collectionGroup": "tweaks_projects",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "ownerId", "order": "ASCENDING" },
@@ -9,7 +9,7 @@
       ]
     },
     {
-      "collectionGroup": "projects",
+      "collectionGroup": "tweaks_projects",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "isPublic", "order": "ASCENDING" },

@@ -1,4 +1,4 @@
-/** projects/{id} — small, listable metadata (the dashboard and gallery read only this). */
+/** tweaks_projects/{id} — small, listable metadata (the dashboard and gallery read only this). */
 export type ProjectMeta = {
   id: string
   ownerId: string

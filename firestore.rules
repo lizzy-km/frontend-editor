@@ -2,20 +2,21 @@ rules_version = '2';
 
 // Security for Tweak. The client is never trusted: plan limits, ownership and
 // who-can-see-what are all enforced here.
+// Collection names are prefixed (tweak_ / tweaks_) and must match src/lib/collections.ts.
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function signedIn() { return request.auth != null; }
     function isUser(uid) { return signedIn() && request.auth.uid == uid; }
-    function userPath(uid) { return /databases/$(database)/documents/users/$(uid); }
-    function projectPath(id) { return /databases/$(database)/documents/projects/$(id); }
+    function userPath(uid) { return /databases/$(database)/documents/tweak_users/$(uid); }
+    function projectPath(id) { return /databases/$(database)/documents/tweaks_projects/$(id); }
     function changedOnly(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
 
     // Keep in sync with src/features/billing/plans.ts
     function maxProjects(plan) { return plan == 'pro' ? 100 : 10; }
 
-    // ---- users/{uid}: profile + page counter -------------------------------
-    match /users/{uid} {
+    // ---- tweak_users/{uid}: profile + page counter -------------------------
+    match /tweak_users/{uid} {
       allow read: if isUser(uid);
 
       allow create: if isUser(uid)
@@ -60,8 +61,8 @@ service cloud.firestore {
       }
     }
 
-    // ---- projects/{id}: listable metadata ----------------------------------
-    match /projects/{projectId} {
+    // ---- tweaks_projects/{id}: listable metadata ----------------------------
+    match /tweaks_projects/{projectId} {
       allow read: if resource.data.isPublic == true || isUser(resource.data.ownerId);
 
       allow create: if isUser(request.resource.data.ownerId)
@@ -78,8 +79,8 @@ service cloud.firestore {
         && getAfter(userPath(request.auth.uid)).data.projectCount == get(userPath(request.auth.uid)).data.projectCount - 1;
     }
 
-    // ---- projectContent/{id}: the page itself ------------------------------
-    match /projectContent/{projectId} {
+    // ---- tweaks_project_content/{id}: the page itself ----------------------
+    match /tweaks_project_content/{projectId} {
       allow read: if resource.data.isPublic == true || isUser(resource.data.ownerId);
 
       allow create: if isUser(request.resource.data.ownerId)

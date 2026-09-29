@@ -1,12 +1,13 @@
 import { collection, doc, Timestamp, type DocumentData, type DocumentSnapshot } from 'firebase/firestore/lite'
+import { COLLECTIONS } from '@/lib/collections'
 import { firestore } from '@/lib/firebase'
 import type { ProjectMeta } from './types'
 
 /** Firestore paths in one place. */
-export const projectsCol = () => collection(firestore(), 'projects')
-export const projectRef = (id: string) => doc(firestore(), 'projects', id)
-export const contentRef = (id: string) => doc(firestore(), 'projectContent', id)
-export const userRef = (uid: string) => doc(firestore(), 'users', uid)
+export const projectsCol = () => collection(firestore(), COLLECTIONS.projects)
+export const projectRef = (id: string) => doc(firestore(), COLLECTIONS.projects, id)
+export const contentRef = (id: string) => doc(firestore(), COLLECTIONS.projectContent, id)
+export const userRef = (uid: string) => doc(firestore(), COLLECTIONS.users, uid)
 
 const toMillis = (value: unknown) => (value instanceof Timestamp ? value.toMillis() : Date.now())
 

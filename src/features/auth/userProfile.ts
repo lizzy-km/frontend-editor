@@ -1,8 +1,9 @@
 import { doc, runTransaction, serverTimestamp } from 'firebase/firestore/lite'
+import { COLLECTIONS } from '@/lib/collections'
 import { firestore } from '@/lib/firebase'
 import type { AppUser } from './types'
 
-/** Stored at users/{uid}. The workspace limit and plan live here. */
+/** Stored at tweak_users/{uid} (COLLECTIONS.users). The workspace limit and plan live here. */
 export type UserProfile = {
   displayName: string
   email: string
@@ -12,7 +13,7 @@ export type UserProfile = {
 }
 
 /**
- * Makes sure users/{uid} has what this app needs, in one transaction (so two
+ * Makes sure the user's profile doc has what this app needs, in one transaction (so two
  * checks at once — sign-in + session restore — can't collide).
  * - Missing: create it (rules allow only plan "free", projectCount 0).
  * - Exists but without our fields (e.g. made by another app in the same
@@ -20,7 +21,7 @@ export type UserProfile = {
  *   leave everything else alone.
  */
 export async function ensureUserProfile(user: AppUser): Promise<void> {
-  const ref = doc(firestore(), 'users', user.uid)
+  const ref = doc(firestore(), COLLECTIONS.users, user.uid)
   await runTransaction(firestore(), async (transaction) => {
     const snapshot = await transaction.get(ref)
     if (!snapshot.exists()) {
