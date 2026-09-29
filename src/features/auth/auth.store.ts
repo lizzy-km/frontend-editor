@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { isFirebaseConfigured } from '@/lib/firebase'
+import { isFirebaseConfigured } from '@/lib/firebaseConfig'
 import type { AppUser, AuthStatus } from './types'
 
 type AuthState = {
