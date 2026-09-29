@@ -3,6 +3,18 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/gallery — 2026-09-29
+- `/gallery` (Explore) shows public pages with thumbnail, name, author and
+  date, 24 at a time ("Show more"). It has friendly empty states, including
+  when accounts are off.
+- `/p/:id` shows a shared page in `SafePageFrame` (never `allow-same-origin`),
+  with Computer/Tablet/Phone views and Download.
+  - Visitors get "Make my own copy". It asks them to sign in if needed, then
+    creates a private copy with `remixOf` that counts toward their limit.
+  - Owners get Edit. Private or missing pages show a notice.
+- Refactor: Preview and public pages share one `features/export/SafePageFrame`.
+- e2e: `gallery.mjs`. The live Firestore paths still need a real project to test.
+
 ## feature/assets — 2026-09-29
 - `workers/assets` is a Cloudflare Worker backed by R2:
   - It checks Firebase ID tokens with jose and Google's JWKS.

@@ -28,7 +28,12 @@ src/
   features/
     home/         public landing page
     import/       paste screen (the front door)
-    export/       download html / zip / png, preview
+    export/       download html / zip / png, preview, SafePageFrame
+    auth/         sign in / up, account menu, RequireAuth
+    workspace/    my pages (Firestore), new page, project editor, share
+    gallery/      Explore + public page view + make a copy
+    assets/       picture uploads (R2 worker client), thumbnails
+    billing/      plans (limits), future crypto checkout
     editor/
       model/      page model: types, parse (paste -> nodes), tree ops, serialize (nodes -> html/css)
       store/      doc (with undo), selection, view
