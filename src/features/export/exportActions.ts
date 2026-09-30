@@ -8,6 +8,13 @@ import { zipFiles } from './zip'
 /** null = whole page, otherwise the id of the part to export. */
 export type ExportScope = string | null
 
+/**
+ * Each export is two steps: prepare (may fail — e.g. a picture that can't be
+ * captured) and deliver (save / copy). A download is only counted between the
+ * two, so a failed export never uses up one of the month's downloads.
+ */
+export type Deliver = () => void | Promise<void>
+
 function baseName(scope: ExportScope): string {
   const name = toFileName(getDoc().title)
   return scope ? `${name}-part` : name
@@ -16,21 +23,25 @@ function baseName(scope: ExportScope): string {
 const partsFor = (scope: ExportScope) => buildPageParts(getDoc(), scope ?? undefined)
 
 /** One .html file that opens anywhere (CSS and JS inside). */
-export function downloadHtml(scope: ExportScope) {
-  downloadFile(`${baseName(scope)}.html`, partsToSingleFile(partsFor(scope)), 'text/html')
+export async function prepareHtml(scope: ExportScope): Promise<Deliver> {
+  const html = partsToSingleFile(partsFor(scope))
+  return () => downloadFile(`${baseName(scope)}.html`, html, 'text/html')
 }
 
 /** A .zip with index.html, styles.css and script.js — for developers / hosting. */
-export function downloadZip(scope: ExportScope) {
-  downloadFile(`${baseName(scope)}.zip`, zipFiles(partsToSplitFiles(partsFor(scope))))
+export async function prepareZip(scope: ExportScope): Promise<Deliver> {
+  const zip = zipFiles(partsToSplitFiles(partsFor(scope)))
+  return () => downloadFile(`${baseName(scope)}.zip`, zip)
 }
 
 /** A .png picture of the page or part. */
-export async function downloadPng(scope: ExportScope) {
-  downloadFile(`${baseName(scope)}.png`, await capturePng(scope))
+export async function preparePng(scope: ExportScope): Promise<Deliver> {
+  const picture = await capturePng(scope)
+  return () => downloadFile(`${baseName(scope)}.png`, picture)
 }
 
 /** Copies the single-file HTML, ready to paste back into an AI chat or a website builder. */
-export async function copyHtml(scope: ExportScope) {
-  await navigator.clipboard.writeText(partsToSingleFile(partsFor(scope)))
+export async function prepareCopy(scope: ExportScope): Promise<Deliver> {
+  const html = partsToSingleFile(partsFor(scope))
+  return () => navigator.clipboard.writeText(html)
 }

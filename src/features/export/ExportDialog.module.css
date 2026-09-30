@@ -18,3 +18,12 @@
   display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
   background: var(--accent-soft); color: var(--accent);
 }
+
+.notice {
+  display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; margin-bottom: 14px;
+  border-radius: 14px; background: var(--accent-soft);
+}
+.notice p { color: var(--text-soft); font-size: 14px; }
+.noticeActions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.allowance { font-size: 13.5px; color: var(--text-soft); margin-bottom: 12px; }
+.allowance strong { color: var(--text); }
