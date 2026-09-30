@@ -2,6 +2,7 @@ import { lazy, Suspense, useMemo } from 'react'
 import { debounce } from '@/lib/debounce'
 import { updateDoc } from '../actions/commit'
 import { useDocStore } from '../store/doc.store'
+import { CodeSection, lineCount } from './code/CodeSection'
 import { HtmlCodeBox } from './code/HtmlCodeBox'
 import styles from './Sidebar.module.css'
 
@@ -27,12 +28,9 @@ function CodeArea({ label, target, value }: { label: string; target: Target; val
   // Pending changes still apply if the tab is closed mid-typing.
   const applyLater = useMemo(() => debounce((text: string) => applyTo(target, text), APPLY_DELAY_MS), [target])
   return (
-    <div className={styles.codeLabel}>
-      <span>{label}</span>
-      <Suspense fallback={<div className={styles.codeLoading}>Loading the code editor…</div>}>
-        <CodeEditor label={label} language={target === 'css' ? 'css' : 'js'} value={value} onChange={applyLater} />
-      </Suspense>
-    </div>
+    <Suspense fallback={<div className={styles.codeLoading}>Loading the code editor…</div>}>
+      <CodeEditor label={label} language={target === 'css' ? 'css' : 'js'} value={value} onChange={applyLater} />
+    </Suspense>
   )
 }
 
@@ -45,13 +43,17 @@ export function CodePanel() {
   return (
     <div className={styles.code}>
       <p className={styles.addHint}>Change the page's code directly. Page HTML applies when you press Apply; styles show as you type; scripts run in Preview.</p>
-      <HtmlCodeBox targetId={rootId} label="Page HTML" />
-      <CodeArea label="Styles (CSS)" target="css" value={css} />
+      <CodeSection id="html" title="Page HTML" info="press Apply to update" defaultOpen>
+        <HtmlCodeBox targetId={rootId} label="Page HTML" hideLabel />
+      </CodeSection>
+      <CodeSection id="css" title="Styles (CSS)" info={lineCount(css)}>
+        <CodeArea label="Styles (CSS)" target="css" value={css} />
+      </CodeSection>
       {scripts.map((script, index) => !script.src && (
-        <CodeArea
-          key={index} target={index} value={script.code ?? ''}
-          label={`Script ${index + 1}${script.type === 'module' ? ' (module)' : ''} — runs in Preview`}
-        />
+        <CodeSection key={index} id={`script-${index}`} title={`Script ${index + 1}${script.type === 'module' ? ' (module)' : ''}`}
+          info={`runs in Preview · ${lineCount(script.code ?? '')}`}>
+          <CodeArea target={index} value={script.code ?? ''} label={`Script ${index + 1}`} />
+        </CodeSection>
       ))}
     </div>
   )
