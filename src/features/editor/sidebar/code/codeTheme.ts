@@ -23,4 +23,11 @@ export const appCodeTheme = EditorView.theme({
   },
   '.cm-cursor': { borderLeftColor: 'var(--text)' },
   '.cm-panels': { backgroundColor: 'var(--surface)', color: 'var(--text)' },
+  // Folding: clear arrows in the gutter and a visible "…" pill for folded blocks.
+  '.cm-foldGutter .cm-gutterElement': { color: 'var(--accent)', cursor: 'pointer', padding: '0 4px', fontSize: '14px' },
+  '.cm-foldGutter .cm-gutterElement:hover': { backgroundColor: 'var(--accent-soft)', borderRadius: '4px' },
+  '.cm-foldPlaceholder': {
+    backgroundColor: 'var(--accent-soft)', color: 'var(--accent)', border: 'none',
+    borderRadius: '999px', padding: '0 8px', margin: '0 2px', cursor: 'pointer', fontWeight: '600',
+  },
 })

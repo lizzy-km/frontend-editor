@@ -3,6 +3,29 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/edit-html — 2026-09-30
+- **Edit the pasted code itself**, not just its CSS and scripts:
+  - **Page HTML** at the top of the Code tab: the whole page as HTML in
+    CodeMirror (html mode), with **Apply changes** / **Discard**.
+  - **Edit code** on the quick-actions bar: the selected part's HTML in a
+    dialog, handy for pasting a fixed section from an AI.
+  - Either way, applying is one undo step and the result gets selected.
+    Code fences around pasted code are removed.
+- Lossless round trip (`nodeToHtml` with `forEditing`):
+  - Computer-view edits are written as `style="…"`.
+  - Hidden parts are marked `data-fe-hidden`, and the parser reads it back
+    to `hidden`.
+  - Tablet and phone-only edits can't be written as HTML, so a warning shows
+    before applying.
+- It applies on demand, not per key press, because rebuilding the page on
+  every key would lose the selection and undo.
+- **Fold / unfold** in every code box: clear arrows in the gutter, a `…` pill
+  on folded blocks, and **Fold all** / **Unfold all** buttons
+  (`@codemirror/language`). The Page HTML box folds down to the page's
+  main sections.
+- Tests: unit `codeActions.test.ts` (5, including an unchanged round trip)
+  and e2e `edit-code.mjs` (13). The suite is 86 of 86, plus 48 unit tests.
+
 ## feature/download-limit — 2026-09-30
 - **10 downloads per page per calendar month** on the free plan; Pro is
   unlimited (`plans.ts` `maxDownloadsPerMonth`, mirrored in `maxDownloads()`

@@ -2,6 +2,7 @@ import { lazy, Suspense, useMemo } from 'react'
 import { debounce } from '@/lib/debounce'
 import { updateDoc } from '../actions/commit'
 import { useDocStore } from '../store/doc.store'
+import { HtmlCodeBox } from './code/HtmlCodeBox'
 import styles from './Sidebar.module.css'
 
 // CodeMirror downloads only when someone opens the Code tab.
@@ -37,12 +38,14 @@ function CodeArea({ label, target, value }: { label: string; target: Target; val
 
 /** For the curious: the page's own CSS and scripts, in a real code editor. */
 export function CodePanel() {
+  const rootId = useDocStore((state) => state.doc.rootId)
   const css = useDocStore((state) => state.doc.css)
   const scripts = useDocStore((state) => state.doc.scripts)
 
   return (
     <div className={styles.code}>
-      <p className={styles.addHint}>Style changes show on the page as you type. Scripts run in Preview. Your clicks-and-sliders edits are kept separately and still win.</p>
+      <p className={styles.addHint}>Change the page's code directly. Page HTML applies when you press Apply; styles show as you type; scripts run in Preview.</p>
+      <HtmlCodeBox targetId={rootId} label="Page HTML" />
       <CodeArea label="Styles (CSS)" target="css" value={css} />
       {scripts.map((script, index) => !script.src && (
         <CodeArea
