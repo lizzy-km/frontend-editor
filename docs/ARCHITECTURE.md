@@ -203,7 +203,11 @@ rule invariants.
 - It has one-way sync: typing calls `onChange` (debounced 400 ms in
   `CodePanel`) and then `updateDoc` with a coalesce key. When the doc changes
   elsewhere (undo), the new text is dispatched into CodeMirror.
-- `HtmlCodeBox` edits a part's HTML (or the whole body) and applies it on
+- The Code tab stacks collapsible `CodeSection`s: Page code, Styles, and one
+  per script.
+- Page code is the whole source (`docToEditableSource`, which parses back
+  with `parsePastedCode`), so applying it updates HTML, CSS and JS together.
+- `HtmlCodeBox` edits a part's HTML (or the whole page) and applies it on
   **Apply** via `applyHtml`, never while typing. It's used by the Code tab
   (Page HTML) and the quick-actions "Edit code" dialog.
 - Every code box has Fold all / Unfold all (`foldAll` / `unfoldAll`), and

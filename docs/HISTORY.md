@@ -3,6 +3,29 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/collapsible-code — 2026-09-30
+- **Collapsible code boxes** (`sidebar/code/CodeSection`): Page code,
+  Styles and each Script have a header to collapse or expand them. The
+  header shows the size ("15 lines").
+  - Open/closed is remembered in this browser. Page code starts open; the
+    others start closed.
+  - A box loads its editor on first open and only hides afterwards, so
+    unapplied code survives a collapse.
+- **Page code = the whole page** (`serialize/editableSource.ts`): head
+  (title, meta, links, scripts), `<style>` with the page CSS, the body, and
+  body scripts. Applying it re-reads everything, so HTML, CSS and JS update
+  together and the Styles and Script boxes follow.
+  - It round-trips exactly. Body, scripts and closing tags are written
+    unbroken, because the HTML parser moves any whitespace there into the
+    body, and re-applying would otherwise add blank lines every time.
+- **Edit code on a part**: a `<style>` or `<script>` inside the snippet now
+  joins the page's CSS or JS (`parse/snippetAssets.ts`) instead of being dropped.
+- **Fold all** (`foldSections`) keeps `<html>`, `<head>` and `<body>` open
+  and folds the `<style>` block and each section, instead of collapsing the
+  page to one line.
+- Tests: 51 unit tests (round trip, CSS/JS through page code, part assets)
+  and 89 of 89 e2e.
+
 ## feature/edit-html — 2026-09-30
 - **Edit the pasted code itself**, not just its CSS and scripts:
   - **Page HTML** at the top of the Code tab: the whole page as HTML in
