@@ -14,6 +14,10 @@ service cloud.firestore {
 
     // Keep in sync with src/features/billing/plans.ts
     function maxProjects(plan) { return plan == 'pro' ? 100 : 10; }
+    // Downloads per page per month; Pro is unlimited (a very large number).
+    function maxDownloads(plan) { return plan == 'pro' ? 1000000000 : 10; }
+    // Month as a number, e.g. 202609 (UTC) — the client uses the same format.
+    function thisMonth() { return request.time.year() * 100 + request.time.month(); }
 
     // ---- tweak_users/{uid}: profile + page counter -------------------------
     match /tweak_users/{uid} {
@@ -67,12 +71,26 @@ service cloud.firestore {
 
       allow create: if isUser(request.resource.data.ownerId)
         && request.resource.data.isPublic == false
+        && !('downloadCount' in request.resource.data) && !('downloadPeriod' in request.resource.data)
         && getAfter(userPath(request.auth.uid)).data.lastProjectOp == projectId
         && getAfter(userPath(request.auth.uid)).data.projectCount == get(userPath(request.auth.uid)).data.projectCount + 1;
 
-      allow update: if isUser(resource.data.ownerId)
-        && changedOnly(['name', 'isPublic', 'thumbnailUrl', 'updatedAt'])
-        && request.resource.data.name is string && request.resource.data.name.size() <= 200;
+      allow update: if isUser(resource.data.ownerId) && (metaEdit() || countDownload());
+
+      function metaEdit() {
+        return changedOnly(['name', 'isPublic', 'thumbnailUrl', 'updatedAt'])
+          && request.resource.data.name is string && request.resource.data.name.size() <= 200;
+      }
+
+      // One more download this month, within the plan (count restarts each month).
+      function countDownload() {
+        let sameMonth = resource.data.get('downloadPeriod', 0) == thisMonth();
+        let before = sameMonth ? resource.data.get('downloadCount', 0) : 0;
+        return changedOnly(['downloadPeriod', 'downloadCount'])
+          && request.resource.data.downloadPeriod == thisMonth()
+          && request.resource.data.downloadCount == before + 1
+          && request.resource.data.downloadCount <= maxDownloads(get(userPath(request.auth.uid)).data.get('plan', 'free'));
+      }
 
       allow delete: if isUser(resource.data.ownerId)
         && getAfter(userPath(request.auth.uid)).data.lastProjectOp == projectId

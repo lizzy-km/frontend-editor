@@ -11,6 +11,7 @@ import type { PageDoc } from '../model/types'
 import { clearLocalDraft, loadLocalDraft, saveLocalDraft } from '../persistence/localDraft'
 import { useAutosave } from '../persistence/useAutosave'
 import { WELCOME_HTML } from '../samples/welcomePage'
+import { playgroundGate } from './playgroundGate'
 import { EditorToolbar } from '../toolbar/EditorToolbar'
 import { Sidebar } from '../sidebar/Sidebar'
 import { SaveIndicator } from '../toolbar/SaveIndicator'
@@ -31,7 +32,7 @@ function PlaygroundEditor({ onStartOver }: { onStartOver: () => void }) {
           end={
             <>
               <SaveIndicator />
-              <ExportButtons />
+              <ExportButtons gate={playgroundGate()} />
               <Link to="/signup?next=%2Fprojects%2Fnew"><Button size="small" variant="primary">Save to an account</Button></Link>
             </>
           }

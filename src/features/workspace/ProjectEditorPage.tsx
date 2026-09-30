@@ -17,6 +17,7 @@ import { Button, EmptyState, Icon, PageSpinner } from '@/shared/ui'
 import { loadProjectContent, saveProjectContent } from './api/projectContent'
 import { getProjectMeta } from './api/projectQueries'
 import { ShareDialog } from './components/ShareDialog'
+import { useDownloadGate } from './useDownloadGate'
 import { useThumbnail } from './useThumbnail'
 import styles from './components/Workspace.module.css'
 
@@ -45,6 +46,7 @@ function Editor({ id, initialPublic }: { id: string; initialPublic: boolean }) {
   const title = useDocStore((state) => state.doc.title)
   const [isPublic, setIsPublic] = useState(initialPublic)
   const [sharing, setSharing] = useState(false)
+  const downloadGate = useDownloadGate(id)
 
   return (
     <EditorLayout
@@ -55,7 +57,7 @@ function Editor({ id, initialPublic }: { id: string; initialPublic: boolean }) {
             <>
               <SaveIndicator />
               <Button size="small" variant="ghost" icon={isPublic ? 'globe' : 'lock'} onClick={() => setSharing(true)}>Share</Button>
-              <ExportButtons />
+              <ExportButtons gate={downloadGate} />
               {sharing && <ShareDialog projectId={id} isPublic={isPublic} onChange={setIsPublic} onClose={() => setSharing(false)} />}
             </>
           }

@@ -3,6 +3,38 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/download-limit — 2026-09-30
+- **10 downloads per page per calendar month** on the free plan; Pro is
+  unlimited (`plans.ts` `maxDownloadsPerMonth`, mirrored in `maxDownloads()`
+  in the rules).
+- Every export counts: .html, .zip, .png and "Copy the code".
+- Saved pages keep a server counter on `tweaks_projects/{id}`:
+  `downloadPeriod` (e.g. `202609`, UTC) and `downloadCount`.
+  - `recordDownload` is a transaction. The rules allow the owner only +1
+    this month, within the plan, and a new month restarts at 1.
+  - A new page can't be created with a download count, and nobody can reset
+    or skip the count.
+- The Download dialog prepares the file, then records the download, then
+  delivers it, so a failed export never uses one up.
+  - It shows "N of 10 downloads left this month", and when the limit is
+    reached, the date downloads start again.
+- **Try-it:** downloading needs a free account. The dialog offers sign-up,
+  which comes back to "Save the page from Try it". Preview still works.
+- **Shared pages** no longer have a direct Download. Visitors make their own
+  copy, which follows their own limit.
+- Export stays independent of Firestore: pages pass a `DownloadGate`
+  (`signin` / `counted` / `open`).
+- **Fixed along the way:** Esc didn't close dialogs in the editor, because
+  the editor's Esc shortcut took the key. Shortcuts now step aside while a
+  dialog is open.
+- Caveat: files are generated in the browser from code the user pasted, so
+  a technically savvy user can always get the code out. The limit stops
+  normal use; it can't be tamper-proof. The counter itself can't be faked.
+- Tests: rules `downloads.test.ts` (6 cases, 19 of 19 in total), unit tests
+  `downloads.test.ts`, and e2e updates (78 of 78). Browser checks use a
+  dev-only Try-it allowance (`allowTryDownloads`), which is stripped from
+  production builds.
+
 ## fix/retirement-page — 2026-09-30
 A real AI page (`e2e/fixtures/retirement.html`: SVG symbols, `<details>` FAQ,
 a form, heading lines made of spans, head meta) exposed these bugs:

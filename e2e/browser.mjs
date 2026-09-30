@@ -36,6 +36,14 @@ export async function openExample() {
   return { ...opened, ...(await editorFrame(opened.page)) }
 }
 
+/**
+ * Try-it downloads need an account. Browser checks that test the actual
+ * files switch on the dev-only allowance (ignored outside `vite dev`).
+ */
+export async function allowTryDownloads(page) {
+  await page.evaluate(() => localStorage.setItem('tweak:e2e-open-downloads', '1'))
+}
+
 /** Fails the run (exit 1) when the condition is false. */
 export function check(label, condition, detail = '') {
   console.log(`${condition ? 'PASS' : 'FAIL'}  ${label}${detail ? `  (${detail})` : ''}`)

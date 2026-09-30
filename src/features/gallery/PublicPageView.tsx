@@ -2,11 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { startAuth, useAuthStore } from '@/features/auth/auth.store'
 import { BREAKPOINTS } from '@/features/editor/model/breakpoints'
-import { buildPageParts, partsToSingleFile } from '@/features/editor/model/serialize/buildPage'
 import type { Breakpoint } from '@/features/editor/model/types'
 import { loadProjectContent } from '@/features/workspace/api/projectContent'
 import { getProjectMeta } from '@/features/workspace/api/projectQueries'
-import { downloadFile, toFileName } from '@/lib/download'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { Button, EmptyState, Icon, PageSpinner } from '@/shared/ui'
 import styles from './Gallery.module.css'
@@ -20,7 +18,11 @@ async function loadPublicPage(id: string) {
 
 const SIZES: Breakpoint[] = ['desktop', 'tablet', 'mobile']
 
-/** /p/:projectId — look at a shared page, copy it, or download it. */
+/**
+ * /p/:projectId — look at a shared page, or make your own copy.
+ * No direct download: downloads are counted per page for its owner, so
+ * visitors download their own copy (which follows their own limit).
+ */
 export default function PublicPageView() {
   const { projectId = '' } = useParams()
   const page = useAsync(() => loadPublicPage(projectId), projectId)
@@ -35,7 +37,6 @@ export default function PublicPageView() {
   }
   const { meta, doc } = page.data
   const isOwner = uid === meta.ownerId
-  const download = () => downloadFile(`${toFileName(doc.title)}.html`, partsToSingleFile(buildPageParts(doc)), 'text/html')
 
   return (
     <div className={styles.viewer}>
@@ -51,7 +52,6 @@ export default function PublicPageView() {
               aria-label={BREAKPOINTS[key].label} aria-pressed={size === key} onClick={() => setSize(key)} />
           ))}
         </div>
-        <Button size="small" variant="ghost" icon="download" onClick={download}>Download</Button>
         {isOwner
           ? <Link to={`/edit/${meta.id}`}><Button size="small" variant="primary" icon="pencil">Edit</Button></Link>
           : <Button size="small" variant="primary" icon="copy" loading={busy} onClick={makeCopy}>Make my own copy</Button>}

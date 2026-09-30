@@ -1,10 +1,11 @@
 // A real-world AI page (fixtures/retirement.html): SVG symbols, <details> FAQ,
 // a form, spans as heading lines, head meta. Guards the bugs it exposed.
 import { readFileSync } from 'node:fs'
-import { check, editorFrame, OUT, openPage } from './browser.mjs'
+import { allowTryDownloads, check, editorFrame, OUT, openPage } from './browser.mjs'
 
 const PAGE = readFileSync(new URL('./fixtures/retirement.html', import.meta.url), 'utf8')
 const { browser, page, errors } = await openPage('/try')
+await allowTryDownloads(page)
 await page.getByLabel('Your code').fill(PAGE)
 await page.waitForTimeout(600)
 check('paste summary', /342 elements/.test(await page.getByText(/Found:/).textContent()))
