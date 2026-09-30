@@ -42,9 +42,9 @@ export function CodePanel() {
 
   return (
     <div className={styles.code}>
-      <p className={styles.addHint}>Change the page's code directly. Page HTML applies when you press Apply; styles show as you type; scripts run in Preview.</p>
-      <CodeSection id="html" title="Page HTML" info="press Apply to update" defaultOpen>
-        <HtmlCodeBox targetId={rootId} label="Page HTML" hideLabel />
+      <p className={styles.addHint}>Change the page's code directly. “Page code” is the whole page — HTML, CSS and JavaScript — and updates everything when you press Apply. The boxes below edit just the styles or a script, live.</p>
+      <CodeSection id="html" title="Page code (HTML + CSS + JS)" info="press Apply to update" defaultOpen>
+        <HtmlCodeBox targetId={rootId} label="Page code" hideLabel />
       </CodeSection>
       <CodeSection id="css" title="Styles (CSS)" info={lineCount(css)}>
         <CodeArea label="Styles (CSS)" target="css" value={css} />

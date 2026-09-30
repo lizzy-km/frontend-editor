@@ -23,13 +23,14 @@ type Props = {
  * re-building the page on every key press would lose the selection and undo.
  */
 export function HtmlCodeBox({ targetId, label, onApplied, tall, hideLabel }: Props) {
-  const nodes = useDocStore((state) => state.doc.nodes)
-  const current = useMemo(() => (nodes ? editableHtml(targetId) : ''), [nodes, targetId])
+  // Whole doc, not just nodes: the page source also contains the CSS and scripts.
+  const doc = useDocStore((state) => state.doc)
+  const current = useMemo(() => (doc ? editableHtml(targetId) : ''), [doc, targetId])
   const [draft, setDraft] = useState<{ base: string; text: string }>({ base: current, text: current })
   // The page changed elsewhere (undo, a click edit) and nothing is typed here: follow it.
   if (draft.base !== current && draft.text === draft.base) setDraft({ base: current, text: current })
   const changed = draft.text !== current
-  const losesScreenEdits = useMemo(() => (nodes ? hasScreenSizeEdits(targetId) : false), [nodes, targetId])
+  const losesScreenEdits = useMemo(() => (doc ? hasScreenSizeEdits(targetId) : false), [doc, targetId])
 
   const apply = () => {
     const code = stripCodeFences(draft.text) // people paste AI answers here too
