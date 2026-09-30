@@ -1,7 +1,9 @@
 // Edit the pasted code: one part (quick action "Edit code") and the whole page (Code tab).
-import { check, OUT, openExample } from './browser.mjs'
+import { check, editorFrame, OUT, openExample } from './browser.mjs'
 
-const { browser, page, frame, box, errors } = await openExample()
+const opened = await openExample()
+const { browser, page, box, errors } = opened
+let frame = opened.frame
 const cardTitles = () => frame.$$eval('.card h3', (els) => els.map((el) => el.textContent))
 
 /** Replace everything in the CodeMirror editor inside `scope` with `text`. */
@@ -36,33 +38,42 @@ await page.keyboard.press('Control+z')
 await page.waitForTimeout(300)
 check('undo brings the old part back', (await cardTitles())[1] === 'Croissants')
 
-// 2. Edit the whole page HTML in the Code tab
+// 2. Edit the whole page code (HTML + CSS + JS) in the Code tab
 const sidebar = page.locator('aside').first()
 await sidebar.getByRole('tab', { name: 'Code' }).click()
-const pageBox = sidebar.locator('.cm-editor', { has: page.getByRole('textbox', { name: 'Page HTML' }) })
+const pageBox = sidebar.locator('.cm-editor', { has: page.getByRole('textbox', { name: 'Page code' }) })
 await sidebar.locator('.cm-content').first().waitFor({ timeout: 8000 })
+// CodeMirror only renders visible lines, so check the top of the source.
+check('page code includes the head and the style block', /<head>[\s\S]*<style>/.test(await pageBox.locator('.cm-content').textContent()))
 check('Apply is off until something changes', await sidebar.getByRole('button', { name: 'Apply changes' }).isDisabled())
 
 // Fold / unfold
-const pageTools = sidebar.getByRole('toolbar', { name: 'Page HTML tools' })
+const pageTools = sidebar.getByRole('toolbar', { name: 'Page code tools' })
 await pageTools.getByRole('button', { name: 'Fold all', exact: true }).click()
 await page.waitForTimeout(200)
 const folded = await pageBox.locator('.cm-foldPlaceholder').count()
-check('Fold all collapses blocks', folded > 0, `${folded} folded`)
+check('Fold all folds the style block and each section, not the whole page', folded >= 4, `${folded} folded`)
 await page.screenshot({ path: OUT + 'edit-code-folded.png' })
 await pageTools.getByRole('button', { name: 'Unfold all' }).click()
 await page.waitForTimeout(200)
 check('Unfold all expands them again', (await pageBox.locator('.cm-foldPlaceholder').count()) === 0)
 check('fold arrows are in the gutter', (await pageBox.locator('.cm-foldGutter').count()) > 0)
-await replaceCode(pageBox, '<main class="hero"><h1>Brand new page</h1></main>')
+await replaceCode(pageBox, '<!doctype html><html><head><title>New</title><style>h1 { color: rgb(1, 2, 3) }</style></head>'
+  + '<body><h1>Brand new page</h1><script>window.done = 1</script></body></html>')
 await sidebar.getByRole('button', { name: 'Apply changes' }).click()
-await page.waitForTimeout(400)
+;({ frame } = await editorFrame(page)) // new head (title, no fonts) = the editor rebuilt its frame
 check('whole page replaced', (await frame.$eval('body', (el) => el.textContent.trim())) === 'Brand new page')
-check('page CSS still applies', (await frame.$eval('h1', (el) => getComputedStyle(el).fontSize)) === '52px')
+check('new CSS from page code applies', (await frame.$eval('h1', (el) => getComputedStyle(el).color)) === 'rgb(1, 2, 3)')
+const cssHeader = sidebar.getByRole('button', { name: /^Styles \(CSS\)/ })
+if ((await cssHeader.getAttribute('aria-expanded')) === 'false') await cssHeader.click()
+const cssBox = sidebar.getByRole('textbox', { name: 'Styles (CSS)' })
+await cssBox.waitFor({ timeout: 8000 })
+check('Styles box shows the new CSS', (await cssBox.textContent()).includes('rgb(1, 2, 3)'))
+check('Script box shows the new JS', await sidebar.getByRole('button', { name: /^Script 1/ }).isVisible())
 
 await page.mouse.click(12, 845)
 await page.keyboard.press('Control+z')
-await page.waitForTimeout(300)
+;({ frame } = await editorFrame(page))
 check('undo restores the page', (await cardTitles()).length === 3)
 
 check('no console errors', errors.length === 0, errors.join(' | '))
