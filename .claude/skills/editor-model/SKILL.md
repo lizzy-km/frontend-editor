@@ -54,7 +54,13 @@ that break things if you ignore them.
 16. **Editor-only DOM state** (such as opening `<details>` so answers can be
     edited) is applied to the frame DOM, never to the model, and undone when
     the selection changes. See `canvas/useRevealDetails.ts`.
-17. **Test with real pages.** `e2e/fixtures/*.html` holds real AI output.
+17. **Code shown for editing uses `nodeToHtml(..., { forEditing: true })`.**
+    It must parse back to the same nodes: desktop styles as inline
+    `style`, and hidden elements as `data-fe-hidden`, which `domToNodes`
+    turns back into `hidden`. Apply it through `actions/codeActions.applyHtml`
+    (one commit). If you add node state that HTML can't express, warn before
+    applying, the way `hasScreenSizeEdits` does.
+18. **Test with real pages.** `e2e/fixtures/*.html` holds real AI output.
     When a pasted page misbehaves, add it there with a check in `e2e/`.
 
 ## Adding a new kind of edit
