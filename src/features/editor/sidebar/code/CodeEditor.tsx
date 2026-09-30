@@ -1,12 +1,13 @@
 import { css } from '@codemirror/lang-css'
 import { html } from '@codemirror/lang-html'
 import { javascript } from '@codemirror/lang-javascript'
-import { foldAll, unfoldAll } from '@codemirror/language'
+import { unfoldAll } from '@codemirror/language'
 import { EditorView } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
 import { useEffect, useRef } from 'react'
 import { Button } from '@/shared/ui'
 import { appCodeTheme } from './codeTheme'
+import { foldSections } from './foldSections'
 import styles from './CodeEditor.module.css'
 
 export type CodeLanguage = 'css' | 'js' | 'html'
@@ -64,7 +65,7 @@ export default function CodeEditor({ value, language, label, onChange }: Props) 
     editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert: value } })
   }, [value])
 
-  const run = (command: typeof foldAll) => {
+  const run = (command: typeof unfoldAll) => {
     if (view.current) command(view.current)
     view.current?.focus()
   }
@@ -72,7 +73,7 @@ export default function CodeEditor({ value, language, label, onChange }: Props) 
   return (
     <div className={styles.wrap}>
       <div className={styles.tools} role="toolbar" aria-label={`${label} tools`}>
-        <Button size="small" variant="ghost" icon="chevronRight" title="Collapse every block (Ctrl+Alt+[)" onClick={() => run(foldAll)}>Fold all</Button>
+        <Button size="small" variant="ghost" icon="chevronRight" title="Collapse every block — the page frame stays open" onClick={() => run(foldSections)}>Fold all</Button>
         <Button size="small" variant="ghost" icon="chevronDown" title="Expand every block (Ctrl+Alt+])" onClick={() => run(unfoldAll)}>Unfold all</Button>
       </div>
       <div ref={host} />
