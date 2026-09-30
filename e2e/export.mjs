@@ -1,6 +1,6 @@
 // Export: download html / zip / png (whole page and one part), preview runs scripts safely.
 import { readFileSync, statSync } from 'node:fs'
-import { check, editorFrame, OUT, openPage } from './browser.mjs'
+import { allowTryDownloads, check, editorFrame, OUT, openPage } from './browser.mjs'
 
 const PAGE = `<!doctype html><html><head><title>Button Test</title>
 <style>.hero{padding:40px;background:#fde8e1}</style></head>
@@ -11,7 +11,23 @@ const PAGE = `<!doctype html><html><head><title>Button Test</title>
 const { browser, page, errors } = await openPage('/try')
 await page.getByLabel('Your code').fill(PAGE)
 await page.getByRole('button', { name: 'Open in editor' }).click()
-const { frame, box } = await editorFrame(page)
+let { frame, box } = await editorFrame(page)
+
+// Try-it: downloading needs an account (sign-up keeps the page)
+await page.getByRole('button', { name: 'Download', exact: true }).click()
+check('Try-it asks to create an account', await page.getByText('Create a free account to download').isVisible())
+check('download choices are disabled', await page.getByRole('button', { name: /Web page/ }).isDisabled())
+check('copy code is disabled too', await page.getByRole('button', { name: 'Copy the code instead' }).isDisabled())
+const signup = await page.getByRole('link', { name: 'Create free account' }).getAttribute('href')
+check('sign-up returns to save the page', signup === '/signup?next=%2Fprojects%2Fnew', signup)
+await page.keyboard.press('Escape')
+
+// The file checks below use the dev-only allowance
+await allowTryDownloads(page)
+await page.getByRole('button', { name: 'Paste new code' }).click()
+await page.getByLabel('Your code').fill(PAGE)
+await page.getByRole('button', { name: 'Open in editor' }).click()
+;({ frame, box } = await editorFrame(page)) // a fresh iframe
 
 const download = async (choice) => {
   const [file] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: new RegExp(choice) }).click()])
