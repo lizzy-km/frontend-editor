@@ -1,11 +1,12 @@
 import { css } from '@codemirror/lang-css'
+import { html } from '@codemirror/lang-html'
 import { javascript } from '@codemirror/lang-javascript'
 import { EditorView } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
 import { useEffect, useRef } from 'react'
 import { appCodeTheme } from './codeTheme'
 
-export type CodeLanguage = 'css' | 'js'
+export type CodeLanguage = 'css' | 'js' | 'html'
 
 type Props = {
   value: string
@@ -15,7 +16,7 @@ type Props = {
   onChange: (value: string) => void
 }
 
-const LANGUAGES = { css: () => css(), js: () => javascript() }
+const LANGUAGES = { css: () => css(), js: () => javascript(), html: () => html() }
 
 /**
  * A real code editor (CodeMirror 6): colours, line numbers, brackets,
