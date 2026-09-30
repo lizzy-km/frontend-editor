@@ -7,6 +7,7 @@ import { BREAKPOINTS } from '../model/breakpoints'
 import { useViewStore } from '../store/view.store'
 import styles from './Canvas.module.css'
 import { Overlay } from './Overlay'
+import { useRevealDetails } from './useRevealDetails'
 
 const PADDING = 24
 
@@ -33,6 +34,7 @@ export function Canvas() {
   const [panX, setPanX] = useState(0)
   const layout = useLayout(size.width, size.height, panX)
   const setScale = useViewStore((state) => state.setScale)
+  useRevealDetails()
 
   useEffect(() => setScale(layout.scale), [layout.scale, setScale])
 
