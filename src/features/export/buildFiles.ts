@@ -32,7 +32,7 @@ export function partsToSplitFiles(parts: PageParts): ExportFiles {
     `<html${parts.htmlAttrs}>`,
     '<head>',
     '  <meta charset="utf-8">',
-    '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+    ...parts.headTags.map((line) => `  ${line}`),
     `  <title>${parts.title.replace(/</g, '&lt;')}</title>`,
     ...parts.links.map((href) => `  <link rel="stylesheet" href="${escapeAttr(href)}">`),
     ...parts.headScripts.filter(keep).map((script) => `  ${scriptTag(script)}`),

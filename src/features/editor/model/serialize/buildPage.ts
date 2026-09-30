@@ -12,12 +12,24 @@ export type PageParts = {
   bodyHtml: string
   css: string
   links: string[]
+  /** Ready-made <meta>/<link> lines for <head>, always including a viewport. */
+  headTags: string[]
   headScripts: PageScript[]
   bodyScripts: PageScript[]
 }
 
 function attrsToString(attrs: Record<string, string>): string {
   return Object.entries(attrs).map(([name, value]) => ` ${name}="${escapeAttr(value)}"`).join('')
+}
+
+const DEFAULT_VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1">'
+
+/** The page's own safe head tags; the default viewport only when the page has none. */
+function headTagLines(doc: PageDoc): string[] {
+  const tags = doc.headTags ?? []
+  const lines = tags.map(({ tag, attrs }) => `<${tag}${attrsToString(attrs)}>`)
+  const hasViewport = tags.some(({ tag, attrs }) => tag === 'meta' && attrs.name?.toLowerCase() === 'viewport')
+  return hasViewport ? lines : [DEFAULT_VIEWPORT, ...lines]
 }
 
 /**
@@ -46,6 +58,7 @@ export function buildPageParts(doc: PageDoc, onlyId?: string): PageParts {
     bodyHtml,
     css: [wrapUserCss(doc.css), overrides].filter(Boolean).join('\n\n'),
     links: doc.links,
+    headTags: headTagLines(doc),
     headScripts: doc.scripts.filter((script) => script.inHead),
     bodyScripts: doc.scripts.filter((script) => !script.inHead),
   }
@@ -65,7 +78,7 @@ export function partsToSingleFile(parts: PageParts): string {
     `<html${parts.htmlAttrs}>`,
     '<head>',
     '<meta charset="utf-8">',
-    '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    ...parts.headTags,
     `<title>${parts.title.replace(/</g, '&lt;')}</title>`,
     ...links,
     ...parts.headScripts.map(scriptTag),

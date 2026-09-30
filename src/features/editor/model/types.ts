@@ -55,7 +55,14 @@ export type PageDoc = {
   /** Stylesheet URLs from <link rel="stylesheet"> (fonts, icon packs...). */
   links: string[]
   scripts: PageScript[]
+  /**
+   * Other safe <head> tags kept for the export (viewport, description,
+   * preconnect, icons...). Optional: pages saved before this existed lack it.
+   */
+  headTags?: HeadTag[]
 }
+
+export type HeadTag = { tag: 'meta' | 'link'; attrs: Record<string, string> }
 
 export const isElement = (node: EditorNode | undefined): node is ElementNode => node?.kind === 'element'
 export const isText = (node: EditorNode | undefined): node is TextNode => node?.kind === 'text'
