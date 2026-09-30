@@ -43,6 +43,19 @@ that break things if you ignore them.
 14. **Quill:** only elements passing `isTextEditable` may open in Quill.
     Save only when the output differs from Quill's first output. Keep
     `classSpan` registered or colored words lose their class.
+    `survivesQuill` in `model/tree/textRules.ts` is the list of what Quill
+    keeps exactly: bare formatting tags, plain links, and spans whose only
+    attribute is a class. Anything else, SVG text included, falls back to
+    the Words list. Add to it only after a round-trip test.
+15. **Canvas wrappers use `overflow: clip`, never `hidden`.** A hidden box
+    can be scrolled by code, and Chrome scrolls it when content inside the
+    iframe calls `scrollIntoView()`. That shifts the page under the overlay
+    and breaks hit-testing.
+16. **Editor-only DOM state** (such as opening `<details>` so answers can be
+    edited) is applied to the frame DOM, never to the model, and undone when
+    the selection changes. See `canvas/useRevealDetails.ts`.
+17. **Test with real pages.** `e2e/fixtures/*.html` holds real AI output.
+    When a pasted page misbehaves, add it there with a check in `e2e/`.
 
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or

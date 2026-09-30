@@ -1,22 +1,38 @@
 import { isElement, type ElementNode, type NodeMap } from '../types'
+import { getAncestorIds } from './queries'
 
-/** Formatting tags the text editor (Quill) can keep. */
-const INLINE_TAGS = new Set(['b', 'strong', 'i', 'em', 'u', 's', 'span', 'a', 'br', 'small', 'sup', 'sub', 'mark', 'code'])
+/** Formatting the text editor (Quill) keeps as-is, as long as the tag carries nothing extra. */
+const PLAIN_FORMATTING = new Set(['b', 'strong', 'i', 'em', 'u', 's', 'br', 'sub', 'sup', 'code'])
+const LINK_ATTRS = new Set(['href', 'target', 'rel', 'title'])
 
 /** Tags that hold text even when they are empty. */
 const TEXT_TAGS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'a', 'button', 'span', 'label',
   'blockquote', 'figcaption', 'td', 'th', 'small', 'strong', 'em', 'dt', 'dd'])
 
-/** <i class="fa fa-star"> is an icon, not italic text — the text editor would destroy it. */
-const isIcon = (node: ElementNode) => node.tag === 'i' && Boolean(node.attrs.class)
+const hasOwnStyles = (node: ElementNode) => Object.values(node.styles).some((styles) => styles && Object.keys(styles).length > 0)
 
-function onlyInlineInside(nodes: NodeMap, id: string): boolean {
+/**
+ * Would this child survive a round trip through Quill unchanged?
+ * Quill rebuilds inline HTML from its own formats, so anything it can't
+ * represent (a bare <span> styled as its own line, a class on a link, our own
+ * per-element edits) would silently disappear.
+ */
+function survivesQuill(child: ElementNode): boolean {
+  const attrs = Object.keys(child.attrs)
+  if (hasOwnStyles(child)) return false
+  if (PLAIN_FORMATTING.has(child.tag)) return attrs.length === 0
+  if (child.tag === 'a') return attrs.every((name) => LINK_ATTRS.has(name))
+  // Kept by the classSpan blot — only when the class is its only attribute.
+  if (child.tag === 'span') return attrs.length === 1 && attrs[0] === 'class'
+  return false
+}
+
+function onlySafeInside(nodes: NodeMap, id: string): boolean {
   const node = nodes[id]
   if (!isElement(node)) return true
   return node.children.every((childId) => {
     const child = nodes[childId]
-    if (!isElement(child)) return true
-    return INLINE_TAGS.has(child.tag) && !isIcon(child) && onlyInlineInside(nodes, childId)
+    return !isElement(child) || (survivesQuill(child) && onlySafeInside(nodes, childId))
   })
 }
 
@@ -27,14 +43,20 @@ function hasText(nodes: NodeMap, id: string): boolean {
   return node.children.some((childId) => hasText(nodes, childId))
 }
 
+/** SVG can't display HTML formatting, so its text is edited as plain words only. */
+function insideSvg(nodes: NodeMap, node: ElementNode): boolean {
+  return node.tag === 'svg' || getAncestorIds(nodes, node.id).some((id) => (nodes[id] as ElementNode | undefined)?.tag === 'svg')
+}
+
 /**
- * Can this element's words be edited with the text editor?
- * Yes when it contains only text and simple formatting (no pictures, boxes, icons).
+ * Can this element's words be edited with the rich text editor?
+ * Yes when everything inside is text or formatting Quill keeps exactly.
+ * Otherwise the settings panel offers the "Words" list, which never touches formatting.
  */
 export function isTextEditable(nodes: NodeMap, id: string): boolean {
   const node = nodes[id]
-  if (!isElement(node) || node.tag === 'body') return false
-  if (!onlyInlineInside(nodes, id)) return false
+  if (!isElement(node) || node.tag === 'body' || insideSvg(nodes, node)) return false
+  if (!onlySafeInside(nodes, id)) return false
   return hasText(nodes, id) || TEXT_TAGS.has(node.tag)
 }
 

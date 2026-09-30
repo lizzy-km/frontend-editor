@@ -9,6 +9,7 @@ import type { SectionContext } from './fieldTypes'
 import styles from './Inspector.module.css'
 import { InspectorHeader } from './InspectorHeader'
 import { AdvancedSection } from './sections/AdvancedSection'
+import { FormFieldSection, HAS_PLACEHOLDER } from './sections/FormFieldSection'
 import { LinkSection } from './sections/LinkSection'
 import { PageSection } from './sections/PageSection'
 import { PictureSection } from './sections/PictureSection'
@@ -64,6 +65,7 @@ export function Inspector() {
       {context.hasText && !context.isTextEditable && <WordsSection id={node.id} />}
       {node.tag === 'a' && <LinkSection node={node} />}
       {node.tag === 'img' && <PictureSection node={node} />}
+      {HAS_PLACEHOLDER.has(node.tag) && <FormFieldSection node={node} />}
       {computed && <StyleSections id={node.id} context={context} computed={computed} overrides={overrides} />}
       {computed && node.id !== rootId && <VisibilitySection node={node} computedDisplay={computed.display ?? ''} />}
       <AdvancedSection node={node} />

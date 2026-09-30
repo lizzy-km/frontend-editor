@@ -78,6 +78,25 @@ describe('export', () => {
     expect(partsToSingleFile(parts)).toContain('<!doctype html>')
   })
 
+  it('keeps the page viewport and preconnect links, drops a refresh', () => {
+    const doc = parseHtmlDocument(`<!doctype html><html><head>
+      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="description" content="A ceremony">
+      <meta http-equiv="refresh" content="0;url=https://evil.example">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin></head><body><p>x</p></body></html>`)
+    const html = partsToSingleFile(buildPageParts(doc))
+    expect(html).toContain('viewport-fit=cover')
+    expect(html.match(/name="viewport"/g)).toHaveLength(1)
+    expect(html).toContain('<meta name="description" content="A ceremony">')
+    expect(html).toContain('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">')
+    expect(html).not.toContain('refresh')
+  })
+
+  it('adds the default viewport when the page has none', () => {
+    const html = partsToSingleFile(buildPageParts(parseHtmlDocument('<body><p>x</p></body>')))
+    expect(html).toContain('<meta name="viewport" content="width=device-width, initial-scale=1">')
+  })
+
   it('wraps pasted css in a layer but keeps @import on top', () => {
     const css = wrapUserCss('@import url(x.css);\nh1{color:red}')
     expect(css.startsWith('@import url(x.css);')).toBe(true)

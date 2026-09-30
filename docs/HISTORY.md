@@ -3,6 +3,31 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/retirement-page — 2026-09-30
+A real AI page (`e2e/fixtures/retirement.html`: SVG symbols, `<details>` FAQ,
+a form, heading lines made of spans, head meta) exposed these bugs:
+- **Clicks selected the wrong element.** In-page `scrollIntoView()` also
+  scrolled the editor's `overflow: hidden` page wrapper, shifting the page
+  about 20 px under the overlay. The canvas and page wrappers now use
+  `overflow: clip`, which can't be scrolled at all.
+- **Editing a whole heading merged its lines.** Quill drops bare
+  `<span>`s, classes on links, `small`/`mark`, per-element edits, and
+  anything inside SVG. `isTextEditable` now opens Quill only when every
+  inline piece survives the round trip; otherwise the Words list is used.
+  Single spans are still editable on their own.
+- **FAQ answers couldn't be reached.** Selecting a question, or anything
+  inside a `<details>`, now opens it in the editor only
+  (`useRevealDetails`); the model and export are untouched.
+- **Raw tag names** such as "DT" and "SUMMARY": many more everyday names
+  (`labels/tagLabels.ts`), and unknown tags read "Page part (tag)".
+- **The export dropped head tags.** `viewport-fit=cover`, description,
+  preconnect and icons are now kept (`PageDoc.headTags`, optional). The page's
+  viewport replaces the default; `http-equiv` refresh is never copied.
+- New: a "Hint text" (placeholder) field for input and text boxes.
+- Checked and fine: the export matched the original pixel for pixel in
+  height (7321 px); fonts, SVG `<use>` icons and the script all work.
+- e2e: `real-page.mjs` (14 checks); the full suite is 74 of 74.
+
 ## feature/codemirror — 2026-09-29
 - The Code tab (page CSS and inline scripts) now uses CodeMirror 6, with
   syntax colors, line numbers, brackets, search (Ctrl/⌘+F) and its own undo.

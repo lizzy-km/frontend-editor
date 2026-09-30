@@ -1,6 +1,7 @@
 import type { NodeMap, PageDoc } from '../types'
 import { combinePastedCode, type PastedCode } from './cleanPaste'
 import { elementToNodes } from './domToNodes'
+import { readHeadTags } from './headTags'
 import { extractPageExtras } from './readHead'
 
 /**
@@ -14,11 +15,12 @@ export function parsePastedCode(pasted: PastedCode): PageDoc {
 
 export function parseHtmlDocument(html: string): PageDoc {
   const doc = new DOMParser().parseFromString(html, 'text/html')
+  const headTags = readHeadTags(doc)
   const extras = extractPageExtras(doc)
   const nodes: NodeMap = {}
   const rootId = elementToNodes(doc.body, null, nodes)
 
-  return { ...extras, title: extras.title || 'Untitled page', rootId, nodes }
+  return { ...extras, headTags, title: extras.title || 'Untitled page', rootId, nodes }
 }
 
 /** A blank page to start from. */
