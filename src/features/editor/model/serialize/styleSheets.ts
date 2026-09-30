@@ -1,5 +1,6 @@
 import { BREAKPOINT_ORDER, BREAKPOINTS } from '../breakpoints'
 import { isElement, type ElementNode, type NodeMap, type StyleMap } from '../types'
+import { splitImports } from './cssImports'
 import { isValidCssProperty, sanitizeCssValue } from './escape'
 
 function declarations(styles: StyleMap): string {
@@ -37,10 +38,6 @@ export function buildOverrideCss(nodes: NodeMap, selectorFor: (node: ElementNode
  */
 export function wrapUserCss(css: string): string {
   if (!css.trim()) return ''
-  const hoisted: string[] = []
-  const body = css.replace(/@(import|charset)[^;]+;/gi, (rule) => {
-    hoisted.push(rule)
-    return ''
-  })
-  return `${hoisted.join('\n')}\n@layer page {\n${body.trim()}\n}`.trim()
+  const { imports, rest } = splitImports(css)
+  return `${imports.join('\n')}\n@layer page {\n${rest.trim()}\n}`.trim()
 }
