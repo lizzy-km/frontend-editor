@@ -37,7 +37,26 @@ check('pasted section added', (await count('.pricing h2')) === 1)
 
 // Code tab: CodeMirror editor, CSS applies live (no click-away needed)
 await sidebar.getByRole('tab', { name: 'Code' }).click()
-const cssEditor = sidebar.getByLabel('Styles (CSS)')
+
+// Code boxes collapse / expand from their headers
+const cssHeader = sidebar.getByRole('button', { name: /^Styles \(CSS\)/ })
+const htmlHeader = sidebar.getByRole('button', { name: /^Page HTML/ })
+check('Page HTML starts open', (await htmlHeader.getAttribute('aria-expanded')) === 'true')
+check('Styles start closed', (await cssHeader.getAttribute('aria-expanded')) === 'false')
+check('closed box shows its size', /\d+ lines/.test(await cssHeader.textContent()), await cssHeader.textContent())
+const htmlEditor = sidebar.getByRole('textbox', { name: 'Page HTML' })
+await htmlEditor.waitFor({ timeout: 8000 })
+await htmlEditor.click()
+await page.keyboard.press('Control+End')
+await page.keyboard.insertText('<!-- not applied yet -->')
+await htmlHeader.click()
+check('collapsing hides the editor', !(await htmlEditor.isVisible()))
+await htmlHeader.click()
+check('unapplied code survives collapse', (await htmlEditor.textContent()).includes('not applied yet'))
+await sidebar.getByRole('button', { name: 'Discard' }).click()
+await cssHeader.click()
+
+const cssEditor = sidebar.getByRole('textbox', { name: 'Styles (CSS)' })
 await cssEditor.waitFor({ timeout: 8000 }) // CodeMirror loads on demand
 check('code editor has line numbers', await sidebar.locator('.cm-lineNumbers').first().isVisible())
 await cssEditor.click()
