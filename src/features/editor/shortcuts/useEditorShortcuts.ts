@@ -35,6 +35,8 @@ export function useEditorShortcuts() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (useViewStore.getState().preview) return // preview has its own keys (Esc)
+      // An open dialog owns the keyboard (Esc must close it, not select a parent).
+      if (document.querySelector('dialog[open]')) return
       if (isTyping(event.target)) {
         // Esc leaves a settings box, so the next Esc/Delete acts on the page again.
         const inPanel = !(event.target as HTMLElement).closest('.ql-editor')
