@@ -165,7 +165,14 @@ into nodes, so nothing the AI wrote gets lost.
   - `partsToSingleFile` makes the .html, copy, and Preview.
   - `partsToSplitFiles` + `zipFiles` make the .zip.
   - `capturePng(id | null)` takes the picture from the live iframe.
-- `exportActions.ts` has one function per button, so new formats plug in there.
+- `exportActions.ts` has one `prepare…` function per button, each
+  returning a `deliver()` step. The dialog prepares the file, then calls
+  `gate.consume()`, then delivers it.
+- `DownloadGate` (`downloadGate.ts`) is chosen by the page:
+  - Try-it passes `signin`.
+  - Saved pages pass `counted` (`workspace/useDownloadGate`, backed by
+    `recordDownload`).
+  - `open` is only for dev and e2e.
 - `PreviewOverlay` runs the page in `sandbox="allow-scripts allow-forms
   allow-popups allow-modals"`. **Never add allow-same-origin to Preview or
   to public page viewers.**

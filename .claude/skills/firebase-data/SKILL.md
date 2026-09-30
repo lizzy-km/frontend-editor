@@ -45,7 +45,13 @@ Names live in `src/lib/collections.ts` (prefixed so a shared Firebase project ca
    `firebase deploy --only firestore` REPLACES the whole project's rules;
    in a shared project that can break the other app. A dedicated project is
    strongly preferred.
-8. **Public pages are untrusted code for the viewer.** Render them only in a
+8. **Downloads are counted per page per month** on `tweaks_projects/{id}`
+   (`downloadPeriod` is a UTC `YYYYMM` number, plus `downloadCount`). Only
+   `recordDownload` (a transaction) writes them. The rules allow the owner
+   +1 within `maxDownloads(plan)`, and the limits must match
+   `plans.ts maxDownloadsPerMonth`. Record a download BEFORE delivering the
+   file, after preparing it (see `export/ExportDialog.tsx`).
+9. **Public pages are untrusted code for the viewer.** Render them only in a
    sandbox WITHOUT `allow-same-origin`, like Preview does.
 
 ## Indexes
