@@ -60,6 +60,10 @@ that break things if you ignore them.
     turns back into `hidden`. Apply it through `actions/codeActions.applyHtml`
     (one commit). If you add node state that HTML can't express, warn before
     applying, the way `hasScreenSizeEdits` does.
+    The whole-page source (`docToEditableSource`) must stay idempotent:
+    source → parse → source is identical. Never put whitespace between body
+    content, body scripts and `</body></html>`, because the parser moves it
+    into the body.
 18. **Test with real pages.** `e2e/fixtures/*.html` holds real AI output.
     When a pasted page misbehaves, add it there with a check in `e2e/`.
 

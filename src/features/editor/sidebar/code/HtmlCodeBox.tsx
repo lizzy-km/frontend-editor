@@ -14,20 +14,23 @@ type Props = {
   /** Called after a successful Apply (e.g. to close a dialog). */
   onApplied?: () => void
   tall?: boolean
+  /** Hide the label when a section header already shows it. */
+  hideLabel?: boolean
 }
 
 /**
  * HTML of a part (or the whole page) in a code editor, applied on demand —
  * re-building the page on every key press would lose the selection and undo.
  */
-export function HtmlCodeBox({ targetId, label, onApplied, tall }: Props) {
-  const nodes = useDocStore((state) => state.doc.nodes)
-  const current = useMemo(() => (nodes ? editableHtml(targetId) : ''), [nodes, targetId])
+export function HtmlCodeBox({ targetId, label, onApplied, tall, hideLabel }: Props) {
+  // Whole doc, not just nodes: the page source also contains the CSS and scripts.
+  const doc = useDocStore((state) => state.doc)
+  const current = useMemo(() => (doc ? editableHtml(targetId) : ''), [doc, targetId])
   const [draft, setDraft] = useState<{ base: string; text: string }>({ base: current, text: current })
   // The page changed elsewhere (undo, a click edit) and nothing is typed here: follow it.
   if (draft.base !== current && draft.text === draft.base) setDraft({ base: current, text: current })
   const changed = draft.text !== current
-  const losesScreenEdits = useMemo(() => (nodes ? hasScreenSizeEdits(targetId) : false), [nodes, targetId])
+  const losesScreenEdits = useMemo(() => (doc ? hasScreenSizeEdits(targetId) : false), [doc, targetId])
 
   const apply = () => {
     const code = stripCodeFences(draft.text) // people paste AI answers here too
@@ -39,7 +42,7 @@ export function HtmlCodeBox({ targetId, label, onApplied, tall }: Props) {
 
   return (
     <div className={styles.codeLabel}>
-      <span>{label}</span>
+      {!hideLabel && <span>{label}</span>}
       <Suspense fallback={<div className={styles.codeLoading}>Loading the code editor…</div>}>
         <div className={tall ? styles.codeTall : undefined}>
           <CodeEditor label={label} language="html" value={draft.text} onChange={(text) => setDraft((old) => ({ ...old, text }))} />
