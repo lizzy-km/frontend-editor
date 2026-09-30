@@ -7,13 +7,15 @@ import { getElement } from '../model/tree/queries'
 import { isTextEditable } from '../model/tree/textRules'
 import { useDocStore } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
+import { describeNode } from '../labels/elementLabels'
 import { ChangePictureDialog } from './ChangePictureDialog'
+import { EditCodeDialog } from './EditCodeDialog'
 import styles from './QuickActions.module.css'
 
 type Action = { icon: IconName; label: string; run: () => void; primary?: boolean }
 
 /** Decides which buttons make sense for the selected element. */
-function useActions(id: string, openPicture: () => void): Action[] {
+function useActions(id: string, openPicture: () => void, openCode: () => void): Action[] {
   const kind = useDocStore((state) => {
     const node = getElement(state.doc.nodes, id)
     if (!node) return 'none'
@@ -28,6 +30,7 @@ function useActions(id: string, openPicture: () => void): Action[] {
     { icon: 'chevronDown', label: 'Move down', run: () => nudgeNode(id, 1) },
     { icon: 'layers', label: 'Select the box around it', run: () => selectParent(id) },
     { icon: 'copy', label: 'Duplicate', run: () => duplicateNode(id) },
+    { icon: 'code', label: 'Edit code', run: openCode },
     { icon: 'trash', label: 'Delete', run: () => deleteNode(id) },
   )
   return actions
@@ -36,7 +39,12 @@ function useActions(id: string, openPicture: () => void): Action[] {
 function ActionBar({ id, placement }: { id: string; placement: FramePlacement }) {
   const box = useTrackedBox(id, placement)
   const [pictureOpen, setPictureOpen] = useState(false)
-  const actions = useActions(id, () => setPictureOpen(true))
+  const [codeOpen, setCodeOpen] = useState(false)
+  const actions = useActions(id, () => setPictureOpen(true), () => setCodeOpen(true))
+  const name = useDocStore((state) => {
+    const node = getElement(state.doc.nodes, id)
+    return node ? describeNode(state.doc.nodes, node, 30) : ''
+  })
   if (!box) return null
 
   // Above the element's right edge (the name tag sits on the left);
@@ -59,6 +67,7 @@ function ActionBar({ id, placement }: { id: string; placement: FramePlacement })
         ))}
       </div>
       <ChangePictureDialog id={id} open={pictureOpen} onClose={() => setPictureOpen(false)} />
+      {codeOpen && <EditCodeDialog id={id} name={name} onClose={() => setCodeOpen(false)} />}
     </>
   )
 }
