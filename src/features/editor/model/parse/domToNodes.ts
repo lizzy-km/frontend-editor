@@ -3,6 +3,9 @@ import type { ElementNode, NodeMap } from '../types'
 import { parseStyleText } from './parseStyle'
 import { readAttributes } from './readHead'
 
+/** Same value as serialize/nodeToHtml HIDDEN_MARK (kept here to avoid an import cycle). */
+const HIDDEN_MARK = 'data-fe-hidden'
+
 /** Tags we never turn into editable nodes. */
 const SKIPPED_TAGS = new Set(['script', 'style', 'link', 'meta', 'base', 'title'])
 
@@ -18,10 +21,13 @@ export function elementToNodes(element: Element, parentId: string | null, nodes:
     kind: 'element',
     tag: element.tagName.toLowerCase(),
     parentId,
-    attrs: readAttributes(element, ['style']),
+    attrs: readAttributes(element, ['style', HIDDEN_MARK]),
     styles: {},
     children: [],
   }
+
+  // Coming back from an "edit code" view: keep hidden elements hidden.
+  if (element.hasAttribute(HIDDEN_MARK)) node.hidden = true
 
   const inlineStyle = element.getAttribute('style')
   if (inlineStyle) node.styles.desktop = parseStyleText(inlineStyle)
