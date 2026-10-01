@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { screenPath } from './autoTrack'
 import { analyticsAllowed, saveOptOut } from './consent'
+import { withoutIds } from './VercelAnalytics'
 
 type Match = { route: { path?: string } }
 const state = (pathname: string, ...paths: (string | undefined)[]) => ({
@@ -38,5 +39,13 @@ describe('usage stats consent', () => {
     expect(analyticsAllowed()).toBe(false)
     vi.stubGlobal('navigator', { ...navigator, doNotTrack: null, globalPrivacyControl: true })
     expect(analyticsAllowed()).toBe(false)
+  })
+})
+
+describe('Vercel page addresses', () => {
+  it('removes page ids', () => {
+    expect(withoutIds('https://x.app/edit/abc123?tab=code')).toBe('https://x.app/edit/:projectId?tab=code')
+    expect(withoutIds('https://x.app/p/xyz')).toBe('https://x.app/p/:projectId')
+    expect(withoutIds('https://x.app/projects')).toBe('https://x.app/projects')
   })
 })

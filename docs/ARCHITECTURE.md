@@ -184,6 +184,9 @@ run, inside a locked frame.
   each Core Web Vital once per visit as `web_vital`, tagged with the screen.
 - `analyticsClient` sets Consent Mode v2 defaults before starting
   (analytics granted, ad storage / user data / personalization denied).
+- `VercelAnalytics` (in `App`, production only) adds Vercel Web Analytics
+  page views; its `beforeSend` drops events when stats are off and removes
+  page ids from addresses (`withoutIds`).
 - `identifyUser(uid, plan)` sets the user id and `plan`/`signed_in`
   properties (from auth and `getUsage`).
 - Edits are counted per undo step (`editor/actions/editStats.ts` uses the same
