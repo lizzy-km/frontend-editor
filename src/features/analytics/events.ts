@@ -16,6 +16,8 @@ export type AnalyticsEvents = {
   sign_up: { method: SignInMethod }
   login: { method: SignInMethod }
   logout: Record<string, never>
+  /** Firebase's error code only (e.g. auth/wrong-password), never the email. */
+  auth_error: { code: string }
 
   // Paste → editor
   paste_code: { elements: number; scripts: number; tailwind: boolean; where: Where }
@@ -26,12 +28,16 @@ export type AnalyticsEvents = {
   edit_code: { scope: 'part' | 'page' | 'css' | 'script' }
   undo: Record<string, never>
   redo: Record<string, never>
+  text_editor_open: Record<string, never>
+  add_block: { block: string }
+  picture_add: { method: 'upload' | 'embed' }
   switch_screen: { size: 'desktop' | 'tablet' | 'mobile' }
   preview_open: { where: Where }
 
   // Pages (workspaces)
   page_create: { remix: boolean }
   page_delete: Record<string, never>
+  page_rename: Record<string, never>
   page_limit_reached: { plan: string }
   share: { method: 'public' | 'private'; content_type: 'page' }
 

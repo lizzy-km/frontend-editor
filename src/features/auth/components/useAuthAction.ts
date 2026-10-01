@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { track } from '@/features/analytics/track'
 import { startAuth, useAuthStore } from '../auth.store'
 import { friendlyAuthError, isCancelled } from '../authErrors'
 
@@ -34,7 +35,10 @@ export function useAuthAction() {
       await action()
       onDone?.()
     } catch (caught) {
-      if (!isCancelled(caught)) setError(friendlyAuthError(caught))
+      if (!isCancelled(caught)) {
+        setError(friendlyAuthError(caught))
+        track('auth_error', { code: String((caught as { code?: string })?.code ?? 'unknown').slice(0, 60) })
+      }
     } finally {
       setBusy(false)
     }

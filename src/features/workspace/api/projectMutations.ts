@@ -51,6 +51,7 @@ export async function deleteProject(uid: string, id: string): Promise<void> {
 
 export async function renameProject(id: string, name: string): Promise<void> {
   await updateDoc(projectRef(id), { name: name.trim() || 'Untitled page', updatedAt: serverTimestamp() })
+  track('page_rename')
 }
 
 /** Public = anyone with the link (and the gallery) can view and copy it. */
