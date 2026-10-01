@@ -1,4 +1,5 @@
 import { features } from '@/config/features.config'
+import { track } from '@/features/analytics/track'
 import { authService, useAuthStore } from '@/features/auth/auth.store'
 
 const ASSETS_URL = (import.meta.env.VITE_ASSETS_URL ?? '').replace(/\/$/, '')
@@ -46,10 +47,14 @@ export async function pictureFromFile(file: File): Promise<string> {
   if (!PICTURE_TYPES.includes(file.type)) throw new Error('Please choose a PNG, JPG, WebP, GIF or AVIF picture.')
   if (canUpload()) {
     if (file.size > MAX_UPLOAD_BYTES) throw new Error('Pictures can be up to 5 MB.')
-    return uploadImage(file, { kind: 'image' })
+    const url = await uploadImage(file, { kind: 'image' })
+    track('picture_add', { method: 'upload' })
+    return url
   }
   if (file.size > MAX_EMBED_BYTES) {
     throw new Error('That picture is too big to add here. Make it smaller (under 400 KB) or paste a picture link instead.')
   }
-  return readAsDataUrl(file)
+  const url = await readAsDataUrl(file)
+  track('picture_add', { method: 'embed' })
+  return url
 }

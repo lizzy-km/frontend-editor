@@ -180,6 +180,10 @@ run, inside a locked frame.
 - `startAutoTracking(router)` (in `App`) sends one `page_view` per screen
   with ids removed (`/edit/:projectId`) and reports uncaught errors as
   `exception` (max 10 per visit). `RouteError` reports crashes as fatal.
+- `webVitals.ts` lazy-loads `web-vitals` (only when sending) and reports
+  each Core Web Vital once per visit as `web_vital`, tagged with the screen.
+- `analyticsClient` sets Consent Mode v2 defaults before starting
+  (analytics granted, ad storage / user data / personalization denied).
 - `identifyUser(uid, plan)` sets the user id and `plan`/`signed_in`
   properties (from auth and `getUsage`).
 - Edits are counted per undo step (`editor/actions/editStats.ts` uses the same

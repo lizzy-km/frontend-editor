@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { track } from '@/features/analytics/track'
 
 type SelectionState = {
   selectedId: string | null
@@ -16,7 +17,10 @@ export const useSelectionStore = create<SelectionState>((set, get) => ({
   editingTextId: null,
   select: (id) => get().selectedId !== id && set({ selectedId: id, editingTextId: null }),
   hover: (id) => get().hoveredId !== id && set({ hoveredId: id }),
-  editText: (id) => set({ editingTextId: id, selectedId: id ?? get().selectedId }),
+  editText: (id) => {
+    if (id && id !== get().editingTextId) track('text_editor_open')
+    set({ editingTextId: id, selectedId: id ?? get().selectedId })
+  },
 }))
 
 export const getSelectedId = () => useSelectionStore.getState().selectedId

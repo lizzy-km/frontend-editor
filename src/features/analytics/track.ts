@@ -33,7 +33,8 @@ function load(): Promise<AnalyticsClient | null> {
   return client
 }
 
-const sending = () => ACTIVE && analyticsAllowed()
+/** Will events actually be sent right now? (Lets callers skip loading extra code.) */
+export const sending = () => ACTIVE && analyticsAllowed()
 
 type Params<K extends AnalyticsEvent> = AnalyticsEvents[K] extends Record<string, never> ? [] : [AnalyticsEvents[K]]
 

@@ -98,8 +98,15 @@ sends page content, code or what people type.
   "Share usage stats" switch in the account menu.
 - No advertising features (Google signals and ad personalization are off).
 - The events and their parameters: `src/features/analytics/events.ts`.
+- Speed from real visits: Core Web Vitals (`web_vital`: LCP, INP, CLS, FCP,
+  TTFB, with a good / needs-improvement / poor rating per screen).
+- Google Consent Mode v2: analytics allowed, every ad signal denied.
 - Turn on **Analytics** in the Firebase console (Project settings →
   Integrations → Google Analytics) and copy the web app's measurement id.
+- In Google Analytics, mark `sign_up`, `page_create` and `download` as **key
+  events**. A useful funnel (Explore → Funnel): `paste_code` → `edit` →
+  `download`. Register `action`, `format`, `metric_name`, `rating` and
+  `where` as custom dimensions to break reports down by them.
 
 ## Known limits
 

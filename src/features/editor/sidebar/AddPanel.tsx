@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { track } from '@/features/analytics/track'
 import { Button, Icon, toast } from '@/shared/ui'
 import { insertHtml } from '../actions/contentActions'
 import { looksLikeHtml, stripCodeFences } from '../model/parse/cleanPaste'
@@ -14,6 +15,7 @@ export function AddPanel() {
     // Only the <body> part is useful here; a full document's head is dropped.
     const body = stripCodeFences(code).match(/<body[^>]*>([\s\S]*)<\/body>/i)?.[1] ?? stripCodeFences(code)
     insertHtml(body)
+    track('add_block', { block: 'pasted-code' })
     setCode('')
     toast('Added to your page', 'success')
   }
@@ -23,7 +25,10 @@ export function AddPanel() {
       <p className={styles.addHint}>New things go inside the selected box, or after the selected element.</p>
       <div className={styles.blocks}>
         {BLOCKS.map((block) => (
-          <button key={block.id} type="button" className={styles.block} onClick={() => insertHtml(block.html)}>
+          <button key={block.id} type="button" className={styles.block} onClick={() => {
+            insertHtml(block.html)
+            track('add_block', { block: block.id })
+          }}>
             <Icon name={block.icon} size={20} />
             <span>{block.label}</span>
           </button>

@@ -1,5 +1,5 @@
 import {
-  initializeAnalytics, isSupported, logEvent, setAnalyticsCollectionEnabled, setUserId, setUserProperties,
+  initializeAnalytics, isSupported, logEvent, setAnalyticsCollectionEnabled, setConsent, setUserId, setUserProperties,
 } from 'firebase/analytics'
 import { firebaseApp } from '@/lib/firebase'
 
@@ -16,6 +16,8 @@ export type AnalyticsClient = {
 /** Starts Analytics, or returns null where the browser can't run it (e.g. cookies blocked). */
 export async function startAnalytics(debug: boolean): Promise<AnalyticsClient | null> {
   if (!(await isSupported())) return null
+  // Consent Mode v2: usage stats only; every advertising signal is denied.
+  setConsent({ analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' })
   const analytics = initializeAnalytics(firebaseApp(), {
     config: {
       // Page views are sent by the router listener (one per screen, ids removed from paths).
