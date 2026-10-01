@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { HISTORY_LIMIT } from '@/config/app.config'
+import { track } from '@/features/analytics/track'
 import { createEmptyDoc } from '../model/parse/parseDocument'
 import type { PageDoc } from '../model/types'
 
@@ -46,6 +47,7 @@ export const useDocStore = create<DocState>((set, get) => ({
     const { doc, past, future, version } = get()
     const previous = past.at(-1)
     if (!previous) return
+    track('undo')
     set({ doc: previous, past: past.slice(0, -1), future: [doc, ...future], version: version + 1, lastEdit: null })
   },
 
@@ -53,6 +55,7 @@ export const useDocStore = create<DocState>((set, get) => ({
     const { doc, past, future, version } = get()
     const next = future[0]
     if (!next) return
+    track('redo')
     set({ doc: next, past: [...past, doc], future: future.slice(1), version: version + 1, lastEdit: null })
   },
 }))

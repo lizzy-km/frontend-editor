@@ -1,3 +1,4 @@
+import { track } from '@/features/analytics/track'
 import { Icon } from '@/shared/ui'
 import { BREAKPOINT_ORDER, BREAKPOINTS } from '../model/breakpoints'
 import { useViewStore } from '../store/view.store'
@@ -14,7 +15,10 @@ export function DeviceSwitch() {
         <button
           key={key} type="button" role="radio" aria-checked={breakpoint === key}
           className={styles.segment} title={`See and edit on ${BREAKPOINTS[key].label.toLowerCase()}`}
-          onClick={() => setBreakpoint(key)}
+          onClick={() => {
+            if (key !== breakpoint) track('switch_screen', { size: key })
+            setBreakpoint(key)
+          }}
         >
           <Icon name={BREAKPOINTS[key].icon} size={17} />
           <span className={styles.segmentLabel}>{BREAKPOINTS[key].label}</span>

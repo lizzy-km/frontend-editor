@@ -5,16 +5,19 @@ import type { NodeMap, TextNode } from '../model/types'
 import { getDoc } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
 import { updateNodes } from './commit'
+import { countEdit } from './editStats'
 
 /** Replaces an element's inside with new HTML (output of the text editor). */
 export function setInnerHtml(id: string, html: string) {
   const childNodes: NodeMap = {}
   const childIds = htmlToChildNodes(html, id, childNodes)
+  countEdit('text')
   updateNodes((nodes) => replaceChildren(nodes, id, childNodes, childIds))
 }
 
 /** Changes one piece of plain text in place (formatting around it is untouched). */
 export function setText(textId: string, text: string) {
+  countEdit('text', `text:${textId}`)
   updateNodes((nodes) => patchNode<TextNode>(nodes, textId, (node) => ({ ...node, text })), `text:${textId}`)
 }
 
@@ -42,6 +45,7 @@ export function insertHtml(html: string, target = resolveInsertTarget()): string
   const created: NodeMap = {}
   const ids = htmlToChildNodes(html, target.parentId, created)
   const firstElement = ids.find((id) => created[id]?.kind === 'element') ?? null
+  countEdit('insert')
 
   updateNodes((nodes) => {
     let next = nodes

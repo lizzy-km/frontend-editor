@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import type { ExportFormat } from '@/features/analytics/events'
+import { track } from '@/features/analytics/track'
 import { describeNode } from '@/features/editor/labels/elementLabels'
 import { getElement } from '@/features/editor/model/tree/queries'
 import { useDocStore } from '@/features/editor/store/doc.store'
 import { useSelectionStore } from '@/features/editor/store/selection.store'
 import { Button, Icon, Modal, toast, type IconName } from '@/shared/ui'
 import { DownloadsLeft, SignInToDownload } from './DownloadNotice'
-import { downloadsBlocked, type DownloadGate } from './downloadGate'
+import { downloadsBlocked, gateWhere, type DownloadGate } from './downloadGate'
 import styles from './ExportDialog.module.css'
 import { prepareCopy, prepareHtml, preparePng, prepareZip, type Deliver, type ExportScope } from './exportActions'
 
@@ -37,6 +39,8 @@ export function ExportDialog({ open, onClose, gate }: Props) {
   const [busy, setBusy] = useState<string | null>(null)
   const scope: ExportScope = onlyPart && part.name ? part.selectedId : null
   const blocked = downloadsBlocked(gate)
+  const blockedBy = !open ? null : gate.kind === 'signin' ? 'signin' : gate.kind === 'counted' && gate.status === 'ready' && blocked ? 'limit' : null
+  useEffect(() => { if (blockedBy) track('download_blocked', { reason: blockedBy }) }, [blockedBy])
 
   // Prepare first, count second, deliver last: a failed export never uses a download.
   const run = async (id: string, prepare: (scope: ExportScope) => Promise<Deliver>, done: string) => {
@@ -45,6 +49,7 @@ export function ExportDialog({ open, onClose, gate }: Props) {
       const deliver = await prepare(scope)
       if (gate.kind === 'counted') await gate.consume()
       await deliver()
+      track('download', { format: id as ExportFormat, scope: scope ? 'part' : 'page', where: gateWhere(gate) })
       toast(done, 'success')
       onClose()
     } catch (error) {

@@ -3,7 +3,8 @@
  * what is measured. Rules: never send page content, code, names, emails or
  * anything typed by the user — only counts and categories.
  * Names follow GA4's recommended events where one exists (login, sign_up,
- * page_view, exception, share, search).
+ * page_view, exception, share). Screens such as the gallery or a public
+ * page are counted by page_view (ids removed from the path).
  */
 export type AnalyticsEvents = {
   page_view: { page_path: string; page_title: string }
@@ -17,7 +18,6 @@ export type AnalyticsEvents = {
   // Paste → editor
   paste_code: { elements: number; scripts: number; tailwind: boolean; where: Where }
   paste_rejected: { reason: string }
-  open_editor: { where: Where }
 
   // Editing (one event per undo step, never the content)
   edit: { action: EditAction }
@@ -35,11 +35,7 @@ export type AnalyticsEvents = {
 
   // Export
   download: { format: ExportFormat; scope: 'page' | 'part'; where: Where }
-  download_blocked: { reason: 'signin' | 'limit' | 'public' }
-
-  // Gallery
-  gallery_view: Record<string, never>
-  public_page_view: Record<string, never>
+  download_blocked: { reason: 'signin' | 'limit' }
 }
 
 export type AnalyticsEvent = keyof AnalyticsEvents

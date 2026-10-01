@@ -5,6 +5,7 @@ import type { ElementNode } from '../model/types'
 import { getDoc } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
 import { updateNodes } from './commit'
+import { countEdit } from './editStats'
 
 const select = (id: string | null) => useSelectionStore.getState().select(id)
 
@@ -14,6 +15,7 @@ export function deleteNode(id: string) {
   if (id === doc.rootId) return
   const parentId = doc.nodes[id]?.parentId ?? null
   updateNodes((nodes) => removeNode(nodes, id))
+  countEdit('delete')
   select(parentId === doc.rootId ? null : parentId)
 }
 
@@ -23,6 +25,7 @@ export function duplicateNode(id: string) {
   const parentId = doc.nodes[id]?.parentId
   if (!parentId) return
   const copy = cloneSubtree(doc.nodes, id)
+  countEdit('duplicate')
   updateNodes((nodes) => {
     const merged = { ...nodes, ...copy.nodes }
     return patchNode<ElementNode>(merged, parentId, (parent) => {
@@ -35,6 +38,7 @@ export function duplicateNode(id: string) {
 }
 
 export function moveNodeTo(id: string, parentId: string, index: number) {
+  countEdit('move')
   updateNodes((nodes) => moveNode(nodes, id, parentId, index))
 }
 
@@ -57,6 +61,7 @@ export function selectParent(id: string) {
 
 /** Sets an HTML attribute (link address, image source...). Empty value removes it. */
 export function setAttribute(id: string, name: string, value: string) {
+  countEdit(name === 'src' ? 'picture' : 'attribute', `attr:${id}:${name}`)
   updateNodes((nodes) => patchNode<ElementNode>(nodes, id, (node) => {
     const attrs = { ...node.attrs }
     if (value === '' && name !== 'alt') delete attrs[name]
@@ -67,6 +72,7 @@ export function setAttribute(id: string, name: string, value: string) {
 
 /** Several attributes as ONE undo step. Empty values remove the attribute (except alt). */
 export function setAttributes(id: string, values: Record<string, string>) {
+  countEdit('src' in values ? 'picture' : 'attribute')
   updateNodes((nodes) => patchNode<ElementNode>(nodes, id, (node) => {
     const attrs = { ...node.attrs }
     for (const [name, value] of Object.entries(values)) {
@@ -78,10 +84,12 @@ export function setAttributes(id: string, values: Record<string, string>) {
 }
 
 export function toggleHidden(id: string) {
+  countEdit('hide')
   updateNodes((nodes) => patchNode<ElementNode>(nodes, id, (node) => ({ ...node, hidden: !node.hidden })))
 }
 
 /** Changes the element type, e.g. a <h2> into a <h1>. Content is kept. */
 export function changeTag(id: string, tag: string) {
+  countEdit('tag')
   updateNodes((nodes) => patchNode<ElementNode>(nodes, id, (node) => ({ ...node, tag })))
 }
