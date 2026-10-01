@@ -35,11 +35,17 @@ check('summary lists what was found', /Tailwind/.test(found) && /1 script/.test(
 await page.screenshot({ path: OUT + 'paste-summary.png' })
 
 await page.getByRole('button', { name: 'Open in editor' }).click()
-const { frame } = await editorFrame(page)
+const { frame, box } = await editorFrame(page)
 await page.waitForTimeout(1500) // Tailwind CDN compiles classes
 const color = await frame.$eval('h1', (el) => getComputedStyle(el).color)
 check('Tailwind styles work while editing', color === 'rgb(6, 95, 70)', color)
-check('page script did not run in the editor', errors.every((e) => !e.includes('Booked')))
+// Page scripts run (sandboxed), but a click in the editor selects instead of using the page.
+let alerted = false
+page.on('dialog', (dialog) => { alerted = true; void dialog.dismiss() })
+const link = await box('a')
+await page.mouse.click(link.x + 5, link.y + 5)
+await page.waitForTimeout(300)
+check('clicking a button in the editor selects it (page action stays off)', !alerted && errors.every((e) => !e.includes('Booked')))
 await page.screenshot({ path: OUT + 'paste-editor.png' })
 
 await page.reload()
