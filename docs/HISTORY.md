@@ -3,6 +3,11 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/vercel-analytics — 2026-10-01
+- Vercel Web Analytics for the Vercel deployment (`vercel.json`: SPA
+  rewrites, long cache for `/assets`). Same opt-out/DNT rules as Firebase;
+  page ids are removed from reported addresses.
+
 ## feature/web-vitals — 2026-10-01
 - Core Web Vitals from real visits (`web_vital`, ~3 kB gzipped, lazy).
 - More events: `auth_error` (Firebase code only), `add_block`,

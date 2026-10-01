@@ -98,6 +98,9 @@ sends page content, code or what people type.
   "Share usage stats" switch in the account menu.
 - No advertising features (Google signals and ad personalization are off).
 - The events and their parameters: `src/features/analytics/events.ts`.
+- On Vercel, Vercel Web Analytics also counts page views (cookieless,
+  same opt-out, page ids removed). Turn it on in the Vercel project's
+  Analytics tab.
 - Speed from real visits: Core Web Vitals (`web_vital`: LCP, INP, CLS, FCP,
   TTFB, with a good / needs-improvement / poor rating per screen).
 - Google Consent Mode v2: analytics allowed, every ad signal denied.
