@@ -1,7 +1,7 @@
 {
   "projects": {
     "dev": "look-vince",
-    "default": "look-vince"
+    "default": "anynote-m"
   },
   "targets": {},
   "etags": {}
