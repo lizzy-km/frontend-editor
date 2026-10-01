@@ -1,4 +1,6 @@
-import { useDeferredValue, useMemo, useState, type ReactNode } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState, type ReactNode } from 'react'
+import type { Where } from '@/features/analytics/events'
+import { track } from '@/features/analytics/track'
 import type { PageDoc } from '@/features/editor/model/types'
 import { Button, Icon } from '@/shared/ui'
 import { analyzePaste } from './analyzePaste'
@@ -10,10 +12,12 @@ type Props = {
   /** Extra actions under the box (e.g. "Try an example"). */
   secondary?: ReactNode
   heading?: string
+  /** For usage stats: Try-it or a saved page. */
+  where: Where
 }
 
 /** The front door: paste code from an AI (or anywhere) and open it in the editor. */
-export function PasteScreen({ onOpen, secondary, heading = 'Paste your code' }: Props) {
+export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', where }: Props) {
   const [html, setHtml] = useState('')
   const [css, setCss] = useState('')
   const [js, setJs] = useState('')
@@ -26,6 +30,15 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code' }: 
     () => analyzePaste({ html: deferredHtml, css: deferredCss, js: deferredJs }),
     [deferredHtml, deferredCss, deferredJs],
   )
+  // Counted once per kind of problem, not on every key press.
+  const reason = summary.reason
+  useEffect(() => { if (reason) track('paste_rejected', { reason }) }, [reason])
+
+  const open = () => {
+    if (!summary.doc || !summary.stats) return
+    track('paste_code', { ...summary.stats, where })
+    onOpen(summary.doc)
+  }
 
   return (
     <div className={styles.screen}>
@@ -55,7 +68,7 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code' }: 
         )}
 
         <div className={styles.actions}>
-          <Button variant="primary" size="large" icon="sparkle" disabled={!summary.ok} onClick={() => summary.doc && onOpen(summary.doc)}>
+          <Button variant="primary" size="large" icon="sparkle" disabled={!summary.ok} onClick={open}>
             Open in editor
           </Button>
           {secondary}
