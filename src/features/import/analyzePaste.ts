@@ -33,6 +33,6 @@ export function analyzePaste(pasted: PastedCode): PasteSummary {
   if (usesTailwind(doc)) found.push('Tailwind')
   if (doc.links.length) found.push(`${doc.links.length} font/style link${doc.links.length === 1 ? '' : 's'}`)
   const scripts = doc.scripts.filter((script) => !script.src?.includes('tailwind')).length
-  if (scripts) found.push(`${scripts} script${scripts === 1 ? '' : 's'} (they run in Preview)`)
+  if (scripts) found.push(`${scripts} script${scripts === 1 ? '' : 's'}`)
   return { ok: true, doc, found }
 }
