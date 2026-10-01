@@ -1,6 +1,7 @@
 import { lazy, Suspense, useMemo } from 'react'
 import { debounce } from '@/lib/debounce'
 import { updateDoc } from '../actions/commit'
+import { countCodeEdit } from '../actions/editStats'
 import { useDocStore } from '../store/doc.store'
 import { CodeSection, lineCount } from './code/CodeSection'
 import { HtmlCodeBox } from './code/HtmlCodeBox'
@@ -17,6 +18,7 @@ type Target = 'css' | number
 
 /** Writes the text back into the page. One undo step per typing burst (coalesce key). */
 function applyTo(target: Target, value: string) {
+  countCodeEdit(target === 'css' ? 'css' : 'script', `code:${target}`)
   if (target === 'css') return updateDoc((doc) => ({ ...doc, css: value }), 'code:css')
   updateDoc((doc) => ({
     ...doc,

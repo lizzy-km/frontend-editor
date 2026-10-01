@@ -1,4 +1,5 @@
 import { doc, getDoc, increment, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore/lite'
+import { track } from '@/features/analytics/track'
 import type { AppUser } from '@/features/auth/types'
 import { ensureUserProfile } from '@/features/auth/userProfile'
 import { planFor } from '@/features/billing/plans'
@@ -17,7 +18,10 @@ export async function createProject(user: AppUser, pageDoc: PageDoc, remixOf: st
   await ensureUserProfile(user)
   const profile = (await getDoc(userRef(user.uid))).data() ?? {}
   const plan = planFor(profile.plan as string | undefined)
-  if (Number(profile.projectCount ?? 0) >= plan.maxProjects) throw new ProjectLimitError(plan.maxProjects)
+  if (Number(profile.projectCount ?? 0) >= plan.maxProjects) {
+    track('page_limit_reached', { plan: plan.id })
+    throw new ProjectLimitError(plan.maxProjects)
+  }
 
   const id = doc(projectsCol()).id
   const now = serverTimestamp()
@@ -31,6 +35,7 @@ export async function createProject(user: AppUser, pageDoc: PageDoc, remixOf: st
   batch.set(contentRef(id), { ownerId: user.uid, isPublic: false, doc: serializeDoc(pageDoc), updatedAt: now })
   batch.update(userRef(user.uid), { projectCount: increment(1), lastProjectOp: id })
   await batch.commit()
+  track('page_create', { remix: Boolean(remixOf) })
   return id
 }
 
@@ -41,6 +46,7 @@ export async function deleteProject(uid: string, id: string): Promise<void> {
   batch.delete(projectRef(id))
   batch.update(userRef(uid), { projectCount: increment(-1), lastProjectOp: id })
   await batch.commit()
+  track('page_delete')
 }
 
 export async function renameProject(id: string, name: string): Promise<void> {
@@ -53,4 +59,5 @@ export async function setProjectPublic(id: string, isPublic: boolean): Promise<v
   batch.update(projectRef(id), { isPublic })
   batch.update(contentRef(id), { isPublic }) // mirrored so read rules need no extra lookup
   await batch.commit()
+  track('share', { method: isPublic ? 'public' : 'private', content_type: 'page' })
 }

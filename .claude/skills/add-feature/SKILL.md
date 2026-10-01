@@ -56,8 +56,17 @@ its own `fix(...)`), and make sure each one passes `tsc` and `eslint`.
   straight into the store. Use a `coalesceKey` for continuous inputs so undo
   treats a whole drag as one step.
 - Nested content lives in `ElementNode.children` only.
-- Never execute page JavaScript while editing. New trusted style libraries
-  are added to `model/scripts.ts` only after a review.
+- Page JavaScript runs while editing, but only inside the sandboxed editor
+  frame. The app reaches the page through `frame.store` (`askFrame`,
+  `tellFrame`, `watchNode`), never by touching the frame's DOM.
+
+## 5b. Usage stats (analytics)
+- Something people do that the team should be able to count? Add the event
+  and its params to `src/features/analytics/events.ts`, then call
+  `track('name', { … })` where it happens (an action or API function is
+  better than a component).
+- Send counts and categories only: never page content, code, names, emails
+  or ids of pages. Continuous edits count once per undo step (`countEdit`).
 
 ## 6. Verify (every change)
 1. `npx tsc -b`

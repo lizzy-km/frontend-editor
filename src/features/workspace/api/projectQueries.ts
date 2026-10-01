@@ -1,4 +1,5 @@
 import { getDoc, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore/lite'
+import { identifyUser } from '@/features/analytics/track'
 import { projectRef, projectsCol, toProjectMeta, userRef } from './refs'
 import type { ProjectMeta } from './types'
 
@@ -39,5 +40,7 @@ export async function getProjectMeta(id: string): Promise<ProjectMeta | null> {
 export async function getUsage(uid: string): Promise<{ count: number; plan: string }> {
   const snapshot = await getDoc(userRef(uid))
   const data = snapshot.data() ?? {}
-  return { count: Number(data.projectCount ?? 0), plan: String(data.plan ?? 'free') }
+  const plan = String(data.plan ?? 'free')
+  identifyUser(uid, plan) // usage stats are split by plan
+  return { count: Number(data.projectCount ?? 0), plan }
 }

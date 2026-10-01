@@ -169,6 +169,22 @@ run, inside a locked frame.
 - Text inputs use `useDraft` (prop → local draft; save on Enter or blur).
   This avoids setState-in-effect.
 
+## Usage stats (`features/analytics`)
+
+- `track(name, params)` is the one way to send an event; `events.ts` lists
+  every event with typed params. `track.ts` is tiny and always loaded; the
+  SDK (`analyticsClient.ts`, chunk `firebase-analytics`) loads on first use
+  after the page is idle. Calls made before that keep their order.
+- Sends nothing when not configured, in dev, in tests, under DNT/GPC, or
+  after opt-out (`consent.ts`, localStorage `tweak:analytics`).
+- `startAutoTracking(router)` (in `App`) sends one `page_view` per screen
+  with ids removed (`/edit/:projectId`) and reports uncaught errors as
+  `exception` (max 10 per visit). `RouteError` reports crashes as fatal.
+- `identifyUser(uid, plan)` sets the user id and `plan`/`signed_in`
+  properties (from auth and `getUsage`).
+- Edits are counted per undo step (`editor/actions/editStats.ts` uses the same
+  800 ms coalescing window as the doc store).
+
 ## Import and saving
 
 - `features/import/PasteScreen` goes through `analyzePaste` (which calls

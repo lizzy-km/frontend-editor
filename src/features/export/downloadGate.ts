@@ -28,3 +28,6 @@ export const remainingDownloads = (gate: DownloadGate): number | null =>
 /** Should the download buttons be disabled right now? */
 export const downloadsBlocked = (gate: DownloadGate): boolean =>
   gate.kind === 'signin' || (gate.kind === 'counted' && (gate.status === 'loading' || remainingDownloads(gate) === 0))
+
+/** For usage stats: counted downloads belong to saved pages, the rest to Try-it. */
+export const gateWhere = (gate: DownloadGate): 'try' | 'project' => (gate.kind === 'counted' ? 'project' : 'try')

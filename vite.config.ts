@@ -15,6 +15,8 @@ export default defineConfig({
       output: {
         // Heavy libraries get their own chunks so the dashboard loads fast.
         manualChunks(id: string) {
+          // Analytics (+ its installations SDK) is its own chunk: it loads after the page is idle.
+          if (/node_modules\/(@firebase\/(analytics|installations)|firebase\/analytics)/.test(id)) return 'firebase-analytics'
           if (id.includes('node_modules/firebase') || id.includes('node_modules/@firebase')) return 'firebase'
           if (id.includes('node_modules/konva') || id.includes('node_modules/react-konva')) return 'konva'
           if (id.includes('node_modules/quill')) return 'quill'

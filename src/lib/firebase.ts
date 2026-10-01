@@ -15,5 +15,7 @@ function getApp(): FirebaseApp {
   return app
 }
 
+/** The app instance (analytics needs it). */
+export const firebaseApp = (): FirebaseApp => getApp()
 export const firebaseAuth = (): Auth => getAuth(getApp())
 export const firestore = (): Firestore => getFirestore(getApp())

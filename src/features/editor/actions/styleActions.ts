@@ -2,6 +2,7 @@ import type { Breakpoint, ElementNode } from '../model/types'
 import { patchNode } from '../model/tree/treeOps'
 import { useViewStore } from '../store/view.store'
 import { updateNodes } from './commit'
+import { countEdit } from './editStats'
 
 const currentBreakpoint = () => useViewStore.getState().breakpoint
 
@@ -10,6 +11,7 @@ const currentBreakpoint = () => useViewStore.getState().breakpoint
  * An empty value removes the property (falls back to the original CSS).
  */
 export function setStyle(id: string, property: string, value: string, breakpoint: Breakpoint = currentBreakpoint()) {
+  countEdit('style', `style:${id}:${property}:${breakpoint}`)
   updateNodes((nodes) => patchNode<ElementNode>(nodes, id, (node) => {
     const styles = { ...node.styles[breakpoint] }
     if (value.trim()) styles[property] = value.trim()
@@ -21,6 +23,7 @@ export function setStyle(id: string, property: string, value: string, breakpoint
 /** Sets several properties at once (e.g. all four paddings) as one undo step. */
 export function setStyles(id: string, values: Record<string, string>) {
   const breakpoint = currentBreakpoint()
+  countEdit('style', `styles:${id}:${Object.keys(values).join(',')}:${breakpoint}`)
   updateNodes((nodes) => patchNode<ElementNode>(nodes, id, (node) => {
     const styles = { ...node.styles[breakpoint] }
     for (const [property, value] of Object.entries(values)) {
@@ -34,6 +37,7 @@ export function setStyles(id: string, values: Record<string, string>) {
 /** Undoes every edit made to this element on this screen size. */
 export function resetStyles(id: string) {
   const breakpoint = currentBreakpoint()
+  countEdit('reset')
   updateNodes((nodes) => patchNode<ElementNode>(nodes, id, (node) => {
     const styles = { ...node.styles }
     delete styles[breakpoint]

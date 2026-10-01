@@ -37,6 +37,7 @@ export default function NewProjectPage() {
       <TopBar><Link to="/projects">My pages</Link><AccountMenu /></TopBar>
       <PasteScreen
         heading="New page"
+        where="project"
         onOpen={(doc) => create(doc)}
         secondary={draft && (
           <Button size="large" loading={busy} onClick={() => create(draft, true)}>Save the page from “Try it”</Button>

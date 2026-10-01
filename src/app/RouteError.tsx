@@ -1,10 +1,15 @@
+import { useEffect } from 'react'
 import { Link, useRouteError } from 'react-router-dom'
+import { trackCrash } from '@/features/analytics/autoTrack'
 import { EmptyState } from '@/shared/ui'
 
 /** Shown when a page crashes, instead of a blank screen. */
 export function RouteError() {
   const error = useRouteError()
-  console.error(error)
+  useEffect(() => {
+    console.error(error)
+    trackCrash(error)
+  }, [error])
   return (
     <EmptyState
       icon="help"

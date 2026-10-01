@@ -3,6 +3,20 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/analytics — 2026-10-01
+- **Google Analytics for Firebase**, lazy-loaded (its own 6 kB gzipped chunk,
+  after the page is idle; the first load and sign-in pages are unchanged).
+- Events (`analytics/events.ts`): page views (ids removed), errors and
+  crashes, sign-up/login/logout by method, paste (counts only) and rejected
+  pastes, edits by kind (one per undo step), code edits by box, undo/redo,
+  screen-size switch, preview, page create/delete/limit/share, downloads by
+  format/scope and blocked downloads. User properties: plan, signed in.
+- Privacy: no content, code, names or page ids; no ad signals; respects Do
+  Not Track / GPC; "Share usage stats" switch in the account menu. Nothing
+  is sent from `vite dev` unless `VITE_ANALYTICS_IN_DEV=1`.
+- Checked on the production build with Google blocked and Firebase answers
+  faked: events reach gtag with the right names; opting out loads nothing.
+
 ## fix/render-fidelity — 2026-10-01
 - **The editor now looks like Preview.** Pages whose scripts draw or reveal
   parts (scroll-reveal text, JS-drawn clock ticks, countdowns) looked broken

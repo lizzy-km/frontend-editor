@@ -9,6 +9,7 @@ import { isElement, type NodeMap, type PageDoc } from '../model/types'
 import { getDoc } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
 import { updateDoc } from './commit'
+import { countCodeEdit } from './editStats'
 
 /**
  * Code the user can edit. For the page root: the WHOLE page source (head,
@@ -64,6 +65,7 @@ function applyToPart(doc: PageDoc, id: string, code: string): { doc: PageDoc; fi
  */
 export function applyHtml(id: string, code: string) {
   const isPage = id === getDoc().rootId
+  countCodeEdit(isPage ? 'page' : 'part')
   let firstId: string | null = null
   updateDoc((doc) => {
     if (isPage) return parsePastedCode({ html: code })

@@ -11,7 +11,11 @@ export const firebaseConfig = {
   storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: env.VITE_FIREBASE_APP_ID,
+  measurementId: env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
 /** False until .env is filled in — sign-in pages then explain that accounts are off. */
 export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId)
+
+/** Analytics needs a measurement id (Project settings -> Your apps -> Web app). */
+export const isAnalyticsConfigured = isFirebaseConfigured && Boolean(firebaseConfig.measurementId)

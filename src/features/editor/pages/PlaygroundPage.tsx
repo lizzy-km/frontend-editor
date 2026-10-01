@@ -62,7 +62,7 @@ export default function PlaygroundPage() {
   return (
     <>
       <TopBar><Link to="/login">Sign in</Link></TopBar>
-      <PasteScreen
+      <PasteScreen where="try"
         onOpen={(doc) => {
           saveLocalDraft(doc)
           open(doc)
