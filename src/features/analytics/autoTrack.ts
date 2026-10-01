@@ -1,5 +1,6 @@
 import type { createBrowserRouter } from 'react-router-dom'
 import { track } from './track'
+import { startWebVitals } from './webVitals'
 
 type AppRouter = ReturnType<typeof createBrowserRouter>
 type RouterState = AppRouter['state']
@@ -13,6 +14,9 @@ export function screenPath(state: Pick<RouterState, 'matches' | 'location'>): st
   return path ?? state.location.pathname
 }
 
+/** The screen being shown (for speed reports, which arrive later). */
+let currentScreen = ''
+
 /** One page_view per screen change (not per search/hash change). */
 function trackPageViews(router: AppRouter): () => void {
   let last = ''
@@ -21,6 +25,7 @@ function trackPageViews(router: AppRouter): () => void {
     const path = screenPath(state)
     if (path === last) return
     last = path
+    currentScreen = path
     track('page_view', { page_path: path, page_title: document.title })
   }
   send(router.state)
@@ -45,10 +50,11 @@ function trackErrors(): () => void {
   }
 }
 
-/** Starts page-view and error tracking for the whole app; returns a stop function. */
+/** Starts page-view, error and speed (Web Vitals) tracking for the whole app; returns a stop function. */
 export function startAutoTracking(router: AppRouter): () => void {
   const stopPages = trackPageViews(router)
   const stopErrors = trackErrors()
+  startWebVitals(() => currentScreen)
   return () => {
     stopPages()
     stopErrors()

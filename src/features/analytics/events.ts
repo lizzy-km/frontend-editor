@@ -9,6 +9,8 @@
 export type AnalyticsEvents = {
   page_view: { page_path: string; page_title: string }
   exception: { description: string; fatal: boolean }
+  /** Core Web Vitals (speed as people feel it). CLS is sent x1000 so all values are whole numbers. */
+  web_vital: { metric_name: 'CLS' | 'INP' | 'LCP' | 'FCP' | 'TTFB'; value: number; rating: 'good' | 'needs-improvement' | 'poor'; page_path: string }
 
   // Account
   sign_up: { method: SignInMethod }
