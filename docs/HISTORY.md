@@ -3,6 +3,26 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/render-fidelity — 2026-10-01
+- **The editor now looks like Preview.** Pages whose scripts draw or reveal
+  parts (scroll-reveal text, JS-drawn clock ticks, countdowns) looked broken
+  while editing, because page JS was off.
+  - The editor frame runs the page's own scripts in a locked frame
+    (`sandbox="allow-scripts"`, no same-origin). The editor talks to it by
+    postMessage (`frame/bridge.ts`) and a runtime inside the frame
+    (`frame/runtime/`) that patches, measures, hit-tests, works out drop
+    slots, reads computed styles and takes PNGs.
+  - Removed: the in-app frame renderer, the shell document and the
+    "trusted scripts" allowlist (`model/scripts.ts`).
+- **CSS `@import` fix**: Google Fonts URLs contain `;`, which cut the import
+  and broke the whole stylesheet (editor, Preview and exports). A small
+  scanner (`serialize/cssImports.ts`) now hoists `@import`/`@charset`.
+- Tests: runtime in jsdom (`frame/editorFrame.test.ts`). The e2e
+  `fidelity.mjs` compares the editor with the original page (elements, height,
+  hidden text) for the samples in `codeToNodeTestCodeFiles/`. The e2e box helper
+  applies the canvas zoom (Playwright ignores it for the sandboxed frame).
+  `pasteCode()` fills big pages instantly.
+
 ## feature/collapsible-code — 2026-09-30
 - **Collapsible code boxes** (`sidebar/code/CodeSection`): Page code,
   Styles and each Script have a header to collapse or expand them. The

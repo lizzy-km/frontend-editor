@@ -1,6 +1,6 @@
 ---
 name: editor-model
-description: How frontend-editor's page model, renderer and edit precedence work — read before touching features/editor/model, store, actions or frame (parsing pasted code, tree ops, export, iframe renderer, CSS layering, script safety).
+description: How frontend-editor's page model, renderer and edit precedence work — read before touching features/editor/model, store, actions or frame (parsing pasted code, tree ops, export, sandboxed editor frame and bridge, CSS layering, script safety).
 ---
 
 # Editor model: rules that must hold
@@ -18,10 +18,15 @@ that break things if you ignore them.
 5. **Precedence:** pasted CSS goes inside `@layer page`; edits are doubled
    selectors, `.fe-<id>.fe-<id>` on export and `[data-fe-id]` doubled in the
    editor. Keep the editor and export specificity identical.
-6. **Scripts:** nothing from the page executes while editing except
-   `runsWhileEditing()` in `model/scripts.ts`. The renderer skips `on*`
-   attributes and `javascript:` URLs. The Preview/public view is a separate
-   sandbox that never has `allow-same-origin`.
+6. **Scripts and the frame:** the page's scripts run while editing, in a
+   frame with `sandbox="allow-scripts"` only. **Never add
+   `allow-same-origin`** (to the editor frame, Preview or the public view):
+   page code would reach the app and the user's login. So the app can't touch
+   the frame's DOM: everything goes through `frame/bridge.ts` via
+   `askFrame` / `tellFrame` / `watchNode` (`frame.store`), handled by
+   `frame/runtime/*.js` (plain JS, inlined with `?raw`). New DOM questions =
+   a new runtime handler. `loadCapture` may only ever send the app's own
+   bundled html-to-image, never page or user code.
 7. **One edit = one `commit`.** Continuous inputs pass a `coalesceKey`.
 8. **Export and the editor share the serializers** in `model/serialize`.
    Don't write a second HTML serializer.
@@ -31,7 +36,7 @@ that break things if you ignore them.
 10. **Konva shapes that follow elements are positioned imperatively**
     (`DraggableBox`). Don't pass x/y/width/height as React props, because it
     breaks drag and resize.
-11. **Drop rules** (`canvas/dropTarget.ts`): over a sibling, reorder; over a
+11. **Drop rules** (`frame/runtime/drop.js`, called by `canvas/dropTarget.ts`): over a sibling, reorder; over a
     container, nest; over a leaf, go before or after it. Change them there
     only, and check them in the browser.
 12. **Browser check:** tsc/vitest can't see canvas bugs. For canvas or text
@@ -53,7 +58,8 @@ that break things if you ignore them.
     and breaks hit-testing.
 16. **Editor-only DOM state** (such as opening `<details>` so answers can be
     edited) is applied to the frame DOM, never to the model, and undone when
-    the selection changes. See `canvas/useRevealDetails.ts`.
+    the selection changes. Use the runtime's `mark` (turning a mark off
+    restores the model's value). See `canvas/useRevealDetails.ts`.
 17. **Code shown for editing uses `nodeToHtml(..., { forEditing: true })`.**
     It must parse back to the same nodes: desktop styles as inline
     `style`, and hidden elements as `data-fe-hidden`, which `domToNodes`
