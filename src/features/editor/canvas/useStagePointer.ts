@@ -1,6 +1,6 @@
 import type Konva from 'konva'
 import { useRef } from 'react'
-import { useFrameStore } from '../frame/frame.store'
+import { tellFrame } from '../frame/frame.store'
 import { isTextEditable } from '../model/tree/textRules'
 import { getDoc } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
@@ -17,6 +17,15 @@ const selection = () => useSelectionStore.getState()
  */
 export function useStagePointer({ placement, dragging, onPan }: Options) {
   const frame = useRef(0)
+  // Hit answers come back from the frame asynchronously: only the newest one counts.
+  const asked = useRef(0)
+  const hitAt = async (point: { x: number; y: number } | null | undefined) => {
+    const ask = ++asked.current
+    const id = point ? await nodeIdAt(point.x, point.y, placement) : null
+    return ask === asked.current ? { id } : null
+  }
+  const hoverAt = (point: { x: number; y: number } | null | undefined) =>
+    void hitAt(point).then((hit) => { if (hit) selection().hover(hit.id) })
 
   const pointer = (event: Konva.KonvaEventObject<Event>) => event.target.getStage()?.getPointerPosition()
 
@@ -24,7 +33,7 @@ export function useStagePointer({ placement, dragging, onPan }: Options) {
     if (dragging) return
     const point = pointer(event)
     cancelAnimationFrame(frame.current)
-    frame.current = requestAnimationFrame(() => selection().hover(point ? nodeIdAt(point.x, point.y, placement) : null))
+    frame.current = requestAnimationFrame(() => hoverAt(point))
   }
 
   // Update hover right away on press so press-and-drag grabs the element under the mouse.
@@ -32,17 +41,20 @@ export function useStagePointer({ placement, dragging, onPan }: Options) {
     if (dragging || event.target.getParent()?.className === 'Transformer') return
     const point = pointer(event)
     cancelAnimationFrame(frame.current)
-    selection().hover(point ? nodeIdAt(point.x, point.y, placement) : null)
+    hoverAt(point)
   }
 
   // Double-click is read from the native click count: Konva's own dblclick needs
   // both clicks on the same shape, but the first click swaps hover box -> selection box.
   const onClick = (event: Konva.KonvaEventObject<MouseEvent>) => {
     if (event.target.getParent()?.className === 'Transformer') return // clicked a resize handle
+    const clicks = event.evt.detail
     const point = pointer(event)
-    const id = point ? nodeIdAt(point.x, point.y, placement) : null
-    if (event.evt.detail >= 2 && id && isTextEditable(getDoc().nodes, id)) selection().editText(id)
-    else selection().select(id)
+    // Not dropped by later hovers: every click is answered.
+    void (point ? nodeIdAt(point.x, point.y, placement) : Promise.resolve(null)).then((id) => {
+      if (clicks >= 2 && id && isTextEditable(getDoc().nodes, id)) selection().editText(id)
+      else selection().select(id)
+    })
   }
 
   const onWheel = (event: Konva.KonvaEventObject<WheelEvent>) => {
@@ -57,11 +69,12 @@ export function useStagePointer({ placement, dragging, onPan }: Options) {
       onPan(shiftKey ? deltaY : deltaX)
       return
     }
-    useFrameStore.getState().iframe?.contentWindow?.scrollBy(0, deltaY / placement.scale)
+    tellFrame('scroll', { dy: deltaY / placement.scale })
   }
 
   const onMouseLeave = () => {
     cancelAnimationFrame(frame.current)
+    asked.current++
     selection().hover(null)
   }
 
