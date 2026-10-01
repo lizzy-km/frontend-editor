@@ -79,7 +79,10 @@ never ship.
 ## Bundle rule
 - `@/lib/firebase` (the SDK) may only be imported from lazily-loaded code:
   `features/auth/authService.ts`, `userProfile.ts`, `features/workspace/api/*`
-  and gallery API files.
+  and gallery API files, plus `features/analytics/analyticsClient.ts`, which
+  `analytics/track.ts` loads after the page is idle.
+- Analytics is its own chunk (`firebase-analytics` in `vite.config.ts`), so
+  sign-in pages don't download it.
 - UI that just needs to know whether Firebase is set up imports
   `@/lib/firebaseConfig`.
 - To check, run `npx vite build`, then `grep -c firebase- dist/index.html`,

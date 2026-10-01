@@ -86,6 +86,21 @@ Put the Worker's URL in `.env` as `VITE_ASSETS_URL`.
 
 Stack: Vite · React 19 · TypeScript · Zustand · Konva · Quill · Firebase (Auth + Firestore) · Cloudflare R2.
 
+## Usage stats
+
+Google Analytics for Firebase counts screens and actions (paste, edits by
+kind, downloads by format, sign-ups) so we know what to improve. It never
+sends page content, code or what people type.
+
+- On only when `VITE_FIREBASE_MEASUREMENT_ID` is set, in production builds
+  (`VITE_ANALYTICS_IN_DEV=1` sends from `vite dev` to DebugView).
+- Off under Do Not Track / Global Privacy Control, and with the
+  "Share usage stats" switch in the account menu.
+- No advertising features (Google signals and ad personalization are off).
+- The events and their parameters: `src/features/analytics/events.ts`.
+- Turn on **Analytics** in the Firebase console (Project settings →
+  Integrations → Google Analytics) and copy the web app's measurement id.
+
 ## Known limits
 
 - A saved page must fit in about 900 KB, the size of one Firestore document.
