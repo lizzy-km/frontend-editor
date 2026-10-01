@@ -1,27 +1,23 @@
 import { useRef, useState } from 'react'
 import { moveNodeTo } from '../actions/nodeActions'
 import { setStyles } from '../actions/styleActions'
-import { getNodeElement } from '../frame/frame.store'
+import { askFrame } from '../frame/frame.store'
 import { useSelectionStore } from '../store/selection.store'
 import { findDropTarget, type DropTarget } from './dropTarget'
 import type { FramePlacement } from './geometry'
 
-type DragState = { id: string; mode: 'flow' | 'free'; startX: number; startY: number }
+/** How the element is placed, read from the frame when the drag starts. */
+type Placement = { position: string; left: number; top: number }
+
+type DragState = { id: string; placed: Promise<Placement | null>; free: boolean; startX: number; startY: number }
 
 /** Elements placed with position absolute/fixed move freely; everything else is reordered. */
-function dragModeFor(id: string): DragState['mode'] {
-  const element = getNodeElement(id)
-  const position = element && element.ownerDocument.defaultView?.getComputedStyle(element).position
-  return position === 'absolute' || position === 'fixed' ? 'free' : 'flow'
-}
+const isFree = (placed: Placement | null) => placed?.position === 'absolute' || placed?.position === 'fixed'
 
-function moveFreely(state: DragState, x: number, y: number, scale: number) {
-  const element = getNodeElement(state.id)
-  const style = element && element.ownerDocument.defaultView?.getComputedStyle(element)
-  if (!style) return
-  const left = (parseFloat(style.left) || 0) + (x - state.startX) / scale
-  const top = (parseFloat(style.top) || 0) + (y - state.startY) / scale
-  setStyles(state.id, { left: `${Math.round(left)}px`, top: `${Math.round(top)}px` })
+function moveFreely(id: string, placed: Placement, dx: number, dy: number, scale: number) {
+  const left = placed.left + dx / scale
+  const top = placed.top + dy / scale
+  setStyles(id, { left: `${Math.round(left)}px`, top: `${Math.round(top)}px` })
 }
 
 /**
@@ -30,28 +26,39 @@ function moveFreely(state: DragState, x: number, y: number, scale: number) {
  */
 export function useBoxDrag(placement: FramePlacement) {
   const state = useRef<DragState | null>(null)
+  const moves = useRef(0)
   const [target, setTarget] = useState<DropTarget | null>(null)
   const [dragging, setDragging] = useState(false)
 
   const start = (id: string, x: number, y: number) => {
-    state.current = { id, mode: dragModeFor(id), startX: x, startY: y }
+    const placed = askFrame<Placement>('position', { id })
+    const drag: DragState = { id, placed, free: false, startX: x, startY: y }
+    void placed.then((value) => { drag.free = isFree(value) })
+    state.current = drag
     setDragging(true)
   }
 
   const move = (x: number, y: number) => {
     const current = state.current
-    if (current?.mode === 'flow') setTarget(findDropTarget(current.id, x, y, placement))
+    if (!current || current.free) return
+    // Answers can come back out of order: only the latest one counts.
+    const move = ++moves.current
+    void findDropTarget(current.id, x, y, placement).then((drop) => {
+      if (move === moves.current && state.current === current) setTarget(drop)
+    })
   }
 
-  const end = (x: number, y: number) => {
+  const end = async (x: number, y: number) => {
     const current = state.current
     state.current = null
+    moves.current++
     setDragging(false)
     setTarget(null)
     if (!current) return
-    if (current.mode === 'free') moveFreely(current, x, y, placement.scale)
+    const placed = await current.placed
+    if (placed && isFree(placed)) moveFreely(current.id, placed, x - current.startX, y - current.startY, placement.scale)
     else {
-      const drop = findDropTarget(current.id, x, y, placement)
+      const drop = await findDropTarget(current.id, x, y, placement)
       if (drop) moveNodeTo(current.id, drop.parentId, drop.index)
     }
     useSelectionStore.getState().select(current.id)

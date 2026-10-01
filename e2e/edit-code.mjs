@@ -62,7 +62,8 @@ await replaceCode(pageBox, '<!doctype html><html><head><title>New</title><style>
   + '<body><h1>Brand new page</h1><script>window.done = 1</script></body></html>')
 await sidebar.getByRole('button', { name: 'Apply changes' }).click()
 ;({ frame } = await editorFrame(page)) // new head (title, no fonts) = the editor rebuilt its frame
-check('whole page replaced', (await frame.$eval('body', (el) => el.textContent.trim())) === 'Brand new page')
+check('whole page replaced', (await frame.$$eval('body > :not(script)', (els) => els.map((el) => el.textContent).join(''))) === 'Brand new page')
+check('page script runs while editing (sandboxed)', (await frame.evaluate(() => window.done)) === 1)
 check('new CSS from page code applies', (await frame.$eval('h1', (el) => getComputedStyle(el).color)) === 'rgb(1, 2, 3)')
 const cssHeader = sidebar.getByRole('button', { name: /^Styles \(CSS\)/ })
 if ((await cssHeader.getAttribute('aria-expanded')) === 'false') await cssHeader.click()

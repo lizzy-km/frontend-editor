@@ -90,6 +90,7 @@ Stack: Vite · React 19 · TypeScript · Zustand · Konva · Quill · Firebase (
 
 - A saved page must fit in about 900 KB, the size of one Firestore document.
   Pages with huge embedded pictures can still be downloaded.
-- Page JavaScript is switched off while editing (so it can't fight the
-  editor) and runs in Preview. Only the Tailwind CDN runs in the editor.
+- Page JavaScript runs while editing, in a locked frame, so the editor looks
+  like Preview. Clicks select things instead of using the page (buttons,
+  tabs and sliders work in Preview).
 - When you're focused inside Preview, Esc can't close it; use "Back to editing".

@@ -1,34 +1,17 @@
-import { useEffect, useState } from 'react'
-import { getNodeElement } from '../frame/frame.store'
-import { sameBox, toOverlayBox, type Box, type FramePlacement } from './geometry'
+import { useEffect, useMemo } from 'react'
+import { useFrameStore, watchNode } from '../frame/frame.store'
+import { toOverlayBox, type Box, type FramePlacement } from './geometry'
 
 /**
- * Follows a node's on-screen box every animation frame.
- * Measuring 1-2 elements per frame is cheap and it catches everything that
- * moves them: scrolling, images loading, fonts, CSS animations, edits.
- * React only re-renders when the box actually changes.
+ * Follows a node's on-screen box. The frame measures watched nodes every
+ * animation frame (catching scrolling, images, fonts, animations, edits)
+ * and only sends boxes that changed, so React re-renders only then.
  */
 export function useTrackedBox(id: string | null, placement: FramePlacement): Box | null {
-  const [tracked, setTracked] = useState<{ id: string; box: Box | null } | null>(null)
+  const rect = useFrameStore((state) => (id ? state.rects[id] ?? null : null))
   const { left, top, scale } = placement
 
-  useEffect(() => {
-    if (!id) return
-    let frame = 0
-    let last: Box | null = null
-    const tick = () => {
-      const element = getNodeElement(id)
-      const next = element ? toOverlayBox(element, { left, top, scale }) : null
-      if (!sameBox(last, next)) {
-        last = next
-        setTracked({ id, box: next })
-      }
-      frame = requestAnimationFrame(tick)
-    }
-    frame = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(frame)
-  }, [id, left, top, scale])
+  useEffect(() => (id ? watchNode(id) : undefined), [id])
 
-  // A box measured for a previous id is never shown for the new one.
-  return id && tracked?.id === id ? tracked.box : null
+  return useMemo(() => (rect ? toOverlayBox(rect, { left, top, scale }) : null), [rect, left, top, scale])
 }

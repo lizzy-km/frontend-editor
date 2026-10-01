@@ -25,7 +25,7 @@ function attrsToString(attrs: Record<string, string>): string {
 const DEFAULT_VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1">'
 
 /** The page's own safe head tags; the default viewport only when the page has none. */
-function headTagLines(doc: PageDoc): string[] {
+export function headTagLines(doc: PageDoc): string[] {
   const tags = doc.headTags ?? []
   const lines = tags.map(({ tag, attrs }) => `<${tag}${attrsToString(attrs)}>`)
   const hasViewport = tags.some(({ tag, attrs }) => tag === 'meta' && attrs.name?.toLowerCase() === 'viewport')

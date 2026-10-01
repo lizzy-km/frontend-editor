@@ -2,7 +2,8 @@ import 'quill/dist/quill.bubble.css'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { setInnerHtml } from '../actions/contentActions'
 import type { Box } from '../canvas/geometry'
-import { getNodeElement } from '../frame/frame.store'
+import { askFrame, tellFrame } from '../frame/frame.store'
+import type { ComputedStyles } from '../inspector/useComputedStyle'
 import { childrenToHtml } from '../model/serialize/nodeToHtml'
 import { getElement } from '../model/tree/queries'
 import { getDoc } from '../store/doc.store'
@@ -23,22 +24,25 @@ const close = () => useSelectionStore.getState().editText(null)
 /** Opens Quill on top of an element, matching its look. Saves on click-outside or Enter. */
 export default function QuillEditor({ id, box, scale }: Props) {
   const host = useRef<HTMLDivElement>(null)
-  const [look] = useState<CSSProperties>(() => {
-    const element = getNodeElement(id)
-    return element ? matchTextStyle(element, scale) : {}
-  })
+  const [look, setLook] = useState<CSSProperties>({})
+  useEffect(() => {
+    let current = true
+    void askFrame<ComputedStyles>('computed', { id }).then((styles) => {
+      if (current && styles) setLook(matchTextStyle(styles, scale))
+    })
+    return () => { current = false }
+  }, [id, scale])
 
   useEffect(() => {
     const container = host.current
     const node = getElement(getDoc().nodes, id)
     if (!container || !node) return
-    const element = getNodeElement(id)
     const quill = new (setupQuill())(container, { theme: 'bubble', placeholder: 'Type your text…', modules: { toolbar: TEXT_TOOLBAR } })
     // Only inline text reaches here (isTextEditable), and Quill converts it
     // through an inert DOMParser into its own model, so nothing can execute.
     quill.clipboard.dangerouslyPasteHTML(childrenToHtml(getDoc().nodes, node).replace(/\s+/g, ' ').trim())
     quill.setSelection(quill.getLength(), 0)
-    element?.setAttribute(EDITING_ATTR, '')
+    tellFrame('mark', { id, name: EDITING_ATTR, on: true })
 
     // Compare with Quill's own first output, so untouched text is never rewritten.
     const initial = quillToInlineHtml(quill.getSemanticHTML())
@@ -73,7 +77,7 @@ export default function QuillEditor({ id, box, scale }: Props) {
     return () => {
       document.removeEventListener('pointerdown', onPointerDown, true)
       container.removeEventListener('keydown', onKeyDown, true)
-      element?.removeAttribute(EDITING_ATTR)
+      tellFrame('mark', { id, name: EDITING_ATTR, on: false })
       save() // e.g. the user switched screen size mid-edit
       container.replaceChildren()
     }

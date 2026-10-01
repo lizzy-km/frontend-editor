@@ -41,7 +41,7 @@ src/
       canvas/     Konva overlay (select, drag, resize)   text/  Quill   quick/  floating actions
       inspector/  right settings panel                  sidebar/  Layers / Add / Code
       persistence/ autosave + local draft               toolbar/  top bar pieces
-      frame/      iframe renderer that mirrors the model into real DOM
+      frame/      sandboxed editor frame: page source, bridge, in-frame runtime
 ```
 
 Rules: files ≤ 150 lines, functions ≤ 100 lines (ESLint enforces both), one
@@ -83,16 +83,35 @@ into nodes, so nothing the AI wrote gets lost.
 
 ## Rendering (`features/editor/frame`)
 
-- `EditorFrame` loads a shell document (fonts, CSS, trusted scripts) into a
-  sandboxed iframe (`allow-same-origin allow-scripts`, no forms/popups/navigation).
-- `createFrameRenderer` builds the body DOM from nodes and then **patches only
-  the nodes whose object changed**. It subscribes straight to the doc store, not
-  through React.
-- While editing, page JavaScript is **off**. Only allowlisted style libraries
-  run (`model/scripts.ts`: the Tailwind CDN, plus a `tailwind.config` that is
-  plain data). Inline `on*` handlers and `javascript:` links are never set.
-  Everything runs in Preview, which is a separate sandbox with no same-origin access.
-- The iframe has `pointer-events: none`; the Konva overlay handles all pointer input.
+The editor shows the page the way Preview does: its own CSS **and scripts**
+run, inside a locked frame.
+
+- `buildEditorSource(doc)` (`editorSource.ts`) is the Preview page plus:
+  `data-fe-id` on every element (hidden ones kept, marked `data-fe-hidden`),
+  the model as JSON (`<script type="application/json" id="fe-model">`, `<`
+  escaped), and the **frame runtime** (`frame/runtime/*.js`, inlined via
+  `?raw`). The runtime runs after the body is parsed and **before** the page's
+  own body scripts, so it links model ids to the untouched DOM first.
+- `EditorFrame` uses `sandbox="allow-scripts"` only: no `allow-same-origin`
+  (the page can't reach the app, its storage or its login), no forms, popups,
+  modals or top navigation. The frame is rebuilt only when `sourceKey`
+  changes (links, scripts, html attrs, head tags); everything else is patched.
+- The editor and the frame talk through `bridge.ts` (postMessage):
+  - editor → frame `{ fe: 1, type, payload, rid? }`; the frame answers with
+    `reply`. Both sides check the sender window (`event.source`).
+  - Messages before the frame's `ready` wait in a queue.
+  - Sent: `sync` (changed nodes + removed ids, from `diffNodes`), `css`
+    (page / edits), `watch`, `mark`, `scroll`, `loadCapture`.
+  - Asked: `hit`, `drop`, `position`, `computed`, `capture`.
+  - Streamed: `rects` — boxes of the watched nodes, every animation frame,
+    only when they change.
+- `frame.store` holds the bridge and the streamed rects; use `askFrame`,
+  `tellFrame` and `watchNode` instead of touching the bridge.
+- Runtime files: `core` (protocol), `render` (patch only changed nodes, SVG
+  aware), `measure` (rects, hit test, computed styles, marks, scroll),
+  `drop` (drop slots), `capture` (PNG with html-to-image), `ready`.
+- The iframe has `pointer-events: none`; the Konva overlay handles all
+  pointer input, so page click handlers never fire while editing.
 
 ## Canvas and overlay (`features/editor/canvas`)
 
@@ -105,11 +124,12 @@ into nodes, so nothing the AI wrote gets lost.
 - `Canvas` works out `scale` (Fit = the page width fills the area) and the
   frame's `left`/`top`. Together these are a `FramePlacement`, used for every
   coordinate conversion (`geometry.ts`).
-- `nodeIdAt(x, y)` maps overlay pixels to frame pixels, calls
-  `elementFromPoint` inside the iframe, and reads `data-fe-id`.
-- `useTrackedBox(id)` measures the hovered and selected element on every
-  animation frame. It is cheap, and it follows scrolling, loading images and
-  animations without extra wiring.
+- `nodeIdAt(x, y)` maps overlay pixels to frame pixels and asks the frame
+  (`hit`: `elementFromPoint`, then the closest `data-fe-id`). It is async;
+  hover keeps only the newest answer, clicks are always answered.
+- `useTrackedBox(id)` watches a node; the frame streams its box every
+  animation frame when it changes, so it follows scrolling, loading images
+  and animations without extra wiring.
 - `DraggableBox` is a Konva Rect whose position is set **imperatively**, so
   Konva's drag and resize never fight React props; it snaps back to the
   measured box afterwards.
@@ -143,8 +163,9 @@ into nodes, so nothing the AI wrote gets lost.
   "More options" fields.
 - `FieldRow` value = the override on this breakpoint, else `read(computed)`,
   else computed. Changes go through `setStyle`/`setStyles`, plus `companionStyles`.
-- `useComputedStyle(id)` snapshots `getComputedStyle` one frame after each
-  edit or screen-size change.
+- `useComputedStyle(id)` asks the frame for `getComputedStyle` one frame after
+  each edit or screen-size change (edits reach the frame first: messages keep
+  their order).
 - Text inputs use `useDraft` (prop → local draft; save on Enter or blur).
   This avoids setState-in-effect.
 
@@ -164,7 +185,8 @@ into nodes, so nothing the AI wrote gets lost.
 - Every format starts from `buildPageParts(doc, onlyId?)` in `editor/model/serialize`:
   - `partsToSingleFile` makes the .html, copy, and Preview.
   - `partsToSplitFiles` + `zipFiles` make the .zip.
-  - `capturePng(id | null)` takes the picture from the live iframe.
+  - `capturePng(id | null)` takes the picture inside the live frame: the app
+    sends its bundled html-to-image once (`loadCapture`), then asks `capture`.
 - `exportActions.ts` has one `prepare…` function per button, each
   returning a `deliver()` step. The dialog prepares the file, then calls
   `gate.consume()`, then delivers it.

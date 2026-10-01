@@ -22,6 +22,6 @@ describe('analyzePaste', () => {
     ].join('\n')
     const result = analyzePaste({ html: reply })
     expect(result.ok).toBe(true)
-    expect(result.found).toEqual(['2 elements', 'Tailwind', '1 script (they run in Preview)'])
+    expect(result.found).toEqual(['2 elements', 'Tailwind', '1 script'])
   })
 })

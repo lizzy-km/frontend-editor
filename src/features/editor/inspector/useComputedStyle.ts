@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getNodeElement } from '../frame/frame.store'
+import { askFrame } from '../frame/frame.store'
 import { useDocStore } from '../store/doc.store'
 import { useViewStore } from '../store/view.store'
 
@@ -8,7 +8,8 @@ export type ComputedStyles = Record<string, string>
 /**
  * What the element really looks like right now (after all CSS), refreshed
  * after every edit and screen-size change. Controls show these values so
- * people see real numbers, not blanks.
+ * people see real numbers, not blanks. Asked from the frame, which gets the
+ * edit first (messages arrive in order), so the answer is never stale.
  */
 export function useComputedStyle(id: string | null): ComputedStyles | null {
   const version = useDocStore((state) => state.version)
@@ -17,19 +18,17 @@ export function useComputedStyle(id: string | null): ComputedStyles | null {
 
   useEffect(() => {
     if (!id) return
-    // Wait one frame so the iframe has re-laid out after the change.
+    let current = true
+    // Wait one frame so a screen-size change has resized the frame first.
     const frame = requestAnimationFrame(() => {
-      const element = getNodeElement(id)
-      const computed = element?.ownerDocument.defaultView?.getComputedStyle(element)
-      if (!computed) return
-      const styles: ComputedStyles = {}
-      for (const property of computed) styles[property] = computed.getPropertyValue(property)
-      for (const shorthand of ['border-radius', 'border-width', 'border-color', 'border-style']) {
-        styles[shorthand] = computed.getPropertyValue(shorthand)
-      }
-      setSnapshot({ id, styles })
+      void askFrame<ComputedStyles>('computed', { id }).then((styles) => {
+        if (current && styles) setSnapshot({ id, styles })
+      })
     })
-    return () => cancelAnimationFrame(frame)
+    return () => {
+      current = false
+      cancelAnimationFrame(frame)
+    }
   }, [id, version, breakpoint])
 
   return snapshot?.id === id ? snapshot.styles : null

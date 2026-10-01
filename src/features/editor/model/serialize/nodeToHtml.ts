@@ -4,6 +4,8 @@ import { escapeAttr, escapeText, VOID_TAGS } from './escape'
 
 /** Marks a hidden element in HTML shown for editing, so it stays hidden when re-applied. */
 export const HIDDEN_MARK = 'data-fe-hidden'
+/** Links an element in the editor frame to its model node. */
+export const NODE_ID_ATTR = 'data-fe-id'
 
 export type HtmlOptions = {
   /** Extra class added to an element (the exporter uses this for style rules). */
@@ -13,6 +15,8 @@ export type HtmlOptions = {
    * and hidden elements are kept (marked) instead of left out.
    */
   forEditing?: boolean
+  /** For the editor frame: every element carries data-fe-id; hidden ones stay (marked). */
+  withIds?: boolean
 }
 
 function hasStyles(node: ElementNode): boolean {
@@ -27,6 +31,10 @@ function attributesToHtml(node: ElementNode, options: HtmlOptions): string {
   if (options.forEditing) {
     const desktop = node.styles.desktop
     if (desktop && Object.keys(desktop).length > 0) attrs.style = stringifyStyle(desktop)
+    if (node.hidden) attrs[HIDDEN_MARK] = ''
+  }
+  if (options.withIds) {
+    attrs[NODE_ID_ATTR] = node.id
     if (node.hidden) attrs[HIDDEN_MARK] = ''
   }
   const extra = options.extraClass?.(node)
@@ -47,7 +55,7 @@ export function nodeToHtml(nodes: NodeMap, id: string, options: HtmlOptions = {}
     const raw = isElement(parent) && (parent.tag === 'script' || parent.tag === 'style')
     return raw ? node.text : escapeText(node.text)
   }
-  if (node.hidden && !options.forEditing) return ''
+  if (node.hidden && !options.forEditing && !options.withIds) return ''
 
   const open = `<${node.tag}${attributesToHtml(node, options)}>`
   if (VOID_TAGS.has(node.tag)) return open

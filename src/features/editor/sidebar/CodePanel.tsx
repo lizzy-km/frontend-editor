@@ -51,7 +51,7 @@ export function CodePanel() {
       </CodeSection>
       {scripts.map((script, index) => !script.src && (
         <CodeSection key={index} id={`script-${index}`} title={`Script ${index + 1}${script.type === 'module' ? ' (module)' : ''}`}
-          info={`runs in Preview · ${lineCount(script.code ?? '')}`}>
+          info={lineCount(script.code ?? '')}>
           <CodeArea target={index} value={script.code ?? ''} label={`Script ${index + 1}`} />
         </CodeSection>
       ))}
