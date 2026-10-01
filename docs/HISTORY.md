@@ -3,6 +3,16 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/web-vitals — 2026-10-01
+- Core Web Vitals from real visits (`web_vital`, ~3 kB gzipped, lazy).
+- More events: `auth_error` (Firebase code only), `add_block`,
+  `picture_add` (upload/embed), `text_editor_open`, `page_rename`.
+- Consent Mode v2 defaults (ad signals denied). README lists the key events,
+  funnel and custom dimensions to set up in Google Analytics.
+- Firebase Performance Monitoring was left out on purpose: Web Vitals cover
+  page speed for a fraction of the size, and Firestore Lite calls are plain
+  fetches the editor already handles.
+
 ## feature/analytics — 2026-10-01
 - **Google Analytics for Firebase**, lazy-loaded (its own 6 kB gzipped chunk,
   after the page is idle; the first load and sign-in pages are unchanged).
