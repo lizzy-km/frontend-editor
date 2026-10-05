@@ -1,6 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Where } from '@/features/analytics/events'
 import { track } from '@/features/analytics/track'
+import { AiPromptHelper } from '@/features/prompts/AiPromptHelper'
 import type { PageDoc } from '@/features/editor/model/types'
 import { Button, Icon } from '@/shared/ui'
 import { analyzePaste } from './analyzePaste'
@@ -57,6 +58,8 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
             <CodeBox label="JavaScript" value={js} onChange={setJs} placeholder="Optional" small />
           </div>
         )}
+
+        <AiPromptHelper />
 
         <button type="button" className={styles.link} onClick={() => setSplit(!split)}>
           {split ? 'I have everything in one piece' : 'My code comes in separate parts (HTML, CSS, JavaScript)'}
