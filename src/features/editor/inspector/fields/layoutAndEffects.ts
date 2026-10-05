@@ -59,7 +59,7 @@ export const LAYOUT_AND_EFFECT_SECTIONS: SectionConfig[] = [
     ],
   },
   {
-    id: 'effects', title: 'Shadow', icon: 'sparkle',
+    id: 'effects', title: 'Shadow & see-through', icon: 'sparkle',
     when: (ctx) => ctx.node.tag !== 'body',
     fields: [
       {
@@ -73,6 +73,7 @@ export const LAYOUT_AND_EFFECT_SECTIONS: SectionConfig[] = [
           ],
         },
       },
+      { prop: 'opacity', label: 'See-through', control: { type: 'slider', min: 0, max: 1, step: 0.05, unit: '' }, hint: '1 = solid, 0 = invisible (the whole element)' },
     ],
   },
 ]

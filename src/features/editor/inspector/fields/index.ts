@@ -2,8 +2,10 @@ import type { SectionConfig } from '../fieldTypes'
 import { LAYOUT_AND_EFFECT_SECTIONS } from './layoutAndEffects'
 import { TEXT_AND_BOX_SECTIONS } from './textAndBox'
 
-/** Display order of the sections in the settings panel. */
-const ORDER = ['text', 'picture', 'arrange', 'background', 'spacing', 'size', 'corners', 'effects']
+/** Display order of the sections in the settings panel. Background (custom) is shown after "arrange". */
+const ORDER = ['text', 'picture', 'arrange', 'spacing', 'size', 'corners', 'effects']
+/** Sections before this one come first, then the Background section. */
+export const BACKGROUND_AFTER = 'arrange'
 
 const ALL = [...TEXT_AND_BOX_SECTIONS, ...LAYOUT_AND_EFFECT_SECTIONS]
 
