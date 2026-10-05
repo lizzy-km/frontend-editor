@@ -86,6 +86,12 @@ Put the Worker's URL in `.env` as `VITE_ASSETS_URL`.
 
 Stack: Vite · React 19 · TypeScript · Zustand · Konva · Quill · Firebase (Auth + Firestore) · Cloudflare R2.
 
+## Downloads
+
+Web page (.html), files for a developer (.zip), a **React project** (.zip:
+Vite + React + TypeScript, one component per part of the page, repeated
+cards as one component with a data list), a picture (.png), or copy the code.
+
 ## No code yet?
 
 The paste screen has a folded "No code yet?" helper: pick one of 10

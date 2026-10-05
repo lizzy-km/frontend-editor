@@ -3,6 +3,28 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/react-export — 2026-10-05
+- **Download → React project (.zip)**: the page (or the selected part) as a
+  Vite + React + TypeScript project, counted like any other download.
+  - One component per part (header, each section, footer); `<main>` stays
+    in `App.tsx` with its sections inside.
+  - Repeated items with the same structure (cards, menu items, reviews,
+    FAQ entries) become one typed component plus a data list in the part
+    that uses them (`cardItems.map(...)`). Only real items with structure
+    inside; never inside SVG, never plain text lists.
+  - Correct JSX: React attribute names, numbers and booleans, form defaults
+    (`defaultValue`), SVG attributes, spaces kept like the browser shows them,
+    `{}` escaped, `<pre>` exact. Inline `onclick=` handlers ride along as
+    `data-on*` and are restored after mount.
+  - CSS unchanged (incl. tablet/phone edits); `body >` rules are pointed
+    through `#root`, which takes no space (`display: contents`).
+  - The page's own inline JavaScript goes to `public/scripts/` and runs once
+    after mount (`src/runPageScripts.ts`), with "page loaded" listeners run
+    right away. Libraries and head settings stay in `index.html`.
+- Checked: test1–3 exports pass the project's own strict `tsc` and `vite
+  build`, and the built apps match the original pages (same elements, text,
+  hidden text and height; script-drawn parts present).
+
 ## feature/ai-prompts — 2026-10-05
 - **"No code yet?" helper** on the paste screen (Try-it and New page), like
   the Landing Page builder's AI prompt: pick one of 10 ready-made page ideas
