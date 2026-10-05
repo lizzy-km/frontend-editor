@@ -3,6 +3,19 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/ai-prompts — 2026-10-05
+- **"No code yet?" helper** on the paste screen (Try-it and New page), like
+  the Landing Page builder's AI prompt: pick one of 10 ready-made page ideas
+  (café, product launch, salon, home for sale, portfolio, online CV, wedding,
+  event, online course, charity) or start blank, change the description in
+  your own words, copy, and open ChatGPT / Claude / Gemini.
+- Each prompt = intro + Part 1 (the brief, editable) + Part 2
+  (`prompts/promptRules.ts`): one self-contained file, real text in real
+  elements, every section with an id and class, CSS tokens on `:root`, the
+  editor's two breakpoints (1024px / 640px), Unsplash `<img>` pictures, and
+  JavaScript that only enhances content already in the HTML.
+- Usage stats: `prompt_copy` (which idea, whether it was edited).
+
 ## feature/vercel-analytics — 2026-10-01
 - Vercel Web Analytics for the Vercel deployment (`vercel.json`: SPA
   rewrites, long cache for `/assets`). Same opt-out/DNT rules as Firebase;

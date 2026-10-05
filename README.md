@@ -86,6 +86,14 @@ Put the Worker's URL in `.env` as `VITE_ASSETS_URL`.
 
 Stack: Vite · React 19 · TypeScript · Zustand · Konva · Quill · Firebase (Auth + Firestore) · Cloudflare R2.
 
+## No code yet?
+
+The paste screen has a folded "No code yet?" helper: pick one of 10
+ready-made page ideas (or start blank), change the description in your own
+words, copy the prompt into ChatGPT, Claude or Gemini, and paste the
+answer back. The prompt's rules make the AI write pages that are easy to
+edit here.
+
 ## Usage stats
 
 Google Analytics for Firebase counts screens and actions (paste, edits by

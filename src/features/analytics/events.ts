@@ -22,6 +22,8 @@ export type AnalyticsEvents = {
   // Paste → editor
   paste_code: { elements: number; scripts: number; tailwind: boolean; where: Where }
   paste_rejected: { reason: string }
+  /** A ready-made AI prompt was copied (which one, and whether the brief was changed). */
+  prompt_copy: { preset: string; edited: boolean }
 
   // Editing (one event per undo step, never the content)
   edit: { action: EditAction }

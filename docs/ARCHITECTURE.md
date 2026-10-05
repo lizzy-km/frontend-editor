@@ -192,6 +192,15 @@ run, inside a locked frame.
 - Edits are counted per undo step (`editor/actions/editStats.ts` uses the same
   800 ms coalescing window as the doc store).
 
+## AI prompts (`features/prompts`)
+
+- `prompts.ts`: `PROMPT_PRESETS` (blank + 10 briefs in `presets/*`),
+  `buildPrompt(brief)` = intro + brief + `PROMPT_RULES`.
+- `promptRules.ts` must stay in step with the parser and the editor frame:
+  if the editor learns or drops something (a breakpoint, a supported
+  pattern), update the rules too.
+- `AiPromptHelper` sits on `PasteScreen`, folded by default.
+
 ## Import and saving
 
 - `features/import/PasteScreen` goes through `analyzePaste` (which calls
