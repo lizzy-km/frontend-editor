@@ -9,7 +9,7 @@ import { Button, Icon, Modal, toast, type IconName } from '@/shared/ui'
 import { DownloadsLeft, SignInToDownload } from './DownloadNotice'
 import { downloadsBlocked, gateWhere, type DownloadGate } from './downloadGate'
 import styles from './ExportDialog.module.css'
-import { prepareCopy, prepareHtml, preparePng, prepareZip, type Deliver, type ExportScope } from './exportActions'
+import { prepareCopy, prepareHtml, preparePng, prepareReact, prepareZip, type Deliver, type ExportScope } from './exportActions'
 
 type Choice = { id: string; icon: IconName; title: string; text: string; prepare: (scope: ExportScope) => Promise<Deliver> }
 
@@ -18,6 +18,7 @@ const CHOICES: Choice[] = [
   { id: 'html', icon: 'globe', title: 'Web page (.html)', text: 'One file you can open in any browser or upload to a website host.', prepare: prepareHtml },
   { id: 'png', icon: 'image', title: 'Picture (.png)', text: 'A sharp image to share on social media or in a chat.', prepare: preparePng },
   { id: 'zip', icon: 'code', title: 'Files for a developer (.zip)', text: 'HTML, CSS and JavaScript as separate files.', prepare: prepareZip },
+  { id: 'react', icon: 'layers', title: 'React project (.zip)', text: 'For developers: React + TypeScript, one file for each part of the page.', prepare: prepareReact },
 ]
 
 type Props = { open: boolean; onClose: () => void; gate: DownloadGate }

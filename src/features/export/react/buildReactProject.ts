@@ -67,8 +67,15 @@ function appSource(parts: ReturnType<typeof splitPage>): string {
   ].join('\n')
 }
 
-/** The page as a Vite + React + TypeScript project: path -> file text. */
-export function buildReactProject(doc: PageDoc): ExportFiles {
+/** Only one part of the page: the same page with just that part inside <body>. */
+function onlyPart(doc: PageDoc, id: string): PageDoc {
+  const body = getElement(doc.nodes, doc.rootId)
+  return body && doc.nodes[id] ? { ...doc, nodes: { ...doc.nodes, [body.id]: { ...body, children: [id] } } } : doc
+}
+
+/** The page (or one part of it) as a Vite + React + TypeScript project: path -> file text. */
+export function buildReactProject(fullDoc: PageDoc, onlyId?: string): ExportFiles {
+  const doc = onlyId && onlyId !== fullDoc.rootId ? onlyPart(fullDoc, onlyId) : fullDoc
   const page = buildPageParts(doc)
   const parts = splitPage(doc)
   const scripts = planScripts([...page.headScripts, ...page.bodyScripts])
