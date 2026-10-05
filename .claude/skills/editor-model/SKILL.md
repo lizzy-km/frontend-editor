@@ -60,10 +60,6 @@ that break things if you ignore them.
     edited) is applied to the frame DOM, never to the model, and undone when
     the selection changes. Use the runtime's `mark` (turning a mark off
     restores the model's value). See `canvas/useRevealDetails.ts`.
-18. **AI prompt rules** (`features/prompts/promptRules.ts`) describe what
-    the parser and frame handle best (breakpoints 1024/640, sections with
-    id + class, real text, enhance-only JS). Change them together with the
-    editor.
 17. **Code shown for editing uses `nodeToHtml(..., { forEditing: true })`.**
     It must parse back to the same nodes: desktop styles as inline
     `style`, and hidden elements as `data-fe-hidden`, which `domToNodes`
@@ -74,6 +70,11 @@ that break things if you ignore them.
     source → parse → source is identical. Never put whitespace between body
     content, body scripts and `</body></html>`, because the parser moves it
     into the body.
+18. **AI prompt rules** (`features/prompts/promptRules.ts`) describe what
+    the parser and frame handle best (breakpoints 1024/640, sections with
+    id + class, real text, enhance-only JS). Change them together with the
+    editor.
+
 18. **Test with real pages.** `e2e/fixtures/*.html` holds real AI output.
     When a pasted page misbehaves, add it there with a check in `e2e/`.
 
