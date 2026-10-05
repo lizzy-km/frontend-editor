@@ -3,6 +3,16 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/local-files-and-uploads — 2026-10-05
+- A page copied from a dev server links files that weren't pasted
+  (`/@vite/client`, `/src/main.tsx`, `css/site.css`). In the editor frame and
+  Preview those resolved to Tweak's own server. Now they're left out there
+  (`serialize/localFiles.ts`); downloads keep the links. The paste screen
+  names them and explains how to copy the finished page instead.
+- Uploads: an `r2.dev` bucket address in `VITE_ASSETS_URL` (read-only)
+  switches uploads off with a dev hint; uploads need the deployed Worker.
+  If the service can't be reached, small pictures are embedded instead.
+
 ## feature/react-export — 2026-10-05
 - **Download → React project (.zip)**: the page (or the selected part) as a
   Vite + React + TypeScript project, counted like any other download.

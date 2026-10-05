@@ -1,5 +1,6 @@
 import { looksLikeHtml, type PastedCode } from '@/features/editor/model/parse/cleanPaste'
 import { parsePastedCode } from '@/features/editor/model/parse/parseDocument'
+import { localFiles } from '@/features/editor/model/serialize/localFiles'
 import { isElement, type PageDoc } from '@/features/editor/model/types'
 
 export type PasteSummary = {
@@ -11,6 +12,8 @@ export type PasteSummary = {
   found: string[]
   /** What kind of problem, for usage stats (no content). */
   reason?: 'not_code' | 'no_content'
+  /** Linked files that weren't pasted (e.g. /src/main.tsx): left out while editing. */
+  missing?: string[]
   /** Counts for usage stats. */
   stats?: { elements: number; scripts: number; tailwind: boolean }
 }
@@ -39,5 +42,6 @@ export function analyzePaste(pasted: PastedCode): PasteSummary {
   if (doc.links.length) found.push(`${doc.links.length} font/style link${doc.links.length === 1 ? '' : 's'}`)
   const scripts = doc.scripts.filter((script) => !script.src?.includes('tailwind')).length
   if (scripts) found.push(`${scripts} script${scripts === 1 ? '' : 's'}`)
-  return { ok: true, doc, found, stats: { elements, scripts, tailwind: usesTailwind(doc) } }
+  const missing = localFiles(doc)
+  return { ok: true, doc, found, stats: { elements, scripts, tailwind: usesTailwind(doc) }, ...(missing.length ? { missing } : {}) }
 }

@@ -47,9 +47,16 @@ export async function pictureFromFile(file: File): Promise<string> {
   if (!PICTURE_TYPES.includes(file.type)) throw new Error('Please choose a PNG, JPG, WebP, GIF or AVIF picture.')
   if (canUpload()) {
     if (file.size > MAX_UPLOAD_BYTES) throw new Error('Pictures can be up to 5 MB.')
-    const url = await uploadImage(file, { kind: 'image' })
-    track('picture_add', { method: 'upload' })
-    return url
+    try {
+      const url = await uploadImage(file, { kind: 'image' })
+      track('picture_add', { method: 'upload' })
+      return url
+    } catch (error) {
+      // TypeError = the service couldn't be reached at all (offline, blocked, wrong address).
+      if (!(error instanceof TypeError)) throw error
+      if (file.size > MAX_EMBED_BYTES) throw new Error('Couldn’t reach the picture service. Check your connection, or use a picture under 400 KB.')
+      console.warn('Picture upload unavailable, embedding the picture in the page instead:', error)
+    }
   }
   if (file.size > MAX_EMBED_BYTES) {
     throw new Error('That picture is too big to add here. Make it smaller (under 400 KB) or paste a picture link instead.')

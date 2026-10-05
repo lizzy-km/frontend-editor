@@ -25,3 +25,14 @@ describe('analyzePaste', () => {
     expect(result.found).toEqual(['2 elements', 'Tailwind', '1 script'])
   })
 })
+
+describe('files that were not pasted', () => {
+  it('lists local scripts and stylesheets, not full addresses', () => {
+    const result = analyzePaste({ html: '<html><head><link rel="stylesheet" href="css/site.css"><script type="module" src="/src/main.tsx"></script><script src="https://cdn.example.com/lib.js"></script></head><body><h1>Hi</h1></body></html>' })
+    expect(result.missing).toEqual(['/src/main.tsx', 'css/site.css'])
+  })
+
+  it('says nothing when everything is in the code', () => {
+    expect(analyzePaste({ html: '<h1>Hi</h1>' }).missing).toBeUndefined()
+  })
+})

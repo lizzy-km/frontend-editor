@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { buildPageParts, partsToSingleFile } from '@/features/editor/model/serialize/buildPage'
+import { withoutLocalFiles } from '@/features/editor/model/serialize/localFiles'
 import type { PageDoc } from '@/features/editor/model/types'
 
 type Props = { doc: PageDoc; width?: number | string; className?: string; title: string }
@@ -10,7 +11,7 @@ type Props = { doc: PageDoc; width?: number | string; className?: string; title:
  * cookies or this app.
  */
 export function SafePageFrame({ doc, width = '100%', className, title }: Props) {
-  const html = useMemo(() => partsToSingleFile(buildPageParts(doc)), [doc])
+  const html = useMemo(() => partsToSingleFile(buildPageParts(withoutLocalFiles(doc))), [doc])
   return (
     <iframe
       title={title} srcDoc={html} className={className} style={{ width }}

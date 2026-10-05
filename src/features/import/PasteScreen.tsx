@@ -69,6 +69,16 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
         {summary.ok && (
           <p className={styles.found}><Icon name="check" size={16} /> Found: {summary.found.join(' · ')}</p>
         )}
+        {summary.missing && (
+          <p className={styles.note}>
+            <Icon name="help" size={16} />
+            <span>
+              This code uses {summary.missing.length === 1 ? 'a file' : `${summary.missing.length} files`} that you didn’t paste
+              ({summary.missing.slice(0, 3).join(', ')}{summary.missing.length > 3 ? '…' : ''}). They’re left out while editing
+              and in Preview. If the page looks empty, copy the finished page instead (in the browser: right-click → View page source).
+            </span>
+          </p>
+        )}
 
         <div className={styles.actions}>
           <Button variant="primary" size="large" icon="sparkle" disabled={!summary.ok} onClick={open}>
