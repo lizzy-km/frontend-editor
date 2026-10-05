@@ -34,6 +34,15 @@ export async function prepareZip(scope: ExportScope): Promise<Deliver> {
   return () => downloadFile(`${baseName(scope)}.zip`, zip)
 }
 
+/** A .zip with a React + TypeScript project (Vite), one component per part. Loaded only when used. */
+export async function prepareReact(scope: ExportScope): Promise<Deliver> {
+  const { buildReactProject } = await import('./react/buildReactProject')
+  const folder = `${baseName(scope)}-react`
+  const files = buildReactProject(getDoc(), scope ?? undefined)
+  const zip = zipFiles(Object.fromEntries(Object.entries(files).map(([path, text]) => [`${folder}/${path}`, text])))
+  return () => downloadFile(`${folder}.zip`, zip)
+}
+
 /** A .png picture of the page or part. */
 export async function preparePng(scope: ExportScope): Promise<Deliver> {
   const picture = await capturePng(scope)

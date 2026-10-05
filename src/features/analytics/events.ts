@@ -52,5 +52,5 @@ export type AnalyticsEvent = keyof AnalyticsEvents
 export type SignInMethod = 'password' | 'google' | 'github'
 /** Try-it (no account) or a saved page. */
 export type Where = 'try' | 'project'
-export type ExportFormat = 'html' | 'zip' | 'png' | 'copy'
+export type ExportFormat = 'html' | 'zip' | 'react' | 'png' | 'copy'
 export type EditAction = 'text' | 'style' | 'move' | 'delete' | 'duplicate' | 'hide' | 'insert' | 'tag' | 'attribute' | 'picture' | 'reset'

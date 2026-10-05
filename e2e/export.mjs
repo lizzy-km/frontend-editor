@@ -1,5 +1,6 @@
 // Export: download html / zip / png (whole page and one part), preview runs scripts safely.
 import { readFileSync, statSync } from 'node:fs'
+import { strFromU8, unzipSync } from 'fflate'
 import { allowTryDownloads, check, editorFrame, OUT, openPage } from './browser.mjs'
 
 const PAGE = `<!doctype html><html><head><title>Button Test</title>
@@ -48,6 +49,15 @@ check('html contains page and script', html.includes('<footer>Bye</footer>') && 
 await page.getByRole('button', { name: 'Download', exact: true }).click()
 const zipPath = await download('Files for a developer')
 check('zip downloaded', statSync(zipPath).size > 300, `${statSync(zipPath).size} bytes`)
+
+// React project
+await page.getByRole('button', { name: 'Download', exact: true }).click()
+const reactPath = await download('React project')
+const reactFiles = unzipSync(readFileSync(reactPath))
+const names = Object.keys(reactFiles)
+check('react zip has a Vite + TS project', ['package.json', 'tsconfig.json', 'src/App.tsx', 'src/main.tsx'].every((file) => names.includes(`button-test-react/${file}`)), names.length + ' files')
+check('react zip splits the parts', names.includes('button-test-react/src/components/Hero.tsx') && names.includes('button-test-react/src/components/Footer.tsx'))
+check('react zip keeps the page script', strFromU8(reactFiles['button-test-react/public/scripts/page-1.js'] ?? new Uint8Array()).includes("addEventListener('click'"))
 
 // Only the selected section as png
 const hero = await box('.hero')

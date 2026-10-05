@@ -217,6 +217,12 @@ run, inside a locked frame.
 - Every format starts from `buildPageParts(doc, onlyId?)` in `editor/model/serialize`:
   - `partsToSingleFile` makes the .html, copy, and Preview.
   - `partsToSplitFiles` + `zipFiles` make the .zip.
+  - `prepareReact` (lazy `export/react/buildReactProject`) makes a Vite +
+    React + TypeScript project: `jsxWriter` writes JSX from nodes (it is not
+    an HTML serializer: JSX rules differ), `repeats` finds same-shape
+    siblings and turns differing text/attributes into props, `componentFiles`
+    writes one file per part plus item components, `pageScripts` decides
+    which scripts move to `public/scripts` and run after mount.
   - `capturePng(id | null)` takes the picture inside the live frame: the app
     sends its bundled html-to-image once (`loadCapture`), then asks `capture`.
 - `exportActions.ts` has one `prepare…` function per button, each
