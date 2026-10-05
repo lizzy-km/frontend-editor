@@ -163,6 +163,12 @@ run, inside a locked frame.
   "More options" fields.
 - `FieldRow` value = the override on this breakpoint, else `read(computed)`,
   else computed. Changes go through `setStyle`/`setStyles`, plus `companionStyles`.
+- The Background section is a component, not config
+  (`inspector/background/BackgroundSection`, placed after "arrange" via
+  `BACKGROUND_AFTER`). It reads `background-image` (edit, else computed) into
+  `{ gradient, picture, custom }` and writes the whole value back in one
+  `setStyle`, gradient first (on top). Picture options are single values,
+  which apply to every layer.
 - `useComputedStyle(id)` asks the frame for `getComputedStyle` one frame after
   each edit or screen-size change (edits reach the frame first: messages keep
   their order).

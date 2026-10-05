@@ -1,7 +1,7 @@
 import type { SectionConfig } from '../fieldTypes'
 
 /**
- * Text, background, spacing, size and border sections.
+ * Text, spacing, size and border sections (Background is its own component: background/).
  * Labels are everyday words; CSS names never appear here in the UI.
  * To add a control: add a field. To add a section: add an entry.
  */
@@ -51,17 +51,6 @@ export const TEXT_AND_BOX_SECTIONS: SectionConfig[] = [
           ],
         },
       },
-    ],
-  },
-  {
-    id: 'background', title: 'Background', icon: 'image',
-    when: () => true,
-    fields: [
-      { prop: 'background-color', label: 'Color', control: { type: 'color' } },
-    ],
-    more: [
-      { prop: 'background-image', label: 'Picture / gradient', control: { type: 'text', placeholder: 'url(https://…)' } },
-      { prop: 'opacity', label: 'See-through', control: { type: 'slider', min: 0, max: 1, step: 0.05, unit: '' }, hint: '1 = solid, 0 = invisible' },
     ],
   },
   {

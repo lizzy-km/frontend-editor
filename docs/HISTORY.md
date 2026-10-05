@@ -3,6 +3,25 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/background-panel — 2026-10-05
+- **Background section** (`inspector/background/`): Color, then **Picture**
+  and **Gradient** tabs (a dot shows which is in use). Both can be used at
+  once: the gradient is drawn over the picture (e.g. "Darken photo").
+  - Picture: choose from the computer or paste a link (shared
+    `quick/PicturePickerDialog`, also used by Change picture), preview,
+    remove, fit (fill / show all / original / stretch), a 3×3 "keep in view"
+    grid, repeat, "stays still when the page scrolls". A first picture
+    fills the box, centred, shown once.
+  - Gradient: 10 ready-made ones, Straight / Round / Sweep, 8 direction
+    arrows + exact angle, middle point and circle/oval for round ones,
+    2–5 colors each with position and solidness, add (blended), remove,
+    flip, "use on the text instead" (gradient text), remove.
+  - `background-image` is parsed exactly (`gradient.ts`,
+    `backgroundLayers.ts`); anything the controls can't represent (px stops,
+    several pictures) is shown as is with "Start over", never rewritten.
+- See-through (opacity) moved to "Shadow & see-through": it fades the whole
+  element, not the background.
+
 ## fix/local-files-and-uploads — 2026-10-05
 - A page copied from a dev server links files that weren't pasted
   (`/@vite/client`, `/src/main.tsx`, `css/site.css`). In the editor frame and
