@@ -22,9 +22,10 @@
 .split > * { flex: 1 1 240px; }
 
 .link { align-self: flex-start; border: 0; background: none; padding: 0; color: var(--accent); font-weight: 600; cursor: pointer; font-size: 14px; }
-.found, .problem { display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px; border-radius: 12px; font-size: 14px; }
+.found, .problem, .note { display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px; border-radius: 12px; font-size: 14px; }
 .found { background: color-mix(in srgb, var(--success) 12%, transparent); color: var(--success); font-weight: 600; }
 .problem { background: color-mix(in srgb, var(--danger) 10%, transparent); color: var(--danger); }
+.note { background: var(--surface-2); color: var(--text-soft); }
 
 .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 6px; }
 

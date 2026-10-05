@@ -83,6 +83,14 @@ describe('editor frame', () => {
     expect(page.querySelector('details')!.hasAttribute('open')).toBe(false)
   })
 
+  it("leaves out files that weren't pasted (they'd load from Tweak's own server)", () => {
+    const source = buildEditorSource(parseHtmlDocument('<html><head><script type="module" src="/src/main.tsx"></script>'
+      + '<link rel="stylesheet" href="css/site.css"><script src="https://cdn.example.com/lib.js"></script></head><body><p>Hi</p></body></html>'))
+    expect(source).not.toContain('/src/main.tsx')
+    expect(source).not.toContain('css/site.css')
+    expect(source).toContain('https://cdn.example.com/lib.js')
+  })
+
   it('keeps page text from closing the model script', () => {
     const source = buildEditorSource(parseHtmlDocument('<body><p>&lt;/script&gt;&lt;b&gt;</p></body>'))
     const model = source.slice(source.indexOf('id="fe-model">'), source.indexOf('</script>', source.indexOf('id="fe-model">')))

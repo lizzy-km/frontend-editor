@@ -2,6 +2,7 @@ import { headTagLines, scriptTag } from '../model/serialize/buildPage'
 import { escapeAttr, escapeRawTag } from '../model/serialize/escape'
 import { childrenToHtml, NODE_ID_ATTR } from '../model/serialize/nodeToHtml'
 import { buildOverrideCss, wrapUserCss } from '../model/serialize/styleSheets'
+import { withoutLocalFiles } from '../model/serialize/localFiles'
 import { getElement } from '../model/tree/queries'
 import type { NodeMap, PageDoc } from '../model/types'
 import { RUNTIME_SCRIPTS } from './runtime'
@@ -32,7 +33,8 @@ const safeJson = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003
  * the page's scripts — plus data-fe-id markers, the model (JSON) and the
  * runtime, which runs after the body is parsed and before the page scripts.
  */
-export function buildEditorSource(doc: PageDoc): string {
+export function buildEditorSource(pageDoc: PageDoc): string {
+  const doc = withoutLocalFiles(pageDoc) // files that weren't pasted would load from Tweak's own server
   const body = getElement(doc.nodes, doc.rootId)
   const bodyAttrs = { ...body?.attrs, [NODE_ID_ATTR]: doc.rootId }
   return [
