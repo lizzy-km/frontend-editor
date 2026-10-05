@@ -21,7 +21,10 @@ its own `fix(...)`), and make sure each one passes `tsc` and `eslint`.
   with an everyday label. Put it under `more` unless people change it often.
 - If it does nothing alone (like border-width without a style), add a rule in `companionStyles.ts`.
 - If the computed value misleads (like flex-direction on a block), add `read`.
-- For anything that isn't a single CSS property, write a custom section in `inspector/sections/`.
+- For anything that isn't a single CSS property, write a custom section in `inspector/sections/`
+  (bigger ones get a folder, like `inspector/background/`).
+- Controls that rewrite a CSS value must parse it exactly first and leave
+  values they can't represent untouched (see `background/gradient.ts`).
 
 ## 2. Where code goes
 - `src/features/<name>/`: the feature's pages, components, hooks, store and API.
