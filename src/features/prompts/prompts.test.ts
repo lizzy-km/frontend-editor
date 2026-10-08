@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest'
 import { buildPrompt, presetBrief, PROMPT_GROUPS, PROMPT_PRESETS } from './prompts'
 
 describe('AI prompts', () => {
-  it('has two groups, each starting blank, with unique ids', () => {
-    expect(PROMPT_GROUPS.map((group) => group.id)).toEqual(['everyday', 'portfolio'])
-    for (const group of PROMPT_GROUPS) expect(group.presets[0]!.label).toBe('Start blank')
-    expect(PROMPT_GROUPS[0]!.presets.length).toBeGreaterThanOrEqual(9)
-    expect(PROMPT_GROUPS[1]!.presets.length).toBeGreaterThanOrEqual(12)
+  it('has four groups, each starting blank, with unique ids', () => {
+    expect(PROMPT_GROUPS.map((group) => group.id)).toEqual(['everyday', 'brands', 'events', 'portfolio'])
+    for (const group of PROMPT_GROUPS) {
+      expect(group.presets[0]!.label).toBe('Start blank')
+      expect(group.presets.length, group.id).toBeGreaterThanOrEqual(6)
+      expect(group.presets.every(Boolean), group.id).toBe(true)
+    }
     expect(new Set(PROMPT_PRESETS.map((preset) => preset.id)).size).toBe(PROMPT_PRESETS.length)
   })
 
@@ -26,6 +28,8 @@ describe('AI prompts', () => {
     expect(portfolio.indexOf('my work')).toBeLessThan(portfolio.indexOf('PART 2'))
     expect(buildPrompt('x', 'cafe')).toContain('one-page website')
     expect(buildPrompt('x', 'cafe')).toContain('MAKE IT EYE-CATCHING')
+    expect(buildPrompt('x', 'birthday')).toContain('event website')
+    expect(buildPrompt('x', 'fashionDrop')).toContain('brand or product launch website')
   })
 
   it('falls back to the everyday blank brief for an unknown id', () => {

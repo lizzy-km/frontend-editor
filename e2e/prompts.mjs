@@ -7,9 +7,11 @@ await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { o
 const helper = page.locator('details', { has: page.getByText('No code yet?') }).first()
 check('helper starts folded', (await helper.getAttribute('open')) === null)
 await page.getByText('No code yet?').click()
-const everyday = await page.getByRole('radiogroup', { name: 'Everyday pages' }).getByRole('radio').count()
-const portfolios = await page.getByRole('radiogroup', { name: 'Portfolios' }).getByRole('radio').count()
-check('ideas grouped: everyday pages and portfolios', everyday >= 9 && portfolios >= 12, `${everyday} + ${portfolios}`)
+const counts = []
+for (const group of ['Business & services', 'Brands & launches', 'Events & celebrations', 'Portfolios']) {
+  counts.push(await page.getByRole('radiogroup', { name: group }).getByRole('radio').count())
+}
+check('ideas grouped into 4 kinds of page', counts.every((count) => count >= 6), counts.join(' + '))
 
 await page.getByRole('radio', { name: /Wedding/ }).click()
 const brief = page.getByLabel('Your page (change anything)')
