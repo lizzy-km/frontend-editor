@@ -1,0 +1,10 @@
+.wrap { display: flex; flex-direction: column; gap: 4px; }
+.tools { display: flex; justify-content: flex-end; gap: 2px; }
+.tools button { height: 26px; padding: 0 8px; font-size: 12px; font-weight: 600; }
+
+/* Shown until CodeMirror has loaded: looks like the editor, works like a text box. */
+.fallback {
+  width: 100%; resize: vertical; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); font: 12.5px/1.55 ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+.fallback:focus { outline: none; border-color: var(--focus); background: var(--surface); }

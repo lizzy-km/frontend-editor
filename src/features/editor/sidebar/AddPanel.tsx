@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { track } from '@/features/analytics/track'
+import { LazyCodeEditor } from '@/shared/code/LazyCodeEditor'
 import { Button, Icon, toast } from '@/shared/ui'
 import { insertHtml } from '../actions/contentActions'
 import { looksLikeHtml, stripCodeFences } from '../model/parse/cleanPaste'
@@ -34,11 +35,9 @@ export function AddPanel() {
           </button>
         ))}
       </div>
-      <label className={styles.addLabel} htmlFor="add-code">Paste more code</label>
-      <textarea
-        id="add-code" className={styles.addCode} value={code} spellCheck={false} placeholder="e.g. a section your AI wrote…"
-        onChange={(event) => setCode(event.target.value)}
-      />
+      <span className={styles.addLabel}>Paste more code</span>
+      <LazyCodeEditor label="Paste more code" language="html" value={code} onChange={setCode} placeholder="e.g. a section your AI wrote…"
+        foldTools={false} minHeight="110px" maxHeight="260px" />
       <Button size="small" icon="plus" disabled={!code.trim()} onClick={addCode}>Add this code</Button>
     </div>
   )

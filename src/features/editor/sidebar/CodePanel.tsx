@@ -8,7 +8,7 @@ import { HtmlCodeBox } from './code/HtmlCodeBox'
 import styles from './Sidebar.module.css'
 
 // CodeMirror downloads only when someone opens the Code tab.
-const CodeEditor = lazy(() => import('./code/CodeEditor'))
+const CodeEditor = lazy(() => import('@/shared/code/CodeEditor'))
 
 /** Wait this long after the last key before applying (keeps typing smooth). */
 const APPLY_DELAY_MS = 400
