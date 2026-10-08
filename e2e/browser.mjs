@@ -67,8 +67,15 @@ export function check(label, condition, detail = '') {
 export async function pasteCode(page, code) {
   const box = page.getByLabel('Your code')
   await box.evaluate((element, value) => {
-    const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set
-    setter.call(element, value)
-    element.dispatchEvent(new Event('input', { bubbles: true }))
+    if (element instanceof HTMLTextAreaElement) { // the plain box shown while CodeMirror loads
+      Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(element, value)
+      element.dispatchEvent(new Event('input', { bubbles: true }))
+      return
+    }
+    // CodeMirror: a real paste event, like Ctrl+V
+    const data = new DataTransfer()
+    data.setData('text/plain', value)
+    element.focus()
+    element.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }))
   }, code)
 }

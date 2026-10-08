@@ -2,6 +2,7 @@ import { useDeferredValue, useEffect, useMemo, useState, type ReactNode } from '
 import type { Where } from '@/features/analytics/events'
 import { track } from '@/features/analytics/track'
 import { AiPromptHelper } from '@/features/prompts/AiPromptHelper'
+import { preloadCodeEditor } from '@/shared/code/LazyCodeEditor'
 import type { PageDoc } from '@/features/editor/model/types'
 import { Button, Icon } from '@/shared/ui'
 import { analyzePaste } from './analyzePaste'
@@ -31,6 +32,7 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
     () => analyzePaste({ html: deferredHtml, css: deferredCss, js: deferredJs }),
     [deferredHtml, deferredCss, deferredJs],
   )
+  useEffect(preloadCodeEditor, []) // the code box swaps in as soon as it has loaded
   // Counted once per kind of problem, not on every key press.
   const reason = summary.reason
   useEffect(() => { if (reason) track('paste_rejected', { reason }) }, [reason])
@@ -54,8 +56,8 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
 
         {split && (
           <div className={styles.split}>
-            <CodeBox label="CSS (styles)" value={css} onChange={setCss} placeholder="Optional" small />
-            <CodeBox label="JavaScript" value={js} onChange={setJs} placeholder="Optional" small />
+            <CodeBox label="CSS (styles)" language="css" value={css} onChange={setCss} placeholder="Optional" small />
+            <CodeBox label="JavaScript" language="js" value={js} onChange={setJs} placeholder="Optional" small />
           </div>
         )}
 

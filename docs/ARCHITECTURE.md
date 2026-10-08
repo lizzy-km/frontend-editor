@@ -266,7 +266,8 @@ rule invariants.
 
 ## Code tab (`features/editor/sidebar/code`)
 
-- `CodeEditor` wraps CodeMirror 6 (css / javascript) and is `lazy()`-loaded,
+- `shared/code/CodeEditor` wraps CodeMirror 6 (html / css / javascript) for every code box
+  (paste screen, Add, Code tab, Edit code); `LazyCodeEditor` is the `lazy()`-loaded form,
   so the `codemirror` chunk downloads only when the Code tab opens.
 - It has one-way sync: typing calls `onChange` (debounced 400 ms in
   `CodePanel`) and then `updateDoc` with a coalesce key. When the doc changes

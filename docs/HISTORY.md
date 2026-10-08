@@ -3,6 +3,18 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/codemirror-everywhere — 2026-10-08
+- Every code box uses CodeMirror (colours, line numbers, search, brackets):
+  the paste screen (one piece, or HTML / CSS / JavaScript) and "Paste more
+  code" in Add, as well as Page code, Styles, Scripts and Edit code.
+- The editor moved to `src/shared/code/` (shared by import and editor):
+  `CodeEditor` (placeholder, autofocus, min/max height, optional Fold all
+  toolbar, `onDropFile` for dropped .html files) and `LazyCodeEditor`, which
+  shows a plain box with the same value until CodeMirror has downloaded.
+  The paste screen preloads it. Text boxes for words (Words list, AI brief)
+  stay plain on purpose.
+- e2e `pasteCode()` sends a real paste event; `code-editors.mjs` checks each box.
+
 ## feature/prompt-groups — 2026-10-08
 - AI prompts are grouped like the Landing Page builder's, each group with its
   own intro and blank brief (`prompts/promptGroups.ts`), 35 ideas in all:

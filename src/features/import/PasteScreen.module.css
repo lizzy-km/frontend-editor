@@ -8,15 +8,6 @@
 
 .box { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
 .boxLabel { font-weight: 600; font-size: 14px; }
-.code {
-  width: 100%; min-height: 260px; resize: vertical; padding: 14px 16px; border-radius: 14px;
-  border: 2px dashed var(--border); background: var(--surface-2);
-  font: 13px/1.5 ui-monospace, 'Cascadia Code', Consolas, monospace; tab-size: 2;
-}
-.code:focus { outline: none; border-color: var(--accent); border-style: solid; background: var(--surface); }
-.code::placeholder { font-family: var(--font); font-size: 16px; color: var(--text-soft); }
-.small { min-height: 120px; }
-.dragging { border-color: var(--accent); background: var(--accent-soft); }
 
 .split { display: flex; gap: 12px; flex-wrap: wrap; }
 .split > * { flex: 1 1 240px; }
@@ -31,5 +22,4 @@
 
 @media (max-width: 560px) {
   .card { padding: 20px; border-radius: 18px; }
-  .code { min-height: 200px; }
 }

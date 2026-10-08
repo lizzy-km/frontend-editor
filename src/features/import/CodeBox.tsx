@@ -1,4 +1,6 @@
-import { useId, useState, type DragEvent } from 'react'
+import { useId } from 'react'
+import { LazyCodeEditor } from '@/shared/code/LazyCodeEditor'
+import type { CodeLanguage } from '@/shared/code/CodeEditor'
 import { toast } from '@/shared/ui'
 import styles from './PasteScreen.module.css'
 import { readCodeFile } from './readCodeFile'
@@ -7,6 +9,7 @@ type Props = {
   label: string
   value: string
   onChange: (value: string) => void
+  language?: CodeLanguage
   placeholder?: string
   autoFocus?: boolean
   small?: boolean
@@ -14,34 +17,22 @@ type Props = {
   acceptFiles?: boolean
 }
 
-/** A big monospace text box; optionally accepts a dropped .html file. */
-export function CodeBox({ label, value, onChange, placeholder, autoFocus, small, acceptFiles }: Props) {
+/** A code box (CodeMirror: colours, line numbers, search); optionally accepts a dropped .html file. */
+export function CodeBox({ label, value, onChange, language = 'html', placeholder, autoFocus, small, acceptFiles }: Props) {
   const id = useId()
-  const [dragging, setDragging] = useState(false)
 
-  const onDrop = async (event: DragEvent) => {
-    if (!acceptFiles) return
-    event.preventDefault()
-    setDragging(false)
-    const file = event.dataTransfer.files[0]
-    if (!file) return
-    try {
-      onChange(await readCodeFile(file))
-    } catch (error) {
-      toast((error as Error).message, 'error')
-    }
+  const onDropFile = (file: File) => {
+    if (!acceptFiles) return false
+    readCodeFile(file).then(onChange, (error: Error) => toast(error.message, 'error'))
+    return true
   }
 
   return (
     <div className={styles.box}>
-      <label htmlFor={id} className={styles.boxLabel}>{label}</label>
-      <textarea
-        id={id} value={value} placeholder={placeholder} autoFocus={autoFocus} spellCheck={false}
-        className={`${styles.code} ${small ? styles.small : ''} ${dragging ? styles.dragging : ''}`}
-        onChange={(event) => onChange(event.target.value)}
-        onDragOver={(event) => { if (acceptFiles) { event.preventDefault(); setDragging(true) } }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={onDrop}
+      <span id={id} className={styles.boxLabel}>{label}</span>
+      <LazyCodeEditor
+        label={label} language={language} value={value} onChange={onChange} placeholder={placeholder} autoFocus={autoFocus}
+        foldTools={false} minHeight={small ? '120px' : '260px'} maxHeight={small ? '320px' : '520px'} onDropFile={onDropFile}
       />
     </div>
   )

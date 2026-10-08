@@ -5,7 +5,7 @@ import { looksLikeHtml, stripCodeFences } from '../../model/parse/cleanPaste'
 import { useDocStore } from '../../store/doc.store'
 import styles from '../Sidebar.module.css'
 
-const CodeEditor = lazy(() => import('./CodeEditor'))
+const CodeEditor = lazy(() => import('@/shared/code/CodeEditor'))
 
 type Props = {
   /** Element to edit; the page's root id means "the whole page". */
