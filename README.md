@@ -94,8 +94,9 @@ cards as one component with a data list), a picture (.png), or copy the code.
 
 ## No code yet?
 
-The paste screen has a folded "No code yet?" helper: pick one of 10
-ready-made page ideas (or start blank), change the description in your own
+The paste screen has a folded "No code yet?" helper: pick one of 35
+ready-made page ideas in four groups (business, brands & launches, events
+& celebrations, portfolios) or start blank, change the description in your own
 words, copy the prompt into ChatGPT, Claude or Gemini, and paste the
 answer back. The prompt's rules make the AI write pages that are easy to
 edit here.
