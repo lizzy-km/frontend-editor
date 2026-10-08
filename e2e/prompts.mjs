@@ -7,8 +7,11 @@ await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { o
 const helper = page.locator('details', { has: page.getByText('No code yet?') }).first()
 check('helper starts folded', (await helper.getAttribute('open')) === null)
 await page.getByText('No code yet?').click()
-const chips = page.getByRole('radiogroup', { name: 'Page idea' }).getByRole('radio')
-check('blank + 10 ideas', (await chips.count()) === 11, String(await chips.count()))
+const counts = []
+for (const group of ['Business & services', 'Brands & launches', 'Events & celebrations', 'Portfolios']) {
+  counts.push(await page.getByRole('radiogroup', { name: group }).getByRole('radio').count())
+}
+check('ideas grouped into 4 kinds of page', counts.every((count) => count >= 6), counts.join(' + '))
 
 await page.getByRole('radio', { name: /Wedding/ }).click()
 const brief = page.getByLabel('Your page (change anything)')
@@ -21,6 +24,13 @@ await page.waitForTimeout(300)
 const copied = await page.evaluate(() => navigator.clipboard.readText())
 check('copied prompt has the edited brief', copied.includes('Ana & Leo') && !copied.includes('Sofia & James'))
 check('copied prompt has the editor rules', copied.includes('PART 2') && copied.includes('@media (max-width: 640px)'))
+check('copied prompt asks for an eye-catching design', copied.includes('MAKE IT EYE-CATCHING'))
+
+await page.getByRole('radiogroup', { name: 'Portfolios' }).getByRole('radio', { name: /Developer/ }).click()
+await page.getByRole('button', { name: 'Copy prompt' }).click()
+await page.waitForTimeout(300)
+const portfolio = await page.evaluate(() => navigator.clipboard.readText())
+check('portfolio prompt uses the portfolio intro', portfolio.includes('portfolio website') && portfolio.includes('Arjun Mehta'))
 check('AI links open in a new tab', (await page.getByRole('link', { name: /Open ChatGPT/ }).getAttribute('target')) === '_blank')
 check('no console errors', errors.length === 0, errors.join(' | '))
 await browser.close()

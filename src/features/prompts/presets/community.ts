@@ -20,7 +20,7 @@ export const COMMUNITY_PRESETS: PromptPreset[] = [
   8. FAQ: 5 questions as <details> (laptop needed, beginners welcome, food, refunds, certificate).
   9. Location: address, how to get there, accessibility note.
   10. Footer: links, contact email, © year.
-- Look and feel: energetic and friendly, white with a bold violet and lime accent, rounded shapes, playful but clear.
+- Look and feel: energetic and bold: deep violet hero with a lime-green accent, large playful blob shapes and a subtle grain texture, chunky rounded buttons, sticker-style badges, a bright countdown in big numbers, cards that tilt slightly on hover.
 - Fonts: Space Grotesk for headings, Inter for text.
 - Details: Saturday 14 November 2026, 10:00–17:00, The Hive, 9 Market Lane, Manchester. Early bird £49, standard £69.`,
   },
@@ -43,7 +43,7 @@ export const COMMUNITY_PRESETS: PromptPreset[] = [
   9. Guarantee: 30-day money-back badge and one sentence.
   10. FAQ: 5 questions as <details>.
   11. Footer: links, contact, © year.
-- Look and feel: reassuring and clear, warm white, deep teal and soft yellow, friendly illustrations-style icons, rounded cards.
+- Look and feel: reassuring and uplifting: warm white with deep teal and soft sunshine-yellow, a friendly hero with a big rounded photo of the teacher and floating stat bubbles, illustration-style icons, rounded cards, highlighted "most popular" plan with a soft glow.
 - Fonts: Nunito for headings, Inter for text.
 - Details: self-paced $149, with coaching $299. Next live group starts 2 March 2026.`,
   },
@@ -65,7 +65,7 @@ export const COMMUNITY_PRESETS: PromptPreset[] = [
   8. Volunteer: short form (name, email, how you'd like to help) with a thank-you message.
   9. Partners: a row of 5 partner names as simple text logos.
   10. Footer: registered charity number, contact, social links, © year.
-- Look and feel: hopeful and down to earth, fresh green, earthy brown and sunny yellow on white, natural photos.
+- Look and feel: hopeful and full of life: fresh green, earthy brown and sunny yellow on white, a full-width photo hero with a warm overlay, an animated progress bar, big impact numbers, organic leaf shapes (inline SVG) as decoration, natural, real-feeling photos.
 - Fonts: Bricolage Grotesque for headings, Inter for text.
 - Details: goal $50,000, raised $31,400, 412 donors, 18 days left.`,
   },

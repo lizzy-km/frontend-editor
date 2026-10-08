@@ -3,6 +3,22 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/prompt-groups — 2026-10-08
+- AI prompts are grouped like the Landing Page builder's, each group with its
+  own intro and blank brief (`prompts/promptGroups.ts`), 35 ideas in all:
+  - **Business & services**: café, salon, home for sale, online course, charity.
+  - **Brands & launches**: brand homepage, new product release, app launch,
+    fashion collection drop, drinks brand, skincare launch.
+  - **Events & celebrations**: wedding, birthday party, company dinner party,
+    graduation party, festival, workshop, conference, concert.
+  - **Portfolios**: the builder's 11 professions (designer, developer,
+    photographer, architect, filmmaker, illustrator, writer, marketer,
+    musician, fashion, 3D) plus an online CV.
+- Eye-catching results: every intro asks for a premium, studio-quality
+  design, and the rules gained "8. DESIGN — MAKE IT EYE-CATCHING" (one visual
+  idea, a striking hero, confident color, characterful type, depth, layout
+  variety, tasteful motion, framed photos). Briefs got richer art direction.
+
 ## feature/background-panel — 2026-10-05
 - **Background section** (`inspector/background/`): Color, then **Picture**
   and **Gradient** tabs (a dot shows which is in use). Both can be used at

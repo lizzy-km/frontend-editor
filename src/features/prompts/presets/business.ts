@@ -18,7 +18,7 @@ export const BUSINESS_PRESETS: PromptPreset[] = [
   6. Reviews: 3 short customer quotes with first name and star rating.
   7. Hours and location: opening hours table, address, phone, and a "Get directions" link to Google Maps.
   8. Footer: logo, social links as text, © year.
-- Look and feel: warm and cozy, cream background, deep green and terracotta accents, rounded corners, lots of food photos.
+- Look and feel: warm, cozy and appetising: cream and toasted-bread tones with deep forest green and terracotta, a full-bleed hero photo with a soft dark gradient for the headline, hand-drawn style squiggle dividers (inline SVG), rounded cards that lift on hover, menu prices in a bold accent color, mouth-watering food photos everywhere.
 - Fonts: Fraunces for headings, Inter for text.
 - Details: Mon–Fri 7:00–17:00, Sat–Sun 8:00–15:00. 42 Linden Street, Portland. Phone (503) 555-0142. Flat white $4.50, avocado toast $12.`,
   },
@@ -40,7 +40,7 @@ export const BUSINESS_PRESETS: PromptPreset[] = [
   8. FAQ: 5 questions as <details> (shipping, returns, warranty, charging, noise level).
   9. Final call: heading, price, "Pre-order now" button and a 7-day countdown to the end of the launch discount.
   10. Footer: logo, links, © year.
-- Look and feel: clean and modern, white and soft grey, one bright sky-blue accent, big product photos, rounded 20px cards.
+- Look and feel: premium tech-product launch: clean white and soft cloud-grey sections alternating with one deep midnight-blue band, a vivid sky-blue accent, huge floating product photo with a soft colored glow behind it, glassy rounded 20px cards, big bold numbers, smooth hover lifts.
 - Fonts: Manrope for headings and text.
 - Details: regular price $89, launch price $69, colors Cloud, Slate and Sage.`,
   },
@@ -61,7 +61,7 @@ export const BUSINESS_PRESETS: PromptPreset[] = [
   7. Reviews: 3 quotes with first name.
   8. Contact: opening hours, address, phone, and a simple booking request form (name, phone, service, preferred day) with a thank-you message.
   9. Footer: logo, social links, © year.
-- Look and feel: calm and elegant, off-white, blush pink and charcoal, thin lines, soft shadows.
+- Look and feel: calm, elegant and luxurious: off-white and blush pink with charcoal text and rose-gold details, large arched photo frames, thin lines, soft shadows, airy spacing, subtle shimmer gradient on the main button.
 - Fonts: Cormorant Garamond for headings, Jost for text.
 - Details: Tue–Sat 9:00–19:00. Women's cut from $55, color from $85. 18 Rue Belle, Montréal.`,
   },
@@ -82,7 +82,7 @@ export const BUSINESS_PRESETS: PromptPreset[] = [
   7. Neighbourhood: 4 cards (schools, parks, shops, transport) with walking times.
   8. Agent: photo, name, phone, email and a short contact form with a thank-you message.
   9. Footer: agency name, license number, © year.
-- Look and feel: bright and trustworthy, white, navy and warm sand, big photos, clean lines.
+- Look and feel: bright, trustworthy and aspirational: white and warm sand with deep navy text, an oversized hero photo with the price in a frosted-glass card, big clean typography for the key facts, crisp icons, photo gallery that zooms gently on hover.
 - Fonts: Playfair Display for headings, Source Sans 3 for text.
 - Details: 27 Maple Grove, Seattle. Price $749,000. Open house Saturday 11:00–13:00.`,
   },
