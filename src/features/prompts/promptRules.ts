@@ -53,12 +53,23 @@ The page will be pasted into a visual editor where people change it by clicking:
 - No alert(), confirm() or prompt(), no pop-ups on load, no localStorage, no network requests, no tracking or third-party widgets.
 - Forms (contact, RSVP, sign-up): real <label> for every field and action="#"; on submit, prevent the default and show a short thank-you message that is already in the HTML (hidden attribute until then).
 
-8. QUALITY
+8. DESIGN — MAKE IT EYE-CATCHING
+- Start from one clear visual idea that fits the subject (its mood, palette, type pairing and a recurring motif) and carry it through every section. It must not look like a generic template or a plain list of boxes.
+- Hero: the most striking part of the page. A big, expressive headline (font-size with clamp(), roughly 44–96px on desktop), a strong photo or rich layered background (gradients, soft shapes, a gentle overlay so text stays readable), a short supporting line and one standout button.
+- Color: one dominant color, one bold accent and a few neutrals, all as :root variables. Use them with confidence: alternate light and dark (or tinted) sections for rhythm, use the accent for buttons, highlights and key numbers.
+- Typography: a characterful display font for headings and a clean, readable body font. Small uppercase labels with letter-spacing above headings, large numbers for stats and prices, comfortable line lengths (about 60–75 characters).
+- Depth and detail: soft layered shadows, rounded or distinctive card shapes, thin dividers, badges and chips, subtle texture or gradient glows, decorative shapes made with CSS pseudo-elements or inline SVG (decoration only — never text).
+- Layout variety: mix layouts (split screen, asymmetric grids, overlapping photo and card, a bento grid, one full-width image band) instead of repeating the same centred stack; generous white space between sections.
+- Motion with taste: hover lifts and color shifts on cards and buttons, a gentle zoom on photos, scroll-reveal and count-up numbers as enhancements, all short (150–600ms) and switched off under prefers-reduced-motion.
+- Photos: high-quality, on-topic and consistent in mood and color; crop them with object-fit and frame them well (rounded, arched or with an offset shape behind).
+
+9. QUALITY
 - Strong, readable color contrast; visible focus styles on links and buttons; alt text on every picture; aria-label on icon-only buttons.
 - Consistent spacing rhythm between sections, a clear visual hierarchy and one obvious main action.
 - The footer has the name, short contact details, links and © with the current year.
 
-9. BEFORE YOU ANSWER, CHECK
+10. BEFORE YOU ANSWER, CHECK
 - One html code block, nothing outside it. One <style> in <head>, one <script> at the end of <body>.
 - Every section has an id and a class; repeated items share a class; all text is real HTML text.
-- It works at 1440px, 1024px, 768px, 390px and 360px wide, with and without JavaScript.`
+- It works at 1440px, 1024px, 768px, 390px and 360px wide, with and without JavaScript.
+- It would stand out next to a site from a top design studio: a memorable hero, a confident palette and real visual variety from section to section.`

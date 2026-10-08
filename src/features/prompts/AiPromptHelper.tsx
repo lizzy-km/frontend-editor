@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { track } from '@/features/analytics/track'
 import { Button, Icon, toast } from '@/shared/ui'
-import { buildPrompt, presetBrief, PROMPT_PRESETS } from './prompts'
+import { buildPrompt, presetBrief, PROMPT_GROUPS, PROMPT_PRESETS } from './prompts'
 import { PROMPT_RULES } from './promptRules'
 import styles from './AiPromptHelper.module.css'
 
@@ -28,7 +28,7 @@ export function AiPromptHelper() {
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(buildPrompt(brief))
+      await navigator.clipboard.writeText(buildPrompt(brief, presetId))
       track('prompt_copy', { preset: presetId, edited: brief !== presetBrief(presetId) })
       setCopied(true)
       toast('Prompt copied — paste it into your AI tool', 'success')
@@ -45,14 +45,19 @@ export function AiPromptHelper() {
       </summary>
       <div className={styles.body}>
         <p className={styles.step}><b>1.</b> Pick an idea close to yours, then change the description below in your own words.</p>
-        <div className={styles.chips} role="radiogroup" aria-label="Page idea">
-          {PROMPT_PRESETS.map((preset) => (
-            <button key={preset.id} type="button" role="radio" aria-checked={preset.id === presetId}
-              className={styles.chip} onClick={() => choose(preset.id)}>
-              <span aria-hidden="true">{preset.icon}</span> {preset.label}
-            </button>
-          ))}
-        </div>
+        {PROMPT_GROUPS.map((group) => (
+          <div key={group.id} className={styles.group}>
+            <p className={styles.groupLabel}>{group.label}</p>
+            <div className={styles.chips} role="radiogroup" aria-label={group.label}>
+              {group.presets.map((preset) => (
+                <button key={preset.id} type="button" role="radio" aria-checked={preset.id === presetId}
+                  className={styles.chip} onClick={() => choose(preset.id)}>
+                  <span aria-hidden="true">{preset.icon}</span> {preset.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
         <label className={styles.briefLabel} htmlFor="ai-brief">Your page (change anything)</label>
         <textarea id="ai-brief" className={styles.brief} value={brief} spellCheck
           onChange={(event) => setBrief(event.target.value)} />
