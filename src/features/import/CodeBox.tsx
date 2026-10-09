@@ -32,7 +32,7 @@ export function CodeBox({ label, value, onChange, language = 'html', placeholder
       <span id={id} className={styles.boxLabel}>{label}</span>
       <LazyCodeEditor
         label={label} language={language} value={value} onChange={onChange} placeholder={placeholder} autoFocus={autoFocus}
-        foldTools={false} minHeight={small ? '120px' : '260px'} maxHeight={small ? '320px' : '520px'} onDropFile={onDropFile}
+        foldTools={false} minHeight={small ? '160px' : '360px'} maxHeight={small ? '360px' : '65vh'} onDropFile={onDropFile}
       />
     </div>
   )
