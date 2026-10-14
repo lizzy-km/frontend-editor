@@ -102,6 +102,15 @@ typed fields, sample rows, and an optional API. The React download turns them
 into TypeScript types, a mock data file and React Query + axios hooks, using
 the sample rows until you switch to the real API.
 
+## Ready-made components
+
+- **List from data**: one card design filled from a data source; in the React
+  download it loads page by page as visitors scroll (React Query + a ready-made
+  InfiniteScroll).
+- **Animation box** (and an Animation section on everything): fade, slide,
+  zoom, flip or unblur on scroll, load, hover or in a loop, one by one if you
+  like. The React download uses Motion.
+
 ## Downloads
 
 Web page (.html), files for a developer (.zip), a **React project** (.zip:
