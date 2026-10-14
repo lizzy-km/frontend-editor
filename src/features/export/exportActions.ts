@@ -5,6 +5,7 @@ import { useViewStore } from '@/features/editor/store/view.store'
 import { downloadFile, toFileName } from '@/lib/download'
 import { partsToSplitFiles } from './buildFiles'
 import { capturePng } from './capturePng'
+import type { RouterKind } from './react/routerTemplates'
 import { currentPageDoc, siteToSplitFiles } from './siteFiles'
 import { zipFiles } from './zip'
 
@@ -42,10 +43,12 @@ export async function prepareZip(scope: ExportScope): Promise<Deliver> {
 }
 
 /** A .zip with a React + TypeScript project (Vite), one component per part. Loaded only when used. */
-export async function prepareReact(scope: ExportScope): Promise<Deliver> {
-  const { buildReactProject } = await import('./react/buildReactProject')
+export async function prepareReact(scope: ExportScope, router: RouterKind = 'react-router'): Promise<Deliver> {
   const folder = `${baseName(scope)}-react`
-  const files = buildReactProject(getDoc(), scope ?? undefined)
+  // A whole site becomes a routed app; one page (or one part) a single App.
+  const files = !scope && isMultiPage(getDoc())
+    ? (await import('./react/buildSiteProject')).buildSiteProject(getDoc(), { router })
+    : (await import('./react/buildReactProject')).buildReactProject(pageForExport(), scope ?? undefined)
   const zip = zipFiles(Object.fromEntries(Object.entries(files).map(([path, text]) => [`${folder}/${path}`, text])))
   return () => downloadFile(`${folder}.zip`, zip)
 }

@@ -27,3 +27,5 @@
 .noticeActions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .allowance { font-size: 13.5px; color: var(--text-soft); margin-bottom: 12px; }
 .allowance strong { color: var(--text); }
+
+.router { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text-soft); margin-bottom: 10px; }

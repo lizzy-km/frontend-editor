@@ -6,7 +6,10 @@ import { getElement } from '@/features/editor/model/tree/queries'
 import { useDocStore } from '@/features/editor/store/doc.store'
 import { useSelectionStore } from '@/features/editor/store/selection.store'
 import { Button, Icon, Modal, toast, type IconName } from '@/shared/ui'
+import { SegmentedControl } from '@/features/editor/inspector/controls/ChoiceControls'
+import { isMultiPage } from '@/features/editor/model/pages'
 import { DownloadsLeft, SignInToDownload } from './DownloadNotice'
+import { ROUTERS, type RouterKind } from './react/routerTemplates'
 import { downloadsBlocked, gateWhere, type DownloadGate } from './downloadGate'
 import styles from './ExportDialog.module.css'
 import { prepareCopy, prepareHtml, preparePng, prepareReact, prepareZip, type Deliver, type ExportScope } from './exportActions'
@@ -38,6 +41,8 @@ export function ExportDialog({ open, onClose, gate }: Props) {
   const part = useSelectedPartName()
   const [onlyPart, setOnlyPart] = useState(false)
   const [busy, setBusy] = useState<string | null>(null)
+  const [router, setRouter] = useState<RouterKind>('react-router')
+  const site = useDocStore((state) => isMultiPage(state.doc))
   const scope: ExportScope = onlyPart && part.name ? part.selectedId : null
   const blocked = downloadsBlocked(gate)
   const blockedBy = !open ? null : gate.kind === 'signin' ? 'signin' : gate.kind === 'counted' && gate.status === 'ready' && blocked ? 'limit' : null
@@ -72,12 +77,19 @@ export function ExportDialog({ open, onClose, gate }: Props) {
       <div className={styles.choices}>
         {CHOICES.map((choice) => (
           <button key={choice.id} type="button" className={styles.choice} disabled={busy !== null || blocked}
-            onClick={() => run(choice.id, choice.prepare, 'Downloaded!')}>
+            onClick={() => run(choice.id, choice.id === 'react' ? (s) => prepareReact(s, router) : choice.prepare, 'Downloaded!')}>
             <span className={styles.icon}><Icon name={busy === choice.id ? 'sparkle' : choice.icon} size={22} /></span>
             <span><strong>{choice.title}</strong><small>{choice.text}</small></span>
           </button>
         ))}
       </div>
+      {site && !scope && !blocked && (
+        <div className={styles.router}>
+          <span>Pages router for the React project</span>
+          <SegmentedControl label="Pages router" value={router} onChange={(value) => setRouter(value as RouterKind)}
+            options={Object.entries(ROUTERS).map(([value, info]) => ({ value, label: info.label }))} />
+        </div>
+      )}
       <Button variant="ghost" icon="copy" disabled={busy !== null || blocked}
         onClick={() => run('copy', prepareCopy, 'Code copied — paste it anywhere')}>
         Copy the code instead

@@ -13,6 +13,18 @@ export type JsxContext = {
   props?: Map<string, string>
   /** Repeated runs to replace, keyed by their first item's id. */
   repeats?: Map<string, RepeatSlot>
+  /** Sites: links to these page addresses become the router's <Link to>; `used` tells the file to import it. */
+  links?: { paths: Set<string>; used: boolean }
+}
+
+/** <a href="/about"> -> <Link to="/about"> when /about is a page of the site (not inside item templates' changing links). */
+function asRouterLink(ctx: JsxContext, node: ElementNode): ElementNode {
+  const href = node.attrs.href ?? ''
+  if (node.tag !== 'a' || !ctx.links?.paths.has(href) || ctx.props?.has(`${node.id}@href`)) return node
+  ctx.links.used = true
+  const attrs: Record<string, string> = { to: href, ...node.attrs }
+  delete attrs.href
+  return { ...node, tag: 'Link', attrs }
 }
 
 /** Tags that sit in a line of text: the space between two of them is visible. */
@@ -95,8 +107,9 @@ function blockChildren(ctx: JsxContext, ids: string[], pad: string, inSvg: boole
 
 /** One element and everything inside it, as JSX, indented by `pad`. */
 export function writeElement(ctx: JsxContext, id: string, pad: string, inSvg = false, inPre = false): string {
-  const node = ctx.nodes[id]
-  if (!isElement(node)) return ''
+  const original = ctx.nodes[id]
+  if (!isElement(original)) return ''
+  const node = asRouterLink(ctx, original)
   const svg = inSvg || node.tag === 'svg'
   const childSvg = svg && node.tag !== 'foreignObject'
   const children = visibleChildren(ctx.nodes, node)
