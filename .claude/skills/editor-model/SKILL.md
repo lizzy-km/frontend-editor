@@ -89,6 +89,11 @@ that break things if you ignore them.
     `data-fe-id`), static ones from `serialize/expandLists.ts`. `data-fe-*`
     attributes are the editor's: React output drops them (`isEditorAttr`).
 
+22. **Sign-in export** (`export/react/auth/`) is only added when something has
+    a condition (`needsAuth`). API paths live in `model/authApi.ts` (editor and
+    export share them). Check guard changes by building both routers' output
+    and running it in Chrome: route redirects race in ways tests can't see.
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

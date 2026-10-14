@@ -92,8 +92,17 @@ Choose "One page" or "A website with several pages" when you start (or turn
 a page into a website later). A website has a Pages tab, a header and footer
 shared by every page, "Go to a page" links and "Click goes to" boxes. Its
 React download is a routed app (React Router or TanStack Router) with a
-shared Layout, one file per page, and a demo sign-in with a route guard for
-"signed-in only" pages.
+shared Layout, one file per page, and route guards for pages only some
+people may open.
+
+## Who can see what
+
+"Who can see this" shows an element or page to everyone, signed-in people
+(optionally with some roles) or signed-out visitors, and can require feature
+flags. "Viewing as" in the toolbar shows the page as each of them. The React
+download gets real sign-in code for any API (set the addresses under
+**Sign-in API** in the Data tab) and a demo mode with sample accounts until
+you switch to your API.
 
 ## Data
 

@@ -3,6 +3,24 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/auth-backend — 2026-10-14
+- **Sign-in in the React download** (`export/react/auth/`), added whenever
+  something is shown to only some visitors: `AuthProvider` + `useAuth`
+  (sign in, create account, forgot / reset password, confirm email, resend,
+  sign out, `hasRole`), `session.ts` (tokens in localStorage, bearer header,
+  one refresh on 401), `authApi.ts` (axios, the site's paths) and
+  `authMock.ts` (a pretend server with demo accounts; confirm and reset links
+  go to the console) used until `VITE_USE_MOCK=false`.
+- `<Show when={{ signedIn, roles, flags }}>` wraps every element with a
+  condition; `src/config/flags.ts` lists the site's flags (on via `VITE_FLAGS`).
+- Route guards per page access: React Router `<RequireAuth roles flags signedOut>`,
+  TanStack `beforeLoad: requireAccess({...})`; "No access" page, and a
+  standard `/login` unless the site has its own. After signing in people go
+  back to the page they wanted.
+- Editor: **Sign-in API** in the Data tab (`model/authApi.ts`, `doc.authApi`).
+- Verified by building both routers' output and running them in Chrome
+  (visitor/member/admin menus, redirects, No access).
+
 ## feature/conditions — 2026-10-15
 - **Who can see this** (`model/conditions.ts`) on any element and on pages:
   everyone / signed in (optionally some roles) / signed out, plus flags that
