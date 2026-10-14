@@ -1,12 +1,6 @@
 /** The exported project's auth core: types, session (tokens), API calls and the mock backend. */
 
-/** Paths of the auth API (relative to VITE_API_URL), set in the editor's Data tab. */
-export type AuthEndpoints = Record<'login' | 'register' | 'forgot' | 'reset' | 'confirm' | 'resend' | 'me' | 'refresh' | 'logout', string>
-
-export const DEFAULT_ENDPOINTS: AuthEndpoints = {
-  login: '/auth/login', register: '/auth/register', forgot: '/auth/forgot-password', reset: '/auth/reset-password',
-  confirm: '/auth/confirm-email', resend: '/auth/resend-confirmation', me: '/auth/me', refresh: '/auth/refresh', logout: '/auth/logout',
-}
+import type { AuthEndpoints } from '@/features/editor/model/authApi'
 
 export const TYPES = `/** Who is signed in. Roles decide what they may see (see Show and the route guards). */
 export type User = { id: string; email: string; name: string; roles: string[]; emailConfirmed: boolean }

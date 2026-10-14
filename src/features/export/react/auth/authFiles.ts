@@ -1,9 +1,10 @@
+import { endpointsOf } from '@/features/editor/model/authApi'
 import { accessOf, conditionOf, hasCondition } from '@/features/editor/model/conditions'
 import { listPages } from '@/features/editor/model/pages'
 import { isElement, type PageDoc } from '@/features/editor/model/types'
 import { clientFiles } from '../dataTemplates'
 import type { RouterKind } from '../routerTemplates'
-import { authApiSource, DEFAULT_ENDPOINTS, SESSION, TYPES, type AuthEndpoints } from './apiTemplates'
+import { authApiSource, SESSION, TYPES } from './apiTemplates'
 import { guardSource, noAccessSource } from './guardTemplates'
 import { loginFallbackSource } from './loginTemplate'
 import { MOCK } from './mockTemplate'
@@ -18,8 +19,6 @@ export const needsAuth = (doc: PageDoc) =>
 /** The site's flags plus any used on an element or page (so flags.ts lists every one). */
 const flagsOf = (doc: PageDoc) => [...new Set([...accessOf(doc).flags,
   ...Object.values(doc.nodes).flatMap((node) => (isElement(node) ? conditionOf(node).flags : []))])]
-
-const endpointsOf = (doc: PageDoc): AuthEndpoints => ({ ...DEFAULT_ENDPOINTS, ...(doc.authApi as Partial<AuthEndpoints> | undefined) })
 
 /**
  * src/auth/* (types, session + tokens, API calls, mock, AuthProvider, useAuth,
