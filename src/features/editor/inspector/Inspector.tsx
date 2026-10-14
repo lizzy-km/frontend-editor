@@ -12,11 +12,13 @@ import styles from './Inspector.module.css'
 import { InspectorHeader } from './InspectorHeader'
 import { AdvancedSection } from './sections/AdvancedSection'
 import { FormFieldSection, HAS_PLACEHOLDER } from './sections/FormFieldSection'
+import { ClickSection, PopupSection } from './sections/ClickSection'
 import { FormSection } from './sections/FormSection'
 import { AnimationSection } from './sections/AnimationSection'
 import { DataListSection } from './sections/DataListSection'
 import { GoToPageSection } from './sections/GoToPageSection'
 import { ShowDataSection } from './sections/ShowDataSection'
+import { MODAL_ATTR } from '../model/popups'
 import { WhoSection } from './sections/WhoSection'
 import { LinkSection } from './sections/LinkSection'
 import { PageSection } from './sections/PageSection'
@@ -75,6 +77,8 @@ export function Inspector() {
       {context.hasText && !context.isTextEditable && <WordsSection id={node.id} />}
       {node.tag === 'a' && <LinkSection node={node} />}
       {node.tag !== 'a' && node.id !== rootId && !isPageNode(node) && <GoToPageSection key={`go-${node.id}`} node={node} />}
+      {MODAL_ATTR in node.attrs && <PopupSection key={`popup-${node.id}`} node={node} />}
+      {node.id !== rootId && !isPageNode(node) && <ClickSection key={`click-${node.id}`} node={node} />}
       {list && <DataListSection info={list} />}
       {inList && <ShowDataSection key={`data-${node.id}`} node={node} list={inList} />}
       {node.tag === 'img' && <PictureSection node={node} />}
