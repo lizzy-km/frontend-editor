@@ -3,7 +3,7 @@ import { Button, Switch } from '@/shared/ui'
 import { createLayout, dropLayout } from '../../actions/pageActions'
 import { layoutOf, ownHeader, type LayoutKind } from '../../model/layouts'
 import { useDocStore } from '../../store/doc.store'
-import styles from './Pages.module.css'
+import styles from './Design.module.css'
 
 const CHOICES: { kind: LayoutKind; label: string; hint: string }[] = [
   { kind: 'top', label: 'Top bar', hint: 'A menu across the top' },
@@ -20,7 +20,6 @@ export function LayoutPanel() {
 
   return (
     <div className={styles.layout}>
-      <p className={styles.layoutTitle}>Layout</p>
       <div className={styles.choices} role="group" aria-label="Layout">
         {CHOICES.map((choice) => (
           <button key={choice.kind} type="button" className={`${styles.choice} ${kind === choice.kind ? styles.chosen : ''}`}

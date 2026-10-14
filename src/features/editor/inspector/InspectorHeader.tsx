@@ -6,7 +6,6 @@ import { useViewStore } from '../store/view.store'
 import styles from './Inspector.module.css'
 
 const SCOPE_TEXT = {
-  desktop: 'Changes show on every screen size (unless you change them for tablet or phone).',
   tablet: 'Changes apply to tablets and phones only.',
   mobile: 'Changes apply to phones only.',
 }
@@ -26,10 +25,12 @@ export function InspectorHeader({ node, nodes }: { node: ElementNode; nodes: Nod
           {description !== label.name && <p className={styles.headerSub}>{description.slice(label.name.length).trim()}</p>}
         </div>
       </div>
-      <p className={styles.notice}>
-        <Icon name={BREAKPOINTS[breakpoint].icon} size={16} />
-        <span><strong>{BREAKPOINTS[breakpoint].label} view.</strong> {SCOPE_TEXT[breakpoint]}</span>
-      </p>
+      {breakpoint !== 'desktop' && (
+        <p className={styles.notice}>
+          <Icon name={BREAKPOINTS[breakpoint].icon} size={16} />
+          <span><strong>{BREAKPOINTS[breakpoint].label} view.</strong> {SCOPE_TEXT[breakpoint]}</span>
+        </p>
+      )}
     </>
   )
 }

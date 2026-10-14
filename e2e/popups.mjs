@@ -1,5 +1,5 @@
 // Pop-ups: ready-made Pop-up block, its name, "Opens" on a button, "Ask first", Preview-style behavior is unit tested.
-import { check, openExample } from './browser.mjs'
+import { check, openExample, inspectorTab } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
@@ -16,6 +16,7 @@ await page.waitForTimeout(300)
 const opener = await box('[data-fe-open]')
 await page.mouse.click(opener.x + 6, opener.y + 6)
 await page.waitForTimeout(300)
+await inspectorTab(page, 'Actions')
 check('button opens the pop-up by name', (await panel.getByLabel('Opens pop-up').inputValue()) === 'welcome')
 await panel.getByLabel('Ask first question').fill('Open it now?')
 await panel.getByLabel('Ask first question').press('Enter')

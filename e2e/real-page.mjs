@@ -1,7 +1,7 @@
 // A real-world AI page (fixtures/retirement.html): SVG symbols, <details> FAQ,
 // a form, spans as heading lines, head meta. Guards the bugs it exposed.
 import { readFileSync } from 'node:fs'
-import { allowTryDownloads, check, editorFrame, OUT, openPage } from './browser.mjs'
+import { allowTryDownloads, check, editorFrame, OUT, openPage, inspectorTab } from './browser.mjs'
 
 const PAGE = readFileSync(new URL('./fixtures/retirement.html', import.meta.url), 'utf8')
 const { browser, page, errors } = await openPage('/try')
@@ -48,6 +48,7 @@ check('selection name is friendly', (await title()).startsWith('Question'), awai
 
 // 4. Hint text for the note box
 await clickIn('#note')
+await inspectorTab(page, 'Actions')
 await panel.getByLabel('Hint text').fill('Share a favourite memory')
 await panel.getByLabel('Hint text').press('Enter')
 await page.waitForTimeout(300)

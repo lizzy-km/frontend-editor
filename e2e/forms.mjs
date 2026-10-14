@@ -1,5 +1,5 @@
 // Forms: ready-made contact form, "Form" and "Input box" settings, rules kept, undo.
-import { check, openExample } from './browser.mjs'
+import { check, openExample, inspectorTab } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
@@ -16,6 +16,7 @@ await page.waitForTimeout(300)
 const form = await box('form[data-fe-submit]')
 await page.mouse.click(form.x + 4, form.y + 4)
 await page.waitForTimeout(300)
+await inspectorTab(page, 'Actions')
 check('Form settings show', await panel.getByText('Check the answers and send them').isVisible())
 await panel.getByLabel('Send answers to address').fill('https://api.example.com/contact')
 await panel.getByLabel('Send answers to address').press('Enter')

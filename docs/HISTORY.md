@@ -3,6 +3,22 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/ux-redesign — 2026-10-15
+- **Left side**: a slim icon rail (Layers, Add, Pages, Design, Data, Code, each
+  with its name under the icon) replaces the row of tabs that got cut off. The
+  open panel gets the full width. **Design** holds Colors and Layout (Layout
+  moved here from Pages).
+- **Settings panel (right side)**: three tabs. **Design** = how it looks (words,
+  picture, text, background, size, space, border). **Actions** = what it does
+  (link, click goes to, pop-up, ask first, list and form settings, who can see
+  it, animation). **More** = show/hide on screen sizes, attributes, own CSS.
+  Actions is left out for the page itself; a dot on it means something is set.
+  The chosen tab is remembered while you select other things.
+- Only the first two style sections (and any with a change already made) start
+  open, so a button shows Text / Background / Spacing instead of ten sections.
+  The "Computer view" notice only shows on Tablet and Phone, where it matters.
+- e2e: `inspectorTab` and `openSection` helpers in `e2e/browser.mjs`.
+
 ## feature/global-colors — 2026-10-15
 - **Colors tab**: every color of the project in one list, most used first.
   Change one (picker or #hex) and it changes everywhere it is used: the page

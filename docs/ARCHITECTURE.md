@@ -275,6 +275,14 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Panels (`sidebar/`, `inspector/`)
+
+- `Sidebar.tsx` is a vertical rail + one panel (`SidePanel`: layers, add, pages,
+  design, data, code). `Inspector.tsx` splits the selected element's sections
+  into `InspectorTab`s (design / actions / more, in `view.store`); put a new
+  section in the tab that matches its question: how does it look, what does it
+  do, or is it rarely needed.
+
 ## Colors (`model/palette.ts`)
 
 - A global color change is a pure `PageDoc -> PageDoc` function (`replaceColor`,

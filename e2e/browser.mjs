@@ -81,3 +81,18 @@ export async function pasteCode(page, code) {
     element.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }))
   }, code)
 }
+
+/** Opens a tab of the settings panel (Design / Actions / More). */
+export async function inspectorTab(page, name) {
+  await page.locator('aside').last().getByRole('tab', { name, exact: true }).click()
+  await page.evaluate(() => document.activeElement?.blur()) // keyboard shortcuts ignore keys while a button has focus
+  await page.waitForTimeout(150)
+}
+
+/** Opens a collapsed section of the settings panel (most start closed now). */
+export async function openSection(page, title) {
+  const header = page.locator('aside').last().getByRole('button', { name: title, exact: true })
+  if ((await header.getAttribute('aria-expanded')) === 'false') await header.click()
+  await page.evaluate(() => document.activeElement?.blur())
+  await page.waitForTimeout(150)
+}

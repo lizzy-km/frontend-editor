@@ -1,5 +1,5 @@
 // Layouts: top bar, side menu, both; the menu comes from the pages; selecting the fixed side menu works; undo.
-import { check, openExample } from './browser.mjs'
+import { check, openExample, inspectorTab } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
@@ -16,6 +16,8 @@ await page.getByRole('dialog').getByLabel('Page name').fill('Prices')
 await page.getByRole('button', { name: 'Add page' }).click()
 await page.waitForTimeout(400)
 
+await sidebar.getByRole('tab', { name: 'Design' }).click()
+await sidebar.getByRole('button', { name: 'Layout', exact: true }).click()
 const layout = sidebar.getByRole('group', { name: 'Layout' })
 await layout.getByRole('button', { name: 'Top bar' }).click()
 await sidebar.getByRole('button', { name: 'Add layout' }).click()
@@ -33,6 +35,7 @@ check('side menu has the page links', (await frame.$eval('[data-fe-layout="side"
 const side = await box('[data-fe-layout="side"] nav')
 await page.mouse.click(side.x + 4, side.y + side.height + 60)
 await page.waitForTimeout(400)
+await inspectorTab(page, 'Actions')
 check('side menu selectable (settings show)', await panel.getByText('Who can see this').first().isVisible())
 
 await sidebar.getByRole('button', { name: 'Remove', exact: true }).click()

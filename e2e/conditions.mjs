@@ -1,5 +1,5 @@
 // "Who can see this" + "Viewing as": elements hidden by sign-in, role and flag, in the editor and Preview.
-import { check, OUT, openExample } from './browser.mjs'
+import { check, OUT, openExample, inspectorTab } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const panel = page.locator('aside').last()
@@ -16,6 +16,7 @@ const link = await box('nav a:last-child')
 await page.mouse.move(link.x + 4, link.y + 4)
 await page.mouse.click(link.x + 4, link.y + 4)
 await page.waitForTimeout(300)
+await inspectorTab(page, 'Actions')
 await panel.getByRole('button', { name: 'Who can see this' }).click()
 await panel.getByRole('group', { name: 'Who can see this' }).getByRole('button', { name: 'Signed in' }).click()
 await page.waitForTimeout(400)

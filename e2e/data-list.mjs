@@ -1,5 +1,5 @@
 // "List from data": one card design, live copies from the data, field bindings, page size, Preview.
-import { check, OUT, openExample } from './browser.mjs'
+import { check, OUT, openExample, inspectorTab } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
@@ -23,6 +23,7 @@ await page.mouse.move(list.x + 4, list.y + 4)
 await page.mouse.click(list.x + 4, list.y + 4)
 await page.waitForTimeout(300)
 check('box settings show', await panel.getByText('List from data').first().isVisible())
+await inspectorTab(page, 'Actions')
 await panel.getByLabel('Cards per page value').fill('3')
 await page.waitForTimeout(400)
 check('page size 3 shows 3 copies', (await cards()) === 4, String(await cards()))

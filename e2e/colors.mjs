@@ -3,7 +3,7 @@ import { check, openExample } from './browser.mjs'
 
 const { browser, page, frame, errors } = await openExample()
 const sidebar = page.locator('aside').first()
-await sidebar.getByRole('tab', { name: 'Colors' }).click()
+await sidebar.getByRole('tab', { name: 'Design' }).click()
 await page.waitForTimeout(400)
 
 const rows = sidebar.getByRole('list', { name: 'Colors on your page' }).getByRole('listitem')
