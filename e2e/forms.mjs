@@ -1,0 +1,41 @@
+// Forms: ready-made contact form, "Form" and "Input box" settings, rules kept, undo.
+import { check, openExample } from './browser.mjs'
+
+const { browser, page, frame, box, errors } = await openExample()
+const sidebar = page.locator('aside').first()
+const panel = page.locator('aside').last()
+
+await page.mouse.click(12, 845)
+await sidebar.getByRole('tab', { name: 'Add' }).click()
+await sidebar.getByRole('button', { name: 'Contact form' }).click()
+await page.waitForTimeout(600)
+check('contact form added', (await frame.$$eval('form[data-fe-submit] input, form[data-fe-submit] textarea', (all) => all.length)) >= 4)
+
+await frame.evaluate(() => document.querySelector('form[data-fe-submit]').scrollIntoView({ block: 'center' }))
+await page.waitForTimeout(300)
+const form = await box('form[data-fe-submit]')
+await page.mouse.click(form.x + 4, form.y + 4)
+await page.waitForTimeout(300)
+check('Form settings show', await panel.getByText('Check the answers and send them').isVisible())
+await panel.getByLabel('Send answers to address').fill('https://api.example.com/contact')
+await panel.getByLabel('Send answers to address').press('Enter')
+await page.waitForTimeout(300)
+check('address saved on the form', (await frame.$eval('form[data-fe-submit]', (el) => el.getAttribute('action'))) === 'https://api.example.com/contact')
+
+const name = await box('form[data-fe-submit] input[name="name"]')
+await page.mouse.click(name.x + 6, name.y + 6)
+await page.waitForTimeout(300)
+check('Input box rules show', await panel.getByLabel('Fewest letters').isVisible())
+await panel.getByLabel('Error message').fill('Tell us your name')
+await panel.getByLabel('Error message').press('Enter')
+await panel.getByLabel('Fewest letters').fill('3')
+await panel.getByLabel('Fewest letters').press('Enter')
+await page.waitForTimeout(300)
+const attrs = await frame.$eval('form[data-fe-submit] input[name="name"]', (el) => [el.getAttribute('minlength'), el.getAttribute('data-fe-message')])
+check('rules saved on the input', attrs[0] === '3' && attrs[1] === 'Tell us your name', attrs.join(','))
+
+await page.mouse.click(12, 845)
+await page.keyboard.press('Control+z')
+await page.waitForTimeout(300)
+check('no console errors', errors.length === 0, errors.join(' | '))
+await browser.close()
