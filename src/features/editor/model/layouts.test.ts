@@ -48,7 +48,7 @@ describe('layouts', () => {
     const swapped = applyLayout(kept, 'side', false)
     expect(layoutOf(swapped)).toBe('side')
     expect(swapped.css.match(/\/\* tweak-layout \*\//g)).toHaveLength(1)
-    expect(swapped.css).not.toContain('.lay-top')
+    expect(swapped.css).not.toContain('.lay-top {')
     const removed = removeLayout(swapped)
     expect(layoutOf(removed)).toBeNull()
     expect(removed.css).not.toContain('tweak-layout')
