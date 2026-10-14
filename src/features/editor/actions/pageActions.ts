@@ -1,5 +1,6 @@
 import { track } from '@/features/analytics/track'
 import { addAuthPages } from '../model/authPages'
+import { applyLayout, removeLayout, type LayoutKind } from '../model/layouts'
 import { addPage, deletePage, movePage, toSite, updatePage, type NewPage } from '../model/pageOps'
 import { listPages } from '../model/pages'
 import { getDoc } from '../store/doc.store'
@@ -60,3 +61,12 @@ export function createAuthPages() {
   const login = pages.find((page) => page.path === '/login')
   if (login) openPage(login.id)
 }
+
+/** Puts a ready-made layout (top bar, side menu, both) on the site, menu made from its pages. One undo step. */
+export function createLayout(kind: LayoutKind, replaceHeader: boolean) {
+  updateDoc((doc) => applyLayout(doc, kind, replaceHeader))
+  track('layout_apply', { kind, replaced: replaceHeader })
+}
+
+/** Takes the ready-made layout away again. */
+export const dropLayout = () => updateDoc((doc) => removeLayout(doc))
