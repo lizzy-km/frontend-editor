@@ -3,7 +3,7 @@ import { isElement, type ElementNode, type FieldType, type NodeMap } from '@/fea
 import { BIND_ATTR, BIND_PREFIX } from '@/features/editor/model/dataLists'
 import { GO_ATTR } from '@/features/editor/model/pages'
 import { jsxAttr, jsxAttrName } from './jsxAttrs'
-import { asRouterLink, fieldExpression, goHandlers, isEditorAttr } from './jsxExtras'
+import { asRouterLink, fieldExpression, goHandlers, isEditorAttr, motionFor, type MotionState } from './jsxExtras'
 
 /** A run of repeated siblings written as one `{list.map(...)}` line. */
 export type RepeatSlot = { ids: string[]; expression: string }
@@ -25,6 +25,8 @@ export type JsxContext = {
   lists?: Map<string, string>
   /** Inside a list's card component: the row's fields and their kinds (bindings become props). */
   row?: Map<string, FieldType>
+  /** Animated elements (Motion): what the file used. */
+  motion?: MotionState
 }
 
 /** Tags that sit in a line of text: the space between two of them is visible. */
@@ -121,26 +123,34 @@ export function writeElement(ctx: JsxContext, id: string, pad: string, inSvg = f
   const list = ctx.lists?.get(id)
   if (list) return `${pad}<${list} />`
   const node = asRouterLink(ctx, original)
+  const { tag, extra } = motionFor(ctx, node)
   const bound = ctx.row && node.attrs[BIND_ATTR] ? fieldExpression(ctx, node.attrs[BIND_ATTR], true) : null
-  if (bound) return `${pad}<${node.tag}${attrsJsx(ctx, node, inSvg)}>{${bound}}</${node.tag}>`
+  if (bound) return `${pad}<${tag}${attrsJsx(ctx, node, inSvg)}${extra}>{${bound}}</${tag}>`
   const svg = inSvg || node.tag === 'svg'
   const childSvg = svg && node.tag !== 'foreignObject'
   const children = visibleChildren(ctx.nodes, node)
   if (node.tag === 'textarea') {
     const text = children.map((child) => (ctx.nodes[child]?.kind === 'text' ? (ctx.nodes[child] as { text: string }).text : '')).join('')
     const value = text ? ` defaultValue={${JSON.stringify(text)}}` : ''
-    return `${pad}<textarea${attrsJsx(ctx, node, svg)}${value} />`
+    return `${pad}<${tag}${attrsJsx(ctx, node, svg)}${extra}${value} />`
   }
-  const open = `<${node.tag}${attrsJsx(ctx, node, svg)}`
+  const open = `<${tag}${attrsJsx(ctx, node, svg)}${extra}`
   if (VOID_TAGS.has(node.tag) || children.length === 0) return `${pad}${open} />`
   const raw = inPre || node.tag === 'pre' // keep every space and line break
   const hasText = raw || children.some((child) => ctx.nodes[child]?.kind === 'text' && !isBlank(ctx.nodes, child))
-  if (hasText) return `${pad}${open}>${inlineChildren(ctx, children, childSvg, raw)}</${node.tag}>`
+  if (hasText) return `${pad}${open}>${inlineChildren(ctx, children, childSvg, raw)}</${tag}>`
   const lines = blockChildren(ctx, children, pad + INDENT, childSvg)
-  return lines.length ? `${pad}${open}>\n${lines.join('\n')}\n${pad}</${node.tag}>` : `${pad}${open} />`
+  return lines.length ? `${pad}${open}>\n${lines.join('\n')}\n${pad}</${tag}>` : `${pad}${open} />`
 }
 
 /** `<tag …attributes>` for an element whose children are written separately (App's <main>). */
 export function openTag(ctx: JsxContext, node: ElementNode): string {
-  return `<${node.tag}${attrsJsx(ctx, node, false)}>`
+  const { tag, extra } = motionFor(ctx, node)
+  return `<${tag}${attrsJsx(ctx, node, false)}${extra}>`
+}
+
+/** The closing tag matching openTag (motion.<tag> when animated). */
+export function closeTag(ctx: JsxContext, node: ElementNode): string {
+  const animated = Boolean(ctx.motion) && node.tag !== 'Link' && (ctx.motion!.items.has(node.id) || Boolean(node.attrs['data-fe-animate']))
+  return `</${animated ? `motion.${node.tag}` : node.tag}>`
 }

@@ -1,0 +1,41 @@
+// Animation box: the block, the Animation settings on any element, Play in the editor, and the player in Preview.
+import { check, OUT, openExample } from './browser.mjs'
+
+const { browser, page, frame, box, errors } = await openExample()
+const sidebar = page.locator('aside').first()
+const panel = page.locator('aside').last()
+
+await page.mouse.click(12, 845)
+await sidebar.getByRole('tab', { name: 'Add' }).click()
+await sidebar.getByRole('button', { name: 'Animation box' }).click()
+await page.waitForTimeout(500)
+check('animation box added, still visible while editing', (await frame.$eval('[data-fe-animate]', (el) => getComputedStyle(el).opacity)) === '1')
+check('Animation settings show for it', (await panel.getByLabel('Animation effect').inputValue()) === 'fade-up')
+await panel.getByRole('button', { name: 'Play' }).click()
+await page.waitForTimeout(100)
+check('Play runs the animation in the editor', (await frame.$eval('[data-fe-animate] h2', (el) => el.getAnimations().length)) > 0)
+await page.screenshot({ path: OUT + 'animation-settings.png' })
+
+// Any element can be animated
+const heading = await box('.hero h1')
+await page.mouse.move(heading.x + 5, heading.y + 5)
+await page.mouse.click(heading.x + 5, heading.y + 5)
+await page.waitForTimeout(300)
+await panel.getByRole('button', { name: 'Animation' }).click()
+await panel.getByLabel('Animation effect').selectOption('zoom-in')
+await panel.getByLabel('When it plays').selectOption('hover')
+await page.waitForTimeout(300)
+check('heading animates on hover', (await frame.$eval('.hero h1', (el) => [el.dataset.feAnimate, el.dataset.feTrigger].join())) === 'zoom-in,hover')
+
+// Preview plays it for real (Web Animations player)
+await page.getByRole('button', { name: 'Preview' }).click()
+const previewFrame = page.frameLocator('iframe[title="Preview of your page"]')
+await page.waitForTimeout(800)
+const animated = previewFrame.locator('[data-fe-animate="fade-up"] h2')
+await animated.scrollIntoViewIfNeeded()
+await page.waitForTimeout(1500)
+const played = await animated.evaluate((el) => el.getAnimations().length)
+const shown = await animated.evaluate((el) => Number(getComputedStyle(el).opacity))
+check('Preview plays the animation and ends visible', played > 0 && shown > 0.95, `${played} animation(s), opacity ${shown}`)
+check('no console errors', errors.length === 0, errors.join(' | '))
+await browser.close()

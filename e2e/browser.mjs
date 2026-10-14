@@ -65,6 +65,8 @@ export function check(label, condition, detail = '') {
  * slowly (a minute for 75 KB); a real Ctrl+V is instant, and so is this.
  */
 export async function pasteCode(page, code) {
+  // Paste into CodeMirror, not into the plain box it replaces when it finishes loading.
+  await page.locator('.cm-editor').first().waitFor({ timeout: 10000 }).catch(() => {})
   const box = page.getByLabel('Your code')
   await box.evaluate((element, value) => {
     if (element instanceof HTMLTextAreaElement) { // the plain box shown while CodeMirror loads

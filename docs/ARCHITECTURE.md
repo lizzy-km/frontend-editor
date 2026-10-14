@@ -246,6 +246,14 @@ run, inside a locked frame.
   downloads by `serialize/expandLists.ts`; React list/card components by
   `export/react/listTemplates.ts` (`JsxContext.lists` / `.row`).
 
+## Animations (`model/animations.ts`)
+
+- One table of effects (`EFFECTS`: from/hover poses) drives the editor's Play
+  (`runtime/animate.js` gets keyframes), the visitors' player
+  (`serialize/forVisitors.ts`, which also fills data lists) and the React
+  helpers (`export/react/animationTemplates.ts`). The JSX writer turns animated
+  elements into `motion.*` (`jsxExtras.motionFor`).
+
 ## Import and saving
 
 - `features/import/PasteScreen` goes through `analyzePaste` (which calls

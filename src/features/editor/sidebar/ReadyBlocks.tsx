@@ -3,6 +3,7 @@ import { Icon } from '@/shared/ui'
 import { insertHtml } from '../actions/contentActions'
 import { createSource } from '../actions/dataActions'
 import { DATA_PRESETS } from '../model/dataPresets'
+import { ANIMATION_BOX_HTML } from '../model/animations'
 import { listBoxHtml } from '../model/dataLists'
 import { getDoc } from '../store/doc.store'
 import styles from './Sidebar.module.css'
@@ -17,6 +18,10 @@ function addDataList() {
 
 const READY = [
   { id: 'data-list', label: 'List from data', hint: 'Cards filled from your data; loads more as visitors scroll', icon: 'layers' as const, add: addDataList },
+  {
+    id: 'animation-box', label: 'Animation box', hint: 'Everything inside glides in when visitors scroll to it', icon: 'sparkle' as const,
+    add: () => { insertHtml(ANIMATION_BOX_HTML); track('add_block', { block: 'animation-box' }) },
+  },
 ]
 
 /** Ready-made components that do more than show content. */

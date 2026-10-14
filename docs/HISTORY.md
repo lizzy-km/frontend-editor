@@ -3,6 +3,24 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/animation-box — 2026-10-14
+- **Animations on any element** (`model/animations.ts`, `data-fe-animate`,
+  `-trigger`, `-duration`, `-delay`, `-ease`, `-stagger`, `-repeat`): fade, fade
+  up/down, slide in, zoom in/out, flip, unblur; when it scrolls into view, on
+  load, on hover or looping; smooth / bouncy / steady; "one by one" for the
+  children. Settings section "Animation" (with **Play**), and a ready-made
+  **Animation box** in Add.
+- While editing nothing hides: animations only play on Play (`runtime/animate.js`).
+- Preview, public view and downloads: a Web Animations player
+  (`serialize/forVisitors.ts`, IntersectionObserver, respects reduced motion).
+- React: `motion.<tag> {...animation({ … })}` with `animationItem` children
+  for "one by one" (also list cards), plus ready-made
+  `src/components/ui/animation.ts` and `AnimateBox.tsx`; `motion` added only when used.
+- Checked: animated exports pass strict `tsc` and `vite build`; in Chrome the
+  box is hidden until scrolled into view, load animations finish, list cards appear.
+- Fixes: settings sections are keyed per element (no open/closed state left
+  over from the previous selection); e2e pastes only once CodeMirror has loaded.
+
 ## feature/data-list — 2026-10-14
 - **"List from data"** (Add → Ready-made): a box holding ONE card design whose
   parts show fields of a data source (`data-fe-list`, `data-fe-page-size`,
