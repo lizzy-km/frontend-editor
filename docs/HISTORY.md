@@ -3,6 +3,35 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/multi-page — 2026-10-14
+- **One page or a website**: Try-it and New page ask "What are you making?"
+  and can **start with a blank page** (a site's blank start has a shared
+  header and footer). One-page projects can become a website later
+  (page settings → "Make this a website with several pages").
+- **Sites live in one document** (`model/pages.ts`, `model/pageOps.ts`): what
+  is in <body> outside page containers is the shared layout; each page is
+  `<div data-fe-page data-fe-path data-fe-title [data-fe-private]>` with
+  `display: contents`. One stylesheet, one undo history, header/footer edited once.
+  - Editor: a **Pages** tab (add empty / pasted code / copy, rename, address,
+    reorder, delete, "only for signed-in visitors"); the frame shows the current
+    page through editor-only view CSS; Layers and Add follow the current page.
+  - Links: "Go to a page" picker on links; **"Click goes to"** on any box (`data-fe-go`).
+  - Preview and the public view move between pages; .html / copy download the
+    current page; the developer .zip holds the whole site (one .html per page,
+    shared styles.css/script.js, links and click boxes pointing at the files).
+  - Clicking empty space below a short page selects the page itself.
+- **React project for sites**: `src/layout/Layout.tsx` (shared parts +
+  `<Outlet />`), `src/pages/*Page.tsx`, components per page, `src/router.tsx` with
+  **React Router or TanStack Router** (picked in the Download dialog), a
+  NotFound route, router `<Link>`s, `useNavigate` for click boxes, and for
+  signed-in-only pages a **mock AuthProvider + route guard** (RequireAuth for
+  React Router, `beforeLoad` + `redirect` for TanStack) and a login page.
+- Checked: both routers' exports pass their own strict `tsc` and `vite build`
+  and work in Chrome (pages, links, guard → login → back, 404).
+
+## fix/wider-paste-box — 2026-10-09
+- The paste card is up to 1120px wide and the code box starts at 360px tall.
+
 ## feature/codemirror-everywhere — 2026-10-08
 - Every code box uses CodeMirror (colours, line numbers, search, brackets):
   the paste screen (one piece, or HTML / CSS / JavaScript) and "Paste more

@@ -77,6 +77,13 @@ that break things if you ignore them.
     id + class, real text, enhance-only JS). Change them together with the
     editor.
 
+20. **Sites are one document.** Pages are body-level containers
+    (`[data-fe-page]`, `display: contents`); the rest of <body> is the shared
+    layout. Use `listPages`/`resolvePage`/`pageOfNode` (`model/pages.ts`) and the
+    pure ops in `model/pageOps.ts` (committed by `actions/pageActions.ts`).
+    Showing one page is editor-only view CSS, never a model change. Anything
+    that exports or previews a page goes through `serialize/sitePages.ts`.
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

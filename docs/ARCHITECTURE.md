@@ -209,6 +209,25 @@ run, inside a locked frame.
   pattern), update the rules too.
 - `AiPromptHelper` sits on `PasteScreen`, folded by default.
 
+## Multi-page sites (`model/pages.ts`, `model/pageOps.ts`)
+
+- A site is ONE `PageDoc`. Body children that are page containers
+  (`[data-fe-page]`, `display: contents`) are pages; everything else in <body>
+  is the shared layout. Page attrs: `data-fe-path`, `data-fe-title`,
+  `data-fe-private`; any element may carry `data-fe-go` ("click goes to").
+- `view.store.pageId` is the page being edited (`resolvePage` falls back to
+  the first). The editor frame hides other pages with editor-only view CSS
+  (`viewCss`, runtime `css.view`); Layers shows layout + current page; Add
+  inserts into the current page when nothing is selected.
+- `serialize/sitePages.ts`: `pageDoc(doc, pageId, { fileLinks })` unwraps one
+  page into a normal document (Preview, .html, copy); `allPagesForFiles` builds
+  the shared files of the site .zip. `SafePageFrame` posts page changes to its
+  parent (`onOpenPage`).
+- React: `export/react/buildSiteProject.ts` (Layout + pages + router),
+  `routerTemplates.ts` (React Router / TanStack), `authTemplates.ts` (mock auth,
+  guard, login). One-page documents keep `buildReactProject` (App.tsx).
+- `import/projectKind.ts`: the paste screen's "one page / website" choice and blank starts.
+
 ## Import and saving
 
 - `features/import/PasteScreen` goes through `analyzePaste` (which calls
