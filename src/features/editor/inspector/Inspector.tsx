@@ -16,6 +16,7 @@ import { AnimationSection } from './sections/AnimationSection'
 import { DataListSection } from './sections/DataListSection'
 import { GoToPageSection } from './sections/GoToPageSection'
 import { ShowDataSection } from './sections/ShowDataSection'
+import { WhoSection } from './sections/WhoSection'
 import { LinkSection } from './sections/LinkSection'
 import { PageSection } from './sections/PageSection'
 import { PictureSection } from './sections/PictureSection'
@@ -79,6 +80,7 @@ export function Inspector() {
       {HAS_PLACEHOLDER.has(node.tag) && <FormFieldSection node={node} />}
       {computed && <StyleSections id={node.id} context={context} computed={computed} overrides={overrides} />}
       {computed && node.id !== rootId && <VisibilitySection node={node} computedDisplay={computed.display ?? ''} />}
+      {node.id !== rootId && !isPageNode(node) && <WhoSection key={`who-${node.id}`} node={node} />}
       {node.id !== rootId && !isPageNode(node) && <AnimationSection key={`animation-${node.id}`} node={node} />}
       <AdvancedSection node={node} />
     </div>

@@ -47,7 +47,8 @@ export function EditorFrame({ width, height, scale }: Props) {
     // Multi-page sites: only the current page is shown (editor-only CSS).
     let shownView = ''
     const sendView = () => {
-      const css = viewCss(useDocStore.getState().doc, useViewStore.getState().pageId)
+      const view = useViewStore.getState()
+      const css = viewCss(useDocStore.getState().doc, view.pageId, view.viewer)
       if (css !== shownView) bridge.send('css', { view: css })
       shownView = css
     }

@@ -20,6 +20,8 @@ export type Viewer = { signedIn: boolean; roles: string[]; flags: string[] }
 export const EVERYONE: Condition = { audience: 'everyone', roles: [], flags: [] }
 export const VISITOR: Viewer = { signedIn: false, roles: [], flags: [] }
 export const DEFAULT_ROLES = ['member', 'admin']
+/** One shared empty list (stable for store selectors). */
+const NO_FLAGS: string[] = []
 
 const list = (value: string | undefined) => (value ?? '').split(',').map((item) => item.trim()).filter(Boolean)
 
@@ -64,7 +66,7 @@ export function hiddenFor(nodes: NodeMap, viewer: Viewer): string[] {
 
 /** The site's roles and flags (Who can see this, Viewing as). */
 export function accessOf(doc: Pick<PageDoc, 'access'>): { roles: string[]; flags: string[] } {
-  return { roles: doc.access?.roles?.length ? doc.access.roles : DEFAULT_ROLES, flags: doc.access?.flags ?? [] }
+  return { roles: doc.access?.roles?.length ? doc.access.roles : DEFAULT_ROLES, flags: doc.access?.flags ?? NO_FLAGS }
 }
 
 /** "Admin only" / "Signed-in visitors" — a short label for lists and badges. */

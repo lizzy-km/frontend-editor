@@ -3,7 +3,8 @@ import { escapeAttr, escapeRawTag } from '../model/serialize/escape'
 import { childrenToHtml, NODE_ID_ATTR } from '../model/serialize/nodeToHtml'
 import { buildOverrideCss, wrapUserCss } from '../model/serialize/styleSheets'
 import { withoutLocalFiles } from '../model/serialize/localFiles'
-import { resolvePage } from '../model/pages'
+import { hiddenFor, VISITOR, type Viewer } from '../model/conditions'
+import { isPageNode, resolvePage } from '../model/pages'
 import { getElement } from '../model/tree/queries'
 import type { NodeMap, PageDoc } from '../model/types'
 import { RUNTIME_SCRIPTS } from './runtime'
@@ -22,9 +23,13 @@ html { scroll-behavior: auto !important; }
 `
 
 /** Shows only the current page of a site (the others stay in the DOM, hidden). */
-export function viewCss(doc: PageDoc, pageId: string | null): string {
+export function viewCss(doc: PageDoc, pageId: string | null, viewer: Viewer = VISITOR): string {
   const page = resolvePage(doc, pageId)
-  return page ? `[data-fe-page]:not([${NODE_ID_ATTR}="${page.id}"]) { display: none !important; }` : ''
+  const pages = page ? `[data-fe-page]:not([${NODE_ID_ATTR}="${page.id}"]) { display: none !important; }` : ''
+  // "Viewing as": hide what this viewer can't see (pages stay: the one being edited is always shown).
+  const hidden = hiddenFor(doc.nodes, viewer).filter((id) => !isPageNode(doc.nodes[id]))
+  const who = hidden.length ? `${hidden.map((id) => `[${NODE_ID_ATTR}="${id}"]`).join(',')} { display: none !important; }` : ''
+  return [pages, who].filter(Boolean).join('\n')
 }
 
 /** The user's edits, targeted by data attribute (doubled for the same weight as the export). */
