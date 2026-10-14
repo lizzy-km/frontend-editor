@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { parseHtmlDocument } from '@/features/editor/model/parse/parseDocument'
 import { getElement } from '@/features/editor/model/tree/queries'
 import { buildReactProject } from './buildReactProject'
-import { jsxAttr } from './jsxAttrs'
+import { attrTag, jsxAttr } from './jsxAttrs'
 import { writeElement } from './jsxWriter'
 
 const project = (body: string, head = '') => buildReactProject(parseHtmlDocument(`<!doctype html><html><head>${head}</head><body>${body}</body></html>`))
@@ -18,6 +18,8 @@ describe('JSX attributes', () => {
     expect(jsxAttr('textarea', 'rows', '3', false)).toBe(' rows={3}')
     expect(jsxAttr('input', 'required', '', false)).toBe(' required')
     expect(jsxAttr('input', 'value', 'Hi', false)).toBe(' defaultValue="Hi"')
+    expect(jsxAttr(attrTag('input', 'radio'), 'value', 's', false)).toBe(' value="s"')
+    expect(jsxAttr(attrTag('input', 'checkbox'), 'checked', '', false)).toBe(' defaultChecked')
     expect(jsxAttr('path', 'stroke-width', '2', true)).toBe(' strokeWidth="2"')
     expect(jsxAttr('button', 'onclick', 'go()', false)).toBe(' data-onclick="go()"')
     expect(jsxAttr('a', 'title', 'Say "hi" {now}', false)).toBe(' title={"Say \\"hi\\" {now}"}')

@@ -5,6 +5,7 @@ import { createSource } from '../actions/dataActions'
 import { DATA_PRESETS } from '../model/dataPresets'
 import { ANIMATION_BOX_HTML } from '../model/animations'
 import { listBoxHtml } from '../model/dataLists'
+import { CONTACT_FORM_HTML, SIGN_UP_FORM_HTML } from '../model/formBlocks'
 import { getDoc } from '../store/doc.store'
 import styles from './Sidebar.module.css'
 
@@ -21,6 +22,14 @@ const READY = [
   {
     id: 'animation-box', label: 'Animation box', hint: 'Everything inside glides in when visitors scroll to it', icon: 'sparkle' as const,
     add: () => { insertHtml(ANIMATION_BOX_HTML); track('add_block', { block: 'animation-box' }) },
+  },
+  {
+    id: 'contact-form', label: 'Contact form', hint: 'Name, email, topic and message, checked before sending', icon: 'pencil' as const,
+    add: () => { insertHtml(CONTACT_FORM_HTML); track('add_block', { block: 'contact-form' }) },
+  },
+  {
+    id: 'sign-up-form', label: 'Sign-up form', hint: 'Name, email, password twice and the terms', icon: 'lock' as const,
+    add: () => { insertHtml(SIGN_UP_FORM_HTML); track('add_block', { block: 'sign-up-form' }) },
   },
 ]
 

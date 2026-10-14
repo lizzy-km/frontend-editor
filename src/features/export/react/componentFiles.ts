@@ -2,6 +2,7 @@ import type { ElementNode, NodeMap } from '@/features/editor/model/types'
 import { writeElement, type JsxContext, type RepeatSlot } from './jsxWriter'
 import { lowerFirst, pascalCase } from './names'
 import { motionImports, motionState, showImport } from './jsxExtras'
+import { formComponents } from './forms/formTemplates'
 import { listComponents, type ListOptions } from './listTemplates'
 import { findRepeats, type PropValue, type RepeatGroup } from './repeats'
 
@@ -72,8 +73,12 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
   const dataLists = data ? listComponents({ nodes, classFor }, rootId, takeName, data) : { lists: new Map<string, string>(), files: [] }
   ctx.lists = dataLists.lists
   items.push(...dataLists.files)
+  // Forms set up in the editor become their own React Hook Form + Zod components.
+  const forms = formComponents({ nodes, classFor }, rootId, takeName, data?.base ?? '..')
+  ctx.forms = forms.forms
+  items.push(...forms.files)
   const body = writeElement(ctx, rootId, BODY_PAD)
-  const listImports = [...dataLists.lists.values()].map((list) => `import ${list} from './${list}'`)
+  const listImports = [...dataLists.lists.values(), ...forms.forms.values()].map((list) => `import ${list} from './${list}'`)
   const allImports = [...linkImport(ctx, router), ...motionImports(ctx.motion, data?.base ?? '..'), ...showImport(ctx.show, data?.base ?? '..'), ...listImports, ...imports]
   const code = [
     ...allImports, ...(allImports.length ? [''] : []),

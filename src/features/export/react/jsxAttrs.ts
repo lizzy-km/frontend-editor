@@ -24,6 +24,10 @@ const NUMBER_ATTRS = new Set(['rows', 'cols', 'tabindex', 'colspan', 'rowspan', 
 /** Inline handlers (onclick="…") keep working: React can't take strings, so they ride along as data-on* and are restored after mount. */
 export const HANDLER_PREFIX = 'data-on'
 
+/** Tick boxes and radio buttons: their value is what they send, not a starting text (pass as the tag). */
+export const CHOICE_INPUT = 'input:choice'
+export const attrTag = (tag: string, type?: string) => (tag === 'input' && /^(checkbox|radio)$/i.test(type ?? '') ? CHOICE_INPUT : tag)
+
 /**
  * The React name of an attribute, or null to leave it out. Form defaults
  * become defaultValue / defaultChecked so fields stay editable.
@@ -33,7 +37,7 @@ export function jsxAttrName(tag: string, name: string, inSvg: boolean): string |
   if (lower.startsWith('on')) return `${HANDLER_PREFIX}${lower.slice(2)}`
   if (lower === 'style' || lower === 'selected') return null // styles live in the CSS; <select> gets defaultValue
   if (lower === 'value' && ['input', 'textarea', 'select'].includes(tag)) return 'defaultValue'
-  if (lower === 'checked' && tag === 'input') return 'defaultChecked'
+  if (lower === 'checked' && tag.startsWith('input')) return 'defaultChecked'
   if (lower.startsWith('data-') || lower.startsWith('aria-')) return lower
   if (RENAMED[lower]) return RENAMED[lower]!
   if (inSvg && /[-:]/.test(name)) return camel(name)

@@ -3,6 +3,26 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/forms — 2026-10-14
+- **Forms** are plain HTML (`model/forms.ts`): fields, labels and the browser's
+  own rules (required, min/max length, number range, pattern) are read from the
+  page, so pasted forms work as they are. Editor extras: `data-fe-match`
+  ("Same as", e.g. repeat password), `data-fe-message` (own error text),
+  `data-fe-submit` / `action` / `data-fe-success` (send address, thank-you).
+- Settings: **Form** section ("Check the answers and send them", send-to
+  address, thank-you text) and **Input box** (hint, kind, name, must be
+  filled in, letters / number limits, same as, error message).
+- Ready-made **Contact form** and **Sign-up form** in Add.
+- Preview and downloads: `serialize/formPlayer.ts` checks rules and "same as",
+  posts JSON to the address (or thanks the visitor).
+- React: every set-up form is its own component with React Hook Form + a Zod
+  schema (`export/react/forms/`: `zodSchema`, `formTemplates`, `formJsx`) and a
+  small kit (`src/components/form/`: Form, TextField, PasswordField, Select,
+  Textarea, Checkbox, SubmitButton, FieldError). Verified by building both
+  project types and submitting the forms in Chrome.
+- New data preset **Store products (Fake Store API)** with the same shape as
+  fakestoreapi.com/products (API address pre-filled).
+
 ## feature/auth-backend — 2026-10-14
 - **Sign-in in the React download** (`export/react/auth/`), added whenever
   something is shown to only some visitors: `AuthProvider` + `useAuth`

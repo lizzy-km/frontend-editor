@@ -12,6 +12,7 @@ import styles from './Inspector.module.css'
 import { InspectorHeader } from './InspectorHeader'
 import { AdvancedSection } from './sections/AdvancedSection'
 import { FormFieldSection, HAS_PLACEHOLDER } from './sections/FormFieldSection'
+import { FormSection } from './sections/FormSection'
 import { AnimationSection } from './sections/AnimationSection'
 import { DataListSection } from './sections/DataListSection'
 import { GoToPageSection } from './sections/GoToPageSection'
@@ -77,7 +78,8 @@ export function Inspector() {
       {list && <DataListSection info={list} />}
       {inList && <ShowDataSection key={`data-${node.id}`} node={node} list={inList} />}
       {node.tag === 'img' && <PictureSection node={node} />}
-      {HAS_PLACEHOLDER.has(node.tag) && <FormFieldSection node={node} />}
+      {node.tag === 'form' && <FormSection key={`form-${node.id}`} node={node} />}
+      {HAS_PLACEHOLDER.has(node.tag) && <FormFieldSection key={`field-${node.id}`} node={node} />}
       {computed && <StyleSections id={node.id} context={context} computed={computed} overrides={overrides} />}
       {computed && node.id !== rootId && <VisibilitySection node={node} computedDisplay={computed.display ?? ''} />}
       {node.id !== rootId && !isPageNode(node) && <WhoSection key={`who-${node.id}`} node={node} />}

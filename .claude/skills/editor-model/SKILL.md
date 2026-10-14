@@ -94,6 +94,11 @@ that break things if you ignore them.
     export share them). Check guard changes by building both routers' output
     and running it in Chrome: route redirects race in ways tests can't see.
 
+23. **Forms stay plain HTML.** Rules are the browser's own attributes; only
+    `data-fe-match/-message/-submit/-success` are the editor's. Anything about
+    fields goes through `model/forms.ts`. React forms are generated
+    components (`export/react/forms/`); never group a form into repeated items.
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.
