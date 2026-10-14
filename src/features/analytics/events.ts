@@ -48,6 +48,8 @@ export type AnalyticsEvents = {
   animation_set: { effect: string }
   /** Who can see something was set (audience, how many roles and flags). */
   condition_set: { audience: string; roles: number; flags: number }
+  /** A form was set to check and send its answers. */
+  form_set: { fields: number }
   /** A page added to a site (blank, from pasted code, or a copy) and how many pages it now has. */
   page_add: { from: 'blank' | 'code' | 'copy'; pages: number }
   page_limit_reached: { plan: string }
