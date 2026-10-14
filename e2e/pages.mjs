@@ -1,7 +1,7 @@
 // Multi-page sites: add pages (empty, pasted, copy), switch, rename, undo, delete. Header/footer are shared.
 import { check, OUT, openExample } from './browser.mjs'
 
-const { browser, page, frame, errors } = await openExample()
+const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
 const visible = (selector) => frame.$eval(selector, (el) => el.getClientRects().length > 0).catch(() => false)
 const pageList = () => sidebar.getByRole('list', { name: 'Pages' }).getByRole('listitem')
@@ -51,5 +51,19 @@ page.once('dialog', (dialog) => dialog.accept())
 await sidebar.getByRole('button', { name: 'Delete Prices' }).click()
 await page.waitForTimeout(300)
 check('page deleted', (await pageList().count()) === 2)
+// A nav link goes to a page; in Preview, clicking it opens that page
+const link = await box('nav a:last-child')
+await page.mouse.move(link.x + 4, link.y + 4)
+await page.mouse.click(link.x + 4, link.y + 4)
+await page.waitForTimeout(300)
+await page.locator('aside').last().getByLabel('Link to a page').selectOption('/about-us')
+await page.waitForTimeout(300)
+check('link set to the About us page', (await frame.$eval('nav a:last-child', (a) => a.getAttribute('href'))) === '/about-us')
+await page.getByRole('button', { name: 'Preview' }).click()
+const preview = page.frameLocator('iframe[title="Preview of your page"]')
+await preview.locator('nav a:last-child').click()
+await page.waitForTimeout(600)
+check('Preview opens the linked page', (await preview.locator('body').innerText()).includes('About us'))
+await page.getByRole('button', { name: 'Back to editing' }).click()
 check('no console errors', errors.length === 0, errors.join(' | '))
 await browser.close()
