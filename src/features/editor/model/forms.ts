@@ -42,6 +42,17 @@ export function formAround(nodes: NodeMap, id: string): ElementNode | undefined 
   return [id, ...getAncestorIds(nodes, id)].map((each) => getElement(nodes, each)).find((node) => node?.tag === 'form')
 }
 
+/** A label's own words (a dropdown's options inside it are not part of them). */
+function labelText(nodes: NodeMap, id: string): string {
+  const node = nodes[id]
+  if (!node) return ''
+  if (node.kind === 'text') return node.text
+  if (FIELD_TAGS.has(node.tag)) return ''
+  return node.children.map((child) => labelText(nodes, child)).join(' ').replace(/\s+/g, ' ').trim()
+}
+
+const FIELD_TAGS = new Set(['input', 'select', 'textarea'])
+
 /** The words people read next to a field: its <label>, else aria-label, hint text or name. */
 export function fieldLabel(nodes: NodeMap, node: ElementNode): string {
   const wrapping = getAncestorIds(nodes, node.id).map((id) => getElement(nodes, id)).find((parent) => parent?.tag === 'label')
@@ -49,7 +60,7 @@ export function fieldLabel(nodes: NodeMap, node: ElementNode): string {
   const pointing = node.attrs.id && form
     ? collectSubtreeIds(nodes, form.id).map((id) => getElement(nodes, id)).find((label) => label?.tag === 'label' && label.attrs.for === node.attrs.id)
     : undefined
-  const fromLabel = (wrapping ?? pointing) ? getTextContent(nodes, (wrapping ?? pointing)!.id).replace(/[*:]\s*$/, '').trim() : ''
+  const fromLabel = (wrapping ?? pointing) ? labelText(nodes, (wrapping ?? pointing)!.id).replace(/[*:]\s*$/, '').trim() : ''
   return fromLabel || node.attrs['aria-label'] || node.attrs.placeholder || node.attrs.name || 'This field'
 }
 
@@ -61,9 +72,22 @@ const numberAttr = (node: ElementNode, name: string) => {
 /** The name a field is sent (and coded) under: its name, else one made from its label. */
 export const fieldName = (nodes: NodeMap, node: ElementNode) => node.attrs.name || codeName(fieldLabel(nodes, node), 'field')
 
+/** "shippingSpeed" -> "Shipping speed". */
+const humanize = (name: string) => {
+  const words = name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/[-_]+/g, ' ').trim().toLowerCase()
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
+/** A radio question's words: its group's <legend>, else its name (each button's own label is one answer). */
+function questionLabel(nodes: NodeMap, node: ElementNode): string {
+  const group = getAncestorIds(nodes, node.id).map((id) => getElement(nodes, id)).find((parent) => parent?.tag === 'fieldset')
+  const legend = group?.children.map((id) => getElement(nodes, id)).find((child) => child?.tag === 'legend')
+  return (legend && getTextContent(nodes, legend.id)) || humanize(fieldName(nodes, node))
+}
+
 function toField(nodes: NodeMap, node: ElementNode, kind: FieldKind): FormField {
   return {
-    ids: [node.id], name: fieldName(nodes, node), label: fieldLabel(nodes, node), kind, required: 'required' in node.attrs,
+    ids: [node.id], name: fieldName(nodes, node), label: kind === 'radio' ? questionLabel(nodes, node) : fieldLabel(nodes, node), kind, required: 'required' in node.attrs,
     minLength: numberAttr(node, 'minlength'), maxLength: numberAttr(node, 'maxlength'),
     min: numberAttr(node, 'min'), max: numberAttr(node, 'max'), pattern: node.attrs.pattern || undefined,
     match: node.attrs[MATCH_ATTR] || undefined, message: node.attrs[MESSAGE_ATTR] || undefined,

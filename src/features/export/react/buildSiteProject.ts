@@ -11,6 +11,7 @@ import { projectShell, renderParts, type Parts } from './projectShell'
 import { DATA_README, readme } from './projectTemplates'
 import { animationDeps, animationFiles } from './animationTemplates'
 import { dataFiles, DATA_DEPS } from './dataTemplates'
+import { formProject } from './forms/formTemplates'
 import { listUiFiles } from './listTemplates'
 import { mainFile } from './mainTemplate'
 import { notFoundSource, routerSource, ROUTERS, type RouteFile, type RouterKind } from './routerTemplates'
@@ -75,7 +76,8 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
   })
 
   const sources = doc.data ?? []
-  const shell = projectShell(allPagesDoc(doc), { ...ROUTERS[router].deps, ...(sources.length ? DATA_DEPS : {}), ...animationDeps(doc.nodes), ...(needsAuth(doc) ? AUTH_DEPS : {}) })
+  const forms = formProject(doc.nodes)
+  const shell = projectShell(allPagesDoc(doc), { ...forms.deps, ...ROUTERS[router].deps, ...(sources.length ? DATA_DEPS : {}), ...animationDeps(doc.nodes), ...(needsAuth(doc) ? AUTH_DEPS : {}) })
   const withAuth = needsAuth(doc)
   const auth = authFiles(doc, router)
   if (withAuth) {
@@ -91,6 +93,7 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
     ...dataFiles(sources),
     ...listUiFiles(doc),
     ...animationFiles(doc.nodes),
+    ...forms.files,
     ...auth,
     'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}${sources.length ? DATA_README : ''}`,
     'src/main.tsx': mainFile({ root: router, query: sources.length > 0, auth: withAuth }),

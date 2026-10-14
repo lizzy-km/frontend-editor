@@ -27,6 +27,7 @@ describe('forms', () => {
     expect(fields.map((field) => field.name)).toEqual(['eMailAddress', 'size'])
     expect(fields[0]!.label).toBe('E-mail address')
     expect(fields[1]!.ids).toHaveLength(2)
+    expect(fields[1]!.label).toBe('Size')
   })
 
   it('knows matching fields and the form settings', () => {

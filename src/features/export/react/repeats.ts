@@ -118,7 +118,8 @@ export function findRepeats(nodes: NodeMap, rootId: string, classFor: ClassFor):
   const groups: RepeatGroup[] = []
   const visit = (id: string) => {
     const node = nodes[id]
-    if (!isElement(node) || node.tag === 'svg') return // drawings are left as they are
+    // Drawings are left as they are; form fields stay where they are (each has its own name and rules).
+    if (!isElement(node) || node.tag === 'svg' || node.tag === 'form') return
     const children = significant(nodes, node)
     if (children.some((child) => nodes[child]?.kind === 'text')) return // a line of text, not a list
     let index = 0

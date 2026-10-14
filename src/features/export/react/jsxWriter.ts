@@ -2,7 +2,8 @@ import { VOID_TAGS } from '@/features/editor/model/serialize/escape'
 import { isElement, type ElementNode, type FieldType, type NodeMap } from '@/features/editor/model/types'
 import { BIND_ATTR, BIND_PREFIX } from '@/features/editor/model/dataLists'
 import { GO_ATTR } from '@/features/editor/model/pages'
-import { jsxAttr, jsxAttrName } from './jsxAttrs'
+import { attrTag, jsxAttr, jsxAttrName } from './jsxAttrs'
+import { formAttrs, formHandlesAttr, withFormExtras, type FormSlot } from './forms/formJsx'
 import { asRouterLink, fieldExpression, goHandlers, isEditorAttr, motionFor, showWhen, type MotionState } from './jsxExtras'
 
 /** A run of repeated siblings written as one `{list.map(...)}` line. */
@@ -29,6 +30,10 @@ export type JsxContext = {
   motion?: MotionState
   /** "Who can see this": elements wrapped in <Show>; `used` tells the file to import it. */
   show?: { used: boolean }
+  /** Forms written as their own component instead: form id -> component name. */
+  forms?: Map<string, string>
+  /** Inside a form component: its fields register with React Hook Form. */
+  form?: FormSlot
 }
 
 /** Tags that sit in a line of text: the space between two of them is visible. */
@@ -78,17 +83,17 @@ function attrsJsx(ctx: JsxContext, node: ElementNode, inSvg: boolean): string {
     const attr = name.slice(BIND_PREFIX.length)
     const value = fieldExpression(ctx, attrs[name]!, false)
     delete attrs[attr]
-    const jsxName = jsxAttrName(node.tag, attr, inSvg)
+    const jsxName = jsxAttrName(attrTag(node.tag, node.attrs.type), attr, inSvg)
     return value && jsxName ? ` ${jsxName}={${value}}` : ''
   })
-  const names = [...new Set([...Object.keys(attrs), ...propNames])].filter((name) => !isEditorAttr(name))
+  const names = [...new Set([...Object.keys(attrs), ...propNames])].filter((name) => !isEditorAttr(name) && !formHandlesAttr(ctx, node.id, name))
   return fromRow.join('') + names.map((name) => {
     const prop = ctx.props?.get(`${node.id}@${name}`)
     if (name === GO_ATTR && ctx.links) return goHandlers(ctx, prop ?? JSON.stringify(attrs[name]), !prop)
-    if (!prop) return jsxAttr(node.tag, name, attrs[name]!, inSvg)
-    const jsxName = jsxAttrName(node.tag, name, inSvg)
+    if (!prop) return jsxAttr(attrTag(node.tag, node.attrs.type), name, attrs[name]!, inSvg)
+    const jsxName = jsxAttrName(attrTag(node.tag, node.attrs.type), name, inSvg)
     return jsxName ? ` ${jsxName}={${prop}}` : ''
-  }).join('')
+  }).join('') + formAttrs(ctx, node.id)
 }
 
 /** Children on one line (elements with text in them): keeps the spaces between words and tags. */
@@ -122,16 +127,17 @@ function blockChildren(ctx: JsxContext, ids: string[], pad: string, inSvg: boole
 export function writeElement(ctx: JsxContext, id: string, pad: string, inSvg = false, inPre = false): string {
   const node = ctx.nodes[id]
   const when = ctx.show && isElement(node) ? showWhen(node) : null
-  if (!when) return writeOne(ctx, id, pad, inSvg, inPre)
+  const one = (at: string) => withFormExtras(ctx, id, writeOne(ctx, id, at, inSvg, inPre), at)
+  if (!when) return one(pad)
   ctx.show!.used = true
-  if (!pad) return `<Show when=${when}>${writeOne(ctx, id, '', inSvg, inPre)}</Show>`
-  return `${pad}<Show when=${when}>\n${writeOne(ctx, id, pad + INDENT, inSvg, inPre)}\n${pad}</Show>`
+  if (!pad) return `<Show when=${when}>${one('')}</Show>`
+  return `${pad}<Show when=${when}>\n${one(pad + INDENT)}\n${pad}</Show>`
 }
 
 function writeOne(ctx: JsxContext, id: string, pad: string, inSvg = false, inPre = false): string {
   const original = ctx.nodes[id]
   if (!isElement(original)) return ''
-  const list = ctx.lists?.get(id)
+  const list = ctx.lists?.get(id) ?? ctx.forms?.get(id)
   if (list) return `${pad}<${list} />`
   const node = asRouterLink(ctx, original)
   const { tag, extra } = motionFor(ctx, node)
