@@ -237,6 +237,15 @@ run, inside a locked frame.
   client and per-source React Query hooks; `mainTemplate.ts` composes the
   providers (React Query outside, auth inside).
 
+## "List from data" (`model/dataLists.ts`)
+
+- A list box's first element child is the card design; bindings are
+  `data-fe-bind` (text) and `data-fe-bind-<attr>` attributes.
+- Editor: live copies by `frame/runtime/lists.js` (data sent with the `data`
+  message and inside the frame's model JSON); static copies for Preview and
+  downloads by `serialize/expandLists.ts`; React list/card components by
+  `export/react/listTemplates.ts` (`JsxContext.lists` / `.row`).
+
 ## Import and saving
 
 - `features/import/PasteScreen` goes through `analyzePaste` (which calls

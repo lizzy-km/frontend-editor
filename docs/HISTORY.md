@@ -3,6 +3,24 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/data-list — 2026-10-14
+- **"List from data"** (Add → Ready-made): a box holding ONE card design whose
+  parts show fields of a data source (`data-fe-list`, `data-fe-page-size`,
+  `data-fe-load`, `data-fe-bind`, `data-fe-bind-<attr>`; `model/dataLists.ts`).
+  - Editor: the frame runtime (`runtime/lists.js`) shows copies filled with the
+    sample rows after the design; copies keep the design's id, so they share its
+    styles and clicking one selects the design. Settings: data, cards per page,
+    "On scroll" / "Show all"; inside the card, "Show data" picks the field for
+    text, pictures (src/alt) and links.
+  - Preview, public view, .html/.zip: `serialize/expandLists.ts` repeats the
+    card per row (static).
+  - React: `XList.tsx` (the box, `useXInfinite(pageSize)` + the ready-made
+    `src/components/ui/InfiniteScroll.tsx`, or `useX()` for "show all") and
+    `XCard.tsx` typed by the row (`({ name, image }: Product)`). The editor's
+    `data-fe-*` markers never reach the React code.
+- Checked: exports with both kinds of list pass strict `tsc` and `vite build`; in
+  Chrome the scrolling list shows 3 cards, then 6 after scrolling.
+
 ## feature/data-panel — 2026-10-14
 - **Data tab**: data sources (`PageDoc.data`) with typed fields (text, long
   text, number, yes/no, picture link, date, link), sample rows and an optional
