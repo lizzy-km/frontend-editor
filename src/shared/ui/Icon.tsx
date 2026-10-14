@@ -19,6 +19,7 @@ const PATHS = {
   copy: 'M9 9h11v11H9zM5 15H4V4h11v1',
   layers: 'M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5',
   chevronDown: 'M6 9l6 6 6-6',
+  chevronUp: 'M6 15l6-6 6 6',
   chevronRight: 'M9 6l6 6-6 6',
   globe: 'M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18',
   lock: 'M6 11h12v10H6zM8 11V7a4 4 0 018 0v4',

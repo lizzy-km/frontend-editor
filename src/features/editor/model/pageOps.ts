@@ -39,7 +39,7 @@ export function toSite(doc: PageDoc): PageDoc {
 export type NewPage = { title: string; path: string; from: 'blank' } | { title: string; path: string; from: 'code'; code: string } | { title: string; path: string; from: 'copy'; pageId: string }
 
 const blankContent = (title: string) =>
-  `<section class="page-intro"><h1>${title.replace(/</g, '&lt;')}</h1><p>Start writing here, or paste a section from your AI in “Add”.</p></section>`
+  `<section class="page-intro" style="padding: 72px 24px; max-width: 960px; margin: 0 auto"><h1>${title.replace(/</g, '&lt;')}</h1><p>Start writing here, or paste a section from your AI in “Add”.</p></section>`
 
 /** The content of pasted code without its own header/footer (the site already has them), plus its CSS and fonts. */
 function pastedContent(code: string, parentId: string) {

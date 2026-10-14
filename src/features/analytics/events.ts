@@ -40,6 +40,8 @@ export type AnalyticsEvents = {
   page_create: { remix: boolean }
   page_delete: Record<string, never>
   page_rename: Record<string, never>
+  /** A page added to a site (blank, from pasted code, or a copy) and how many pages it now has. */
+  page_add: { from: 'blank' | 'code' | 'copy'; pages: number }
   page_limit_reached: { plan: string }
   share: { method: 'public' | 'private'; content_type: 'page' }
 

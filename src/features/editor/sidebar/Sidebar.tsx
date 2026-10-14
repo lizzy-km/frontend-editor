@@ -3,15 +3,17 @@ import { useViewStore, type SidePanel } from '../store/view.store'
 import { AddPanel } from './AddPanel'
 import { CodePanel } from './CodePanel'
 import { LayersPanel } from './LayersPanel'
+import { PagesPanel } from './pages/PagesPanel'
 import styles from './Sidebar.module.css'
 
 const TABS: { id: SidePanel; label: string; icon: IconName }[] = [
+  { id: 'pages', label: 'Pages', icon: 'globe' },
   { id: 'layers', label: 'Layers', icon: 'layers' },
   { id: 'add', label: 'Add', icon: 'plus' },
   { id: 'code', label: 'Code', icon: 'code' },
 ]
 
-/** Left column: Layers / Add / Code. */
+/** Left column: Pages / Layers / Add / Code. */
 export function Sidebar() {
   const panel = useViewStore((state) => state.sidePanel)
   const setPanel = useViewStore((state) => state.setSidePanel)
@@ -26,6 +28,7 @@ export function Sidebar() {
         ))}
       </div>
       <div role="tabpanel" className={styles.panel}>
+        {panel === 'pages' && <PagesPanel />}
         {panel === 'layers' && <LayersPanel />}
         {panel === 'add' && <AddPanel />}
         {panel === 'code' && <CodePanel />}
