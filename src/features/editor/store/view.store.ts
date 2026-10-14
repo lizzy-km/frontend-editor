@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { VISITOR, type Viewer } from '../model/conditions'
 import type { Breakpoint } from '../model/types'
 
-export type SidePanel = 'pages' | 'layers' | 'add' | 'data' | 'code'
+export type SidePanel = 'pages' | 'layers' | 'add' | 'colors' | 'data' | 'code'
 export type ZoomMode = 'fit' | number
 
 type ViewState = {

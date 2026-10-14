@@ -275,6 +275,14 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Colors (`model/palette.ts`)
+
+- A global color change is a pure `PageDoc -> PageDoc` function (`replaceColor`,
+  `setThemeColor`) over `doc.css` (declaration blocks only) and every node's
+  style values and paint attributes. Untouched nodes keep their identity.
+  `--var: #color` declarations are theme colors and are never changed by
+  `replaceColor`.
+
 ## Layouts (`model/layouts.ts`)
 
 - `applyLayout(doc, kind, replaceHeader)` removes the old generated boxes

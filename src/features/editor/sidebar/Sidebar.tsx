@@ -4,6 +4,7 @@ import { useDocStore } from '../store/doc.store'
 import { useViewStore, type SidePanel } from '../store/view.store'
 import { AddPanel } from './AddPanel'
 import { CodePanel } from './CodePanel'
+import { ColorsPanel } from './colors/ColorsPanel'
 import { DataPanel } from './data/DataPanel'
 import { LayersPanel } from './LayersPanel'
 import { PagesPanel } from './pages/PagesPanel'
@@ -13,6 +14,7 @@ const TABS: { id: SidePanel; label: string; icon: IconName }[] = [
   { id: 'pages', label: 'Pages', icon: 'globe' },
   { id: 'layers', label: 'Layers', icon: 'layers' },
   { id: 'add', label: 'Add', icon: 'plus' },
+  { id: 'colors', label: 'Colors', icon: 'sun' },
   { id: 'data', label: 'Data', icon: 'box' },
   { id: 'code', label: 'Code', icon: 'code' },
 ]
@@ -39,6 +41,7 @@ export function Sidebar() {
         {panel === 'pages' && <PagesPanel />}
         {panel === 'layers' && <LayersPanel />}
         {panel === 'add' && <AddPanel />}
+        {panel === 'colors' && <ColorsPanel />}
         {panel === 'data' && <DataPanel />}
         {panel === 'code' && <CodePanel />}
       </div>
