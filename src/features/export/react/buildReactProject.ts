@@ -4,6 +4,7 @@ import type { ExportFiles } from '../buildFiles'
 import { createNameRegistry } from './names'
 import { projectShell, renderParts, type Parts } from './projectShell'
 import { dataFiles, DATA_DEPS } from './dataTemplates'
+import { listUiFiles } from './listTemplates'
 import { mainFile } from './mainTemplate'
 import { DATA_README, readme } from './projectTemplates'
 
@@ -30,13 +31,14 @@ function onlyPart(doc: PageDoc, id: string): PageDoc {
 export function buildReactProject(fullDoc: PageDoc, onlyId?: string): ExportFiles {
   const doc = onlyId && onlyId !== fullDoc.rootId ? onlyPart(fullDoc, onlyId) : fullDoc
   const body = getElement(doc.nodes, doc.rootId)
-  const parts = renderParts(doc.nodes, body?.children ?? [], createNameRegistry(), '      ')
   const sources = doc.data ?? []
+  const parts = renderParts(doc.nodes, body?.children ?? [], createNameRegistry(), '      ', undefined, { base: '..', sources })
   const shell = projectShell(doc, sources.length ? DATA_DEPS : {})
   const files: ExportFiles = {
     ...shell.files,
     'README.md': readme(doc.title, parts.names, shell.hasScripts) + (sources.length ? DATA_README : ''),
     ...dataFiles(sources),
+    ...listUiFiles(doc),
     'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: false }),
     'src/App.tsx': appSource(parts),
   }

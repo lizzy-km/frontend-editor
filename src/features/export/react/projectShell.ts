@@ -4,6 +4,7 @@ import { isElement, type ElementNode, type NodeMap, type PageDoc } from '@/featu
 import { toFileName } from '@/lib/download'
 import type { ExportFiles } from '../buildFiles'
 import { partComponent, type ComponentFile, type RouterLinks } from './componentFiles'
+import type { ListOptions } from './listTemplates'
 import { openTag, visibleChildren, type JsxContext } from './jsxWriter'
 import { describeName } from './names'
 import { handlerEvents, linkTags, planScripts } from './pageScripts'
@@ -23,13 +24,13 @@ type TakeName = (wanted: string, alternative?: string) => string
 export type Parts = { files: ComponentFile[]; names: string[]; jsx: string[] }
 
 /** Each part (header, a section…) becomes a component; a <main> stays as it is with its sections inside. */
-export function renderParts(nodes: NodeMap, ids: string[], takeName: TakeName, pad: string, router?: RouterLinks): Parts {
+export function renderParts(nodes: NodeMap, ids: string[], takeName: TakeName, pad: string, router?: RouterLinks, data?: ListOptions): Parts {
   const parts: Parts = { files: [], names: [], jsx: [] }
   const ctx: JsxContext = { nodes, classFor }
   const elements = (list: string[]) => list.filter((id) => isElement(nodes[id]) && !(nodes[id] as ElementNode).hidden)
   const add = (id: string, indent: string) => {
     const name = takeName(describeName(nodes[id] as ElementNode))
-    parts.files.push(...partComponent(nodes, classFor, id, name, takeName, router))
+    parts.files.push(...partComponent(nodes, classFor, id, name, takeName, router, data))
     parts.names.push(name)
     parts.jsx.push(`${indent}<${name} />`)
   }

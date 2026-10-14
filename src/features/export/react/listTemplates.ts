@@ -1,0 +1,133 @@
+import { rowTypeName } from '@/features/editor/model/data'
+import { bindingsOf, isListBox, listInfo, type ListInfo } from '@/features/editor/model/dataLists'
+import { collectSubtreeIds } from '@/features/editor/model/tree/queries'
+import { isElement, type DataSource, type ElementNode, type NodeMap } from '@/features/editor/model/types'
+import { openTag, writeElement, type JsxContext } from './jsxWriter'
+
+type ComponentFile = { name: string; code: string }
+type TakeName = (wanted: string, alternative?: string) => string
+/** Where generated files reach src/ from ('..' in src/components, '../..' in src/components/<page>). */
+export type ListOptions = { base: string; sources: DataSource[] }
+
+/** Ready-made: src/components/ui/InfiniteScroll.tsx, for any useXInfinite() hook. */
+export const INFINITE_SCROLL = `import { useEffect, useRef, type ReactNode } from 'react'
+import type { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query'
+
+type Page<T> = { items: T[]; nextPage: number | null }
+
+type Props<T> = {
+  /** The result of a useXInfinite() hook (src/api). */
+  query: UseInfiniteQueryResult<InfiniteData<Page<T>, unknown>, Error>
+  /** One item (give it a key). */
+  render: (item: T) => ReactNode
+  /** Shown when there is nothing to show. */
+  empty?: ReactNode
+}
+
+/** Shows items page by page and loads the next page as the end scrolls into view. */
+export default function InfiniteScroll<T>({ query, render, empty = <p>Nothing here yet.</p> }: Props<T>) {
+  const end = useRef<HTMLDivElement>(null)
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query
+
+  useEffect(() => {
+    const target = end.current
+    if (!target || !hasNextPage) return
+    const watcher = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting && !isFetchingNextPage) void fetchNextPage()
+    }, { rootMargin: '400px' })
+    watcher.observe(target)
+    return () => watcher.disconnect()
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+
+  if (query.isPending) return <p style={{ gridColumn: '1 / -1' }}>Loading…</p>
+  if (query.isError) {
+    return (
+      <p role="alert" style={{ gridColumn: '1 / -1' }}>
+        Couldn't load this list. <button type="button" onClick={() => void query.refetch()}>Try again</button>
+      </p>
+    )
+  }
+  const items = query.data.pages.flatMap((page) => page.items)
+  if (items.length === 0) return <>{empty}</>
+  return (
+    <>
+      {items.map(render)}
+      <div ref={end} aria-hidden="true" style={{ gridColumn: '1 / -1', width: '100%', height: 1 }} />
+      {isFetchingNextPage && <p style={{ gridColumn: '1 / -1' }}>Loading more…</p>}
+    </>
+  )
+}
+`
+
+const pascal = (name: string) => name.charAt(0).toUpperCase() + name.slice(1)
+
+/** The fields a card design shows (its props). */
+function usedFields(nodes: NodeMap, templateId: string, source: DataSource): string[] {
+  const names = new Set(source.fields.map((field) => field.name))
+  const used = new Set<string>()
+  for (const id of collectSubtreeIds(nodes, templateId)) {
+    const node = nodes[id]
+    if (isElement(node)) for (const field of Object.values(bindingsOf(node))) if (names.has(field)) used.add(field)
+  }
+  return [...used]
+}
+
+function cardFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: string, base: string): ComponentFile {
+  const type = rowTypeName(source.name)
+  const fields = usedFields(ctx.nodes, info.templateId!, source)
+  // Links in a card stay plain <a> (the card file has no router imports).
+  const card: JsxContext = { nodes: ctx.nodes, classFor: ctx.classFor, row: new Map(source.fields.map((field) => [field.name, field.type])) }
+  const body = writeElement(card, info.templateId!, '    ')
+  return {
+    name,
+    code: [
+      `import type { ${type} } from '${base}/data/types'`, '',
+      `/** One ${type} card. Change the design here; the words and pictures come from "${source.name}". */`,
+      `export default function ${name}(${fields.length ? `{ ${fields.join(', ')} }` : '_card'}: ${type}) {`,
+      '  return (', body, '  )', '}', '',
+    ].join('\n'),
+  }
+}
+
+function listFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: string, card: string, base: string): ComponentFile {
+  const box = ctx.nodes[info.id] as ElementNode
+  const hook = `use${pascal(source.name)}${info.load === 'scroll' ? 'Infinite' : ''}`
+  const items = info.load === 'scroll'
+    ? [`      <InfiniteScroll query={query} render={(item) => <${card} key={item.id} {...item} />} />`]
+    : ['      {query.isPending && <p>Loading…</p>}', `      {query.data?.map((item) => <${card} key={item.id} {...item} />)}`]
+  return {
+    name,
+    code: [
+      `import { ${hook} } from '${base}/api/${source.name}'`,
+      ...(info.load === 'scroll' ? [`import InfiniteScroll from '${base}/components/ui/InfiniteScroll'`] : []),
+      `import ${card} from './${card}'`, '',
+      `/** ${pascal(source.name)} from the data${info.load === 'scroll' ? `, ${info.pageSize} at a time, more as visitors scroll` : ''}. */`,
+      `export default function ${name}() {`,
+      `  const query = ${hook}(${info.load === 'scroll' ? info.pageSize : ''})`,
+      '  return (', `    ${openTag(ctx, box)}`, ...items, `    </${box.tag}>`, '  )', '}', '',
+    ].join('\n'),
+  }
+}
+
+/** Finds the "List from data" boxes in a part and writes a list + card component for each. */
+export function listComponents(ctx: JsxContext, rootId: string, takeName: TakeName, { base, sources }: ListOptions) {
+  const lists = new Map<string, string>()
+  const files: ComponentFile[] = []
+  for (const id of collectSubtreeIds(ctx.nodes, rootId)) {
+    if (!isListBox(ctx.nodes[id])) continue
+    const info = listInfo(ctx.nodes, id)
+    const source = sources.find((item) => item.name === info?.source)
+    if (!info?.templateId || !source) continue
+    const card = takeName(`${rowTypeName(source.name)}Card`)
+    const name = takeName(`${pascal(source.name)}List`)
+    files.push(listFile(ctx, info, source, name, card, base), cardFile(ctx, info, source, card, base))
+    lists.set(id, name)
+  }
+  return { lists, files }
+}
+
+/** The ready-made InfiniteScroll, when some list loads more as visitors scroll. */
+export function listUiFiles(doc: { nodes: NodeMap; data?: DataSource[] }): Record<string, string> {
+  const scrolls = Object.keys(doc.nodes).some((id) => listInfo(doc.nodes, id)?.load === 'scroll')
+  return scrolls && doc.data?.length ? { 'src/components/ui/InfiniteScroll.tsx': INFINITE_SCROLL } : {}
+}
