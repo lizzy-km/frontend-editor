@@ -60,7 +60,17 @@ export type PageDoc = {
    * preconnect, icons...). Optional: pages saved before this existed lack it.
    */
   headTags?: HeadTag[]
+  /** Data sources (Data panel): typed fields, mock rows, an optional API. Optional: older pages have none. */
+  data?: DataSource[]
 }
+
+/** What kind of value a data field holds (decides the TypeScript type and how it is shown). */
+export type FieldType = 'text' | 'longText' | 'number' | 'boolean' | 'image' | 'date' | 'url'
+export type DataField = { name: string; type: FieldType }
+export type DataValue = string | number | boolean
+/** Where to get the real data: a GET address returning a list (or an object holding one), with optional paging. */
+export type DataApi = { url: string; listPath?: string; pageParam?: string; pageSizeParam?: string }
+export type DataSource = { id: string; name: string; fields: DataField[]; rows: Record<string, DataValue>[]; api?: DataApi }
 
 export type HeadTag = { tag: 'meta' | 'link'; attrs: Record<string, string> }
 
