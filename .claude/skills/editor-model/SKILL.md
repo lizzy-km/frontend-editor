@@ -99,6 +99,11 @@ that break things if you ignore them.
     fields goes through `model/forms.ts`. React forms are generated
     components (`export/react/forms/`); never group a form into repeated items.
 
+24. **Sign-in pages are normal pages with normal forms.** Their behaviour is
+    only `data-fe-submit` (kind) + conventional field names (email, password,
+    name). Never hard-code them in the export; the redirect after login uses
+    `sessionStorage['auth:redirect']`, cleared only when the wanted page loads.
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

@@ -2,12 +2,12 @@ import { MATCH_ATTR, SUBMIT_ATTR, SUCCESS_ATTR } from './forms'
 
 /** Ready-made forms for Add > Ready-made: plain HTML with inline styles, so they look right on any page. */
 
-const FIELD = 'display: grid; gap: 6px; font-size: 14px; font-weight: 600'
-const INPUT = 'font: inherit; font-weight: 400; padding: 11px 14px; border: 1px solid #d6d3d1; border-radius: 10px; background: #fff; color: #1c1917'
-const BUTTON = 'font: inherit; font-weight: 700; padding: 13px 20px; border: 0; border-radius: 10px; background: #1c1917; color: #fff; cursor: pointer'
-const BOX = 'display: grid; gap: 16px; max-width: 520px; margin: 48px auto; padding: 32px; border: 1px solid #e7e5e4; border-radius: 18px; background: #fff; box-shadow: 0 18px 40px -24px rgba(28, 25, 23, .35)'
+export const FIELD = 'display: grid; gap: 6px; font-size: 14px; font-weight: 600'
+export const INPUT = 'font: inherit; font-weight: 400; padding: 11px 14px; border: 1px solid #d6d3d1; border-radius: 10px; background: #fff; color: #1c1917'
+export const BUTTON = 'font: inherit; font-weight: 700; padding: 13px 20px; border: 0; border-radius: 10px; background: #1c1917; color: #fff; cursor: pointer'
+export const BOX = 'display: grid; gap: 16px; max-width: 520px; margin: 48px auto; padding: 32px; border: 1px solid #e7e5e4; border-radius: 18px; background: #fff; box-shadow: 0 18px 40px -24px rgba(28, 25, 23, .35)'
 
-const field = (label: string, control: string) => `<label style="${FIELD}">${label}${control}</label>`
+export const field = (label: string, control: string) => `<label style="${FIELD}">${label}${control}</label>`
 
 /** A contact form: name, email, topic, message and a "may we email you" tick box. */
 export const CONTACT_FORM_HTML = `<form ${SUBMIT_ATTR}="send" ${SUCCESS_ATTR}="Thank you! We'll get back to you within a day." style="${BOX}">`

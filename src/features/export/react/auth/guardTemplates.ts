@@ -23,15 +23,14 @@ export function RequireAuth({ children, roles = [], flags = [], signedOut = fals
   if (signedOut) {
     if (!user) return <>{children}</>
     // Just signed in (or already was): on to the page they wanted, else home.
-    const target = sessionStorage.getItem('auth:redirect') ?? '/'
-    sessionStorage.removeItem('auth:redirect')
-    return <Navigate to={target} replace />
+    return <Navigate to={sessionStorage.getItem('auth:redirect') ?? '/'} replace />
   }
   if (!user) {
     sessionStorage.setItem('auth:redirect', location.pathname)
     return <Navigate to="/login" replace />
   }
   const allowed = (!roles.length || roles.some((role) => user.roles.includes(role))) && (!flags.length || isOn(...flags))
+  if (allowed) sessionStorage.removeItem('auth:redirect') // they got where they wanted
   return allowed ? <>{children}</> : <NoAccessPage />
 }
 `
@@ -61,6 +60,7 @@ export function requireAccess({ roles = [], flags = [], signedOut = false }: Acc
     }
     const allowed = (!roles.length || roles.some((role) => user.roles.includes(role))) && (!flags.length || isOn(...flags))
     if (!allowed) throw redirect({ to: '/no-access' })
+    sessionStorage.removeItem('auth:redirect') // they got where they wanted
   }
 }
 `

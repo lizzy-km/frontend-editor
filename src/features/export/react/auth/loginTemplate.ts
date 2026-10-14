@@ -23,7 +23,6 @@ ${kind === 'tanstack' ? '  const navigate = useNavigate()\n' : ''}  const [email
       ${kind === 'react-router'
     ? '// The page\'s guard (RequireAuth signedOut) now sends them on to the page they wanted.'
     : `const target = ${AFTER_SIGN_IN}
-      sessionStorage.removeItem('auth:redirect')
       // The address is only known at run time, so it is not one of the typed routes.
       void navigate({ to: target as never, replace: true })`}
     } catch (caught) {
