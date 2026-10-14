@@ -1,3 +1,4 @@
+import { conditionOf, type Condition } from './conditions'
 import { getElement } from './tree/queries'
 import { isElement, type EditorNode, type ElementNode, type NodeMap, type PageDoc } from './types'
 
@@ -16,7 +17,7 @@ export const GO_ATTR = 'data-fe-go'
 /** Only signed-in visitors may open the page (used by the React export's route guard). */
 export const PRIVATE_ATTR = 'data-fe-private'
 
-export type PageInfo = { id: string; key: string; path: string; title: string; private: boolean }
+export type PageInfo = { id: string; key: string; path: string; title: string; private: boolean; access: Condition }
 
 /** Is this node a page container? */
 export const isPageNode = (node: EditorNode | undefined): boolean => isElement(node) && PAGE_ATTR in node.attrs
@@ -26,7 +27,8 @@ const toInfo = (node: ElementNode): PageInfo => ({
   key: node.attrs[PAGE_ATTR]!,
   path: node.attrs[PATH_ATTR] ?? '/',
   title: node.attrs[TITLE_ATTR] ?? 'Page',
-  private: PRIVATE_ATTR in node.attrs,
+  private: conditionOf(node).audience === 'signed-in',
+  access: conditionOf(node),
 })
 
 /** The pages of a site, in order (empty for a one-page document). */

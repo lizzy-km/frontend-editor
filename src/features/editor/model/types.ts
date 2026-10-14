@@ -62,6 +62,8 @@ export type PageDoc = {
   headTags?: HeadTag[]
   /** Data sources (Data panel): typed fields, mock rows, an optional API. Optional: older pages have none. */
   data?: DataSource[]
+  /** The site's roles and flags for "Who can see this" (defaults: member, admin; no flags). */
+  access?: { roles: string[]; flags: string[] }
 }
 
 /** What kind of value a data field holds (decides the TypeScript type and how it is shown). */
