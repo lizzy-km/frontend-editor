@@ -5,6 +5,7 @@ import { removeNode } from '../tree/treeOps'
 import { isElement, type PageDoc } from '../types'
 import { expandDataLists } from './expandLists'
 import { withForms } from './formPlayer'
+import { withLayouts } from './layoutPlayer'
 import { withPopups } from './popupPlayer'
 
 const effects = Object.fromEntries(EFFECTS.map((effect) => [effect.value, { from: poseCss(effect.from), hover: poseCss(effect.hover) }]))
@@ -85,6 +86,6 @@ function forViewer(doc: PageDoc, viewer: Viewer): PageDoc {
 /**
  * The page as visitors get it (Preview, public view, downloads): only what this
  * viewer may see (downloads: a signed-out visitor), lists filled with their
- * data rows, and the animation, form and pop-up players added.
+ * data rows, and the animation, form, pop-up and layout players added.
  */
-export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR): PageDoc => withPopups(withForms(withAnimations(expandDataLists(forViewer(doc, viewer)))))
+export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR): PageDoc => withLayouts(withPopups(withForms(withAnimations(expandDataLists(forViewer(doc, viewer))))))

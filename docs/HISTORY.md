@@ -3,6 +3,24 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/layouts — 2026-10-14
+- **Layouts** (Pages tab → Layout): **Top bar**, **Side menu** or **Both**
+  (`model/layouts.ts`, `layoutCss.ts`). They are ordinary boxes (`data-fe-layout`)
+  with a menu made from the site's pages; each item keeps the page's "who can
+  see this", so menus follow signed-in / roles / flags. Log in, Sign up and Log
+  out are added when the site has a Log in page. "Replace my current header"
+  swaps the page's own header; "Update layout and menu" rebuilds after adding
+  pages; Remove takes boxes and CSS away (one undo step each).
+- Responsive: under 860px the top menu collapses behind a ☰ button and the side
+  menu slides in; a menu link closes it. The open page's link is highlighted.
+- Visitors: `serialize/layoutPlayer.ts` (☰, close on click, highlight in downloads).
+- React: menu links become `NavLink` (React Router) or `Link` with `activeProps`
+  (TanStack), ☰ and link clicks toggle `body.menu-open`, "Log out" calls the new
+  `src/auth/signOut.ts` (reloads so every guard re-checks).
+- Verified by building top bar / side menu / both with both routers and driving
+  them in Chrome at desktop and phone width (menu, active link, account links
+  by sign-in, ☰, Log out).
+
 ## feature/popups — 2026-10-14
 - **Pop-ups** (`model/popups.ts`): a ready-made **Pop-up** block (a button plus
   the box). The box is an ordinary box while editing (`data-fe-modal="name"`);

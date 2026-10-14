@@ -11,10 +11,10 @@ type TakeName = (wanted: string, alternative?: string) => string
 /** Sites: page addresses that become router links, where Link/useNavigate come from, and how to call navigate. */
 export type RouterLinks = { paths: Set<string>; lib: string; go: (target: string, typed: boolean) => string }
 
-const linksFor = (router?: RouterLinks) => (router ? { paths: router.paths, used: false, navigate: false, go: router.go } : undefined)
+const linksFor = (router?: RouterLinks) => (router ? { paths: router.paths, lib: router.lib, used: false, navigate: false, go: router.go } : undefined)
 /** `import { Link, useNavigate } from '…'` for what the file used. */
 function linkImport(ctx: JsxContext, router?: RouterLinks): string[] {
-  const names = [ctx.links?.used && 'Link', ctx.links?.navigate && 'useNavigate'].filter(Boolean)
+  const names = [ctx.links?.used && 'Link', ctx.links?.navLink && 'NavLink', ctx.links?.navigate && 'useNavigate'].filter(Boolean)
   return names.length && router ? [`import { ${names.join(', ')} } from '${router.lib}'`] : []
 }
 /** The hook line for components with "click goes to" boxes. */
@@ -37,7 +37,7 @@ function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, n
   return {
     name,
     code: [
-      ...linkImport(ctx, router), ...motionImports(ctx.motion, base), ...showImport(ctx.show, base), ...(ctx.links?.used || ctx.motion?.animation || ctx.motion?.item || showImport(ctx.show, base).length ? [''] : []),
+      ...linkImport(ctx, router), ...motionImports(ctx.motion, base), ...showImport(ctx.show, base), ...(ctx.links?.used || ctx.links?.navLink || ctx.motion?.animation || ctx.motion?.item || showImport(ctx.show, base).length ? [''] : []),
       `export type ${name}Props = {`, ...fields, '}', '',
       `/** One of the repeated items. Change the look here; change the words in the list that uses it. */`,
       `export default function ${name}({ ${params} }: ${name}Props) {`,

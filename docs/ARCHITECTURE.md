@@ -275,6 +275,15 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Layouts (`model/layouts.ts`)
+
+- `applyLayout(doc, kind, replaceHeader)` removes the old generated boxes
+  (`data-fe-layout`) and CSS block (`/* tweak-layout */`), then inserts the
+  new boxes before the pages. Menu links carry `data-fe-nav` + the page's
+  condition attributes. React: `asRouterLink` (NavLink), `popups/jsxPopups`
+  (`navProps`, ☰, Log out). Layout CSS uses `body:has(.lay-side)` because in
+  the React project the boxes sit inside `#root`, not directly in `<body>`.
+
 ## Page guard (`model/pageGuard.ts`)
 
 - `guardPage(doc, pageId, viewer)` mirrors the React route guards for

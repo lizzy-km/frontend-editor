@@ -22,7 +22,7 @@ export type JsxContext = {
    * Sites: links to these page addresses become the router's <Link to> (`used`), and "click goes to"
    * boxes call navigate (`navigate`); both tell the file what to import. `go` writes the navigate call.
    */
-  links?: { paths: Set<string>; used: boolean; navigate: boolean; go: (target: string, typed: boolean) => string }
+  links?: { paths: Set<string>; lib: string; used: boolean; navLink?: boolean; navigate: boolean; go: (target: string, typed: boolean) => string }
   /** "List from data" boxes written as their list component instead: box id -> component name. */
   lists?: Map<string, string>
   /** Inside a list's card component: the row's fields and their kinds (bindings become props). */
@@ -173,6 +173,6 @@ export function openTag(ctx: JsxContext, node: ElementNode): string {
 
 /** The closing tag matching openTag (motion.<tag> when animated). */
 export function closeTag(ctx: JsxContext, node: ElementNode): string {
-  const animated = Boolean(ctx.motion) && node.tag !== 'Link' && node.tag !== 'Modal' && (ctx.motion!.items.has(node.id) || Boolean(node.attrs['data-fe-animate']))
+  const animated = Boolean(ctx.motion) && node.tag !== 'Link' && node.tag !== 'NavLink' && node.tag !== 'Modal' && (ctx.motion!.items.has(node.id) || Boolean(node.attrs['data-fe-animate']))
   return `</${animated ? `motion.${node.tag}` : node.tag}>`
 }

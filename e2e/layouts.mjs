@@ -1,0 +1,46 @@
+// Layouts: top bar, side menu, both; the menu comes from the pages; selecting the fixed side menu works; undo.
+import { check, openExample } from './browser.mjs'
+
+const { browser, page, frame, box, errors } = await openExample()
+const sidebar = page.locator('aside').first()
+const panel = page.locator('aside').last()
+const count = (selector) => frame.$$eval(selector, (all) => all.length)
+
+const frameBox = await page.locator('iframe[title="Your page"]').boundingBox()
+await page.mouse.click(frameBox.x + frameBox.width / 2, frameBox.y + frameBox.height - 30)
+await page.waitForTimeout(300)
+await page.locator('aside').last().getByRole('button', { name: /Make this a website/ }).click()
+await page.waitForTimeout(300)
+await sidebar.getByRole('button', { name: 'Add a page' }).click()
+await page.getByRole('dialog').getByLabel('Page name').fill('Prices')
+await page.getByRole('button', { name: 'Add page' }).click()
+await page.waitForTimeout(400)
+
+const layout = sidebar.getByRole('group', { name: 'Layout' })
+await layout.getByRole('button', { name: 'Top bar' }).click()
+await sidebar.getByRole('button', { name: 'Add layout' }).click()
+await page.waitForTimeout(600)
+check('top bar added with the pages in its menu', (await count('[data-fe-layout="top"] nav a')) >= 2 && (await frame.$eval('[data-fe-layout="top"]', (el) => el.innerText)).includes('Prices'))
+check('old header replaced (only one header)', (await count('header')) === 1)
+
+await layout.getByRole('button', { name: 'Both' }).click()
+await sidebar.getByRole('button', { name: 'Update layout and menu' }).click()
+await page.waitForTimeout(600)
+check('both: top bar and side menu, no duplicates', (await count('[data-fe-layout="top"]')) === 1 && (await count('[data-fe-layout="side"]')) === 1)
+check('side menu has the page links', (await frame.$eval('[data-fe-layout="side"]', (el) => el.innerText)).includes('Prices'))
+
+// The fixed side menu can be selected on the canvas
+const side = await box('[data-fe-layout="side"] nav')
+await page.mouse.click(side.x + 4, side.y + side.height + 60)
+await page.waitForTimeout(400)
+check('side menu selectable (settings show)', await panel.getByText('Who can see this').first().isVisible())
+
+await sidebar.getByRole('button', { name: 'Remove', exact: true }).click()
+await page.waitForTimeout(400)
+check('remove takes the layout and its styles away', (await count('[data-fe-layout]')) === 0 && !(await frame.evaluate(() => document.documentElement.innerHTML.includes('tweak-layout'))))
+await page.mouse.click(12, 845)
+await page.keyboard.press('Control+z')
+await page.waitForTimeout(400)
+check('undo brings it back', (await count('[data-fe-layout="side"]')) === 1)
+check('no console errors', errors.length === 0, errors.join(' | '))
+await browser.close()

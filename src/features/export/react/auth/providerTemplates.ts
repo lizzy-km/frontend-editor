@@ -86,6 +86,20 @@ export function useAuth(): AuthState {
 }
 `
 
+/** src/auth/signOut.ts: for "Log out" buttons that are not inside a component using useAuth(). */
+export const SIGN_OUT = `import { authApi } from './authApi'
+import { clearSession, sessionEvents } from './session'
+
+/** Signs out: tells the API, forgets the session and lets the AuthProvider (and the route guards) know. */
+export async function signOut(): Promise<void> {
+  await authApi.signOut().catch(() => {})
+  clearSession()
+  sessionEvents.onExpired()
+  // Reload so every route guard checks again (TanStack's run on navigation only).
+  window.location.reload()
+}
+`
+
 export const SHOW = `import type { ReactNode } from 'react'
 import { isOn } from '../config/flags'
 import { useAuth } from './useAuth'

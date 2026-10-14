@@ -110,6 +110,12 @@ that break things if you ignore them.
     never add a second `onClick` in the JSX writer. Generated file names must
     not differ only by case.
 
+26. **Layouts are generated boxes, not model features.** `data-fe-layout`
+    boxes + one marked CSS block; always go through `applyLayout` /
+    `removeLayout` so there is never more than one of each. Don't assume the
+    boxes are direct children of `<body>` in exported CSS (React wraps them in
+    `#root`).
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

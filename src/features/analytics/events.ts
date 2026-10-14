@@ -52,6 +52,8 @@ export type AnalyticsEvents = {
   auth_pages_add: { added: number }
   /** An element was set to open a pop-up, or to ask first. */
   popup_set: { kind: 'open' | 'ask' }
+  /** A ready-made layout was put on a site (which one, and whether the old header was replaced). */
+  layout_apply: { kind: 'top' | 'side' | 'both'; replaced: boolean }
   /** A form was set to check and send its answers. */
   form_set: { fields: number }
   /** A page added to a site (blank, from pasted code, or a copy) and how many pages it now has. */

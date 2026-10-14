@@ -104,6 +104,10 @@ accounts and a pretend email until you connect your API).
 button opens or closes under "When clicked", and make any button or link ask
 "Are you sure?" first. They work in Preview, downloads and the React project.
 
+**Layouts:** under Pages → Layout pick a top bar, a side menu or both. The menu
+is made from your pages and hides items visitors may not open; on phones it
+becomes a ☰ button. Log in, Sign up and Log out are added when you have a Log in page.
+
 ## Who can see what
 
 "Who can see this" shows an element or page to everyone, signed-in people
