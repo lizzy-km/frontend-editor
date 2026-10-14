@@ -4,5 +4,6 @@
  */
 ;(function (fe) {
   fe.start()
+  if (fe.initialData) fe.handlers.data({ sources: fe.initialData })
   fe.post('ready', { rootId: fe.rootId })
 })(window.__fe)

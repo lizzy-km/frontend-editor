@@ -59,12 +59,15 @@ export function buildEditorSource(pageDoc: PageDoc): string {
     `<style id="${VIEW_STYLE_ID}"></style>`,
     '</head>',
     `<body${attrs(bodyAttrs)}>${body ? childrenToHtml(doc.nodes, body, { withIds: true }) : ''}`,
-    `<script type="application/json" id="fe-model">${safeJson({ rootId: doc.rootId, nodes: doc.nodes })}</script>`,
+    `<script type="application/json" id="fe-model">${safeJson({ rootId: doc.rootId, nodes: doc.nodes, data: dataForFrame(doc) })}</script>`,
     ...RUNTIME_SCRIPTS.map((code) => `<script>${escapeRawTag(code, 'script')}</script>`),
     ...doc.scripts.filter((script) => !script.inHead).map(scriptTag),
     '</body></html>',
   ].join('\n')
 }
+
+/** The data the frame needs for live lists: names and rows only. */
+export const dataForFrame = (doc: PageDoc) => (doc.data ?? []).map((source) => ({ name: source.name, rows: source.rows }))
 
 /** Changing these needs a fresh frame (scripts can't be "un-run"). Everything else is patched live. */
 export function sourceKey(doc: PageDoc): string {
