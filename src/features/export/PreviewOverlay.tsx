@@ -15,6 +15,8 @@ export function PreviewOverlay() {
   const breakpoint = useViewStore((state) => state.breakpoint)
   const setPreview = useViewStore((state) => state.setPreview)
   const [doc] = useState(getDoc) // snapshot taken when Preview opens
+  const pageId = useViewStore((state) => state.pageId)
+  const setPageId = useViewStore((state) => state.setPageId)
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setPreview(false)
@@ -31,7 +33,7 @@ export function PreviewOverlay() {
       </header>
       <div className={styles.stage}>
         <SafePageFrame
-          doc={doc} title="Preview of your page" className={styles.frame}
+          doc={doc} title="Preview of your page" className={styles.frame} pageId={pageId} onOpenPage={setPageId}
           width={breakpoint === 'desktop' ? '100%' : BREAKPOINTS[breakpoint].frameWidth}
         />
       </div>

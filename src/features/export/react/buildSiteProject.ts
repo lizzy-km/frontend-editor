@@ -1,0 +1,87 @@
+import { listPages, PATH_ATTR, type PageInfo } from '@/features/editor/model/pages'
+import { allPagesDoc } from '@/features/editor/model/serialize/sitePages'
+import { getElement } from '@/features/editor/model/tree/queries'
+import type { ElementNode, PageDoc } from '@/features/editor/model/types'
+import type { ExportFiles } from '../buildFiles'
+import { AUTH_PROVIDER, loginPageSource, requireAuthSource, USE_AUTH } from './authTemplates'
+import type { RouterLinks } from './componentFiles'
+import { createNameRegistry, pascalCase } from './names'
+import { projectShell, renderParts, type Parts } from './projectShell'
+import { readme } from './projectTemplates'
+import { mainSource, notFoundSource, routerSource, ROUTERS, type RouteFile, type RouterKind } from './routerTemplates'
+import { siteReadme } from './siteReadme'
+
+type Options = { router: RouterKind }
+
+const componentImports = (parts: Parts, folder: string, from: string) =>
+  parts.names.map((name) => `import ${name} from '${from}/components/${folder}/${name}'`)
+
+/** src/layout/Layout.tsx: the shared parts with the current page (<Outlet />) where the pages sit. */
+function layoutSource(kind: RouterKind, before: Parts, after: Parts): string {
+  const isReactRouter = kind === 'react-router'
+  return [
+    "import { useEffect } from 'react'",
+    `import { Outlet${isReactRouter ? ', ScrollRestoration' : ''} } from '${ROUTERS[kind].lib}'`,
+    ...componentImports(before, 'layout', '..'), ...componentImports(after, 'layout', '..'),
+    "import { runPageScripts } from '../runPageScripts'",
+    '',
+    '/** The parts every page shares (header, footer…). The current page appears at <Outlet />. */',
+    'export default function Layout() {',
+    '  useEffect(() => runPageScripts(), [])',
+    '  return (', '    <>', ...before.jsx, '      <Outlet />', ...after.jsx,
+    ...(isReactRouter ? ['      <ScrollRestoration />'] : []), '    </>', '  )', '}', '',
+  ].join('\n')
+}
+
+function pageSource(name: string, title: string, parts: Parts, folder: string): string {
+  return [
+    ...componentImports(parts, folder, '..'), '',
+    `/** The "${title.replace(/"/g, "'")}" page. */`,
+    `export default function ${name}() {`,
+    '  return (', '    <>', ...parts.jsx, '    </>', '  )', '}', '',
+  ].join('\n')
+}
+
+/** A multi-page site as a Vite + React + TypeScript app with a router, a shared Layout and one file per page. */
+export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles {
+  const pages = listPages(doc)
+  const body = getElement(doc.nodes, doc.rootId)!
+  const first = body.children.indexOf(pages[0]!.id)
+  const isPage = (id: string) => pages.some((page) => page.id === id)
+  const links: RouterLinks = { paths: new Set(pages.map((page) => page.path)), lib: ROUTERS[router].lib, go: ROUTERS[router].go }
+  const takeName = createNameRegistry()
+  const files: ExportFiles = {}
+  const write = (parts: Parts, folder: string) => { for (const file of parts.files) files[`src/components/${folder}/${file.name}.tsx`] = file.code }
+
+  const before = renderParts(doc.nodes, body.children.slice(0, first).filter((id) => !isPage(id)), takeName, '      ', links)
+  const after = renderParts(doc.nodes, body.children.slice(first).filter((id) => !isPage(id)), takeName, '      ', links)
+  write(before, 'layout')
+  write(after, 'layout')
+
+  const routes: (RouteFile & { page: PageInfo })[] = pages.map((page) => {
+    const component = takeName(`${pascalCase(page.title) || 'Page'}Page`)
+    const folder = page.key
+    const parts = renderParts(doc.nodes, (doc.nodes[page.id] as ElementNode).children, takeName, '      ', links)
+    write(parts, folder)
+    files[`src/pages/${component}.tsx`] = pageSource(component, page.title, parts, folder)
+    return { path: (doc.nodes[page.id] as ElementNode).attrs[PATH_ATTR] ?? '/', component, file: component, private: page.private, page }
+  })
+
+  const shell = projectShell(allPagesDoc(doc), ROUTERS[router].deps)
+  const withAuth = routes.some((route) => route.private)
+  if (withAuth) {
+    files['src/auth/AuthProvider.tsx'] = AUTH_PROVIDER
+    files['src/auth/useAuth.ts'] = USE_AUTH
+    files['src/auth/RequireAuth.tsx'] = requireAuthSource(router)
+    files['src/pages/LoginPage.tsx'] = loginPageSource(router)
+  }
+  return {
+    ...shell.files,
+    ...files,
+    'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}`,
+    'src/main.tsx': mainSource(router, withAuth),
+    'src/router.tsx': routerSource(router, routes, (route) => (route.private ? `<RequireAuth><${route.component} /></RequireAuth>` : `<${route.component} />`)),
+    'src/layout/Layout.tsx': layoutSource(router, before, after),
+    'src/pages/NotFoundPage.tsx': notFoundSource(router),
+  }
+}

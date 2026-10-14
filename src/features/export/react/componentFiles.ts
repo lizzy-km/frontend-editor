@@ -5,6 +5,17 @@ import { findRepeats, type PropValue, type RepeatGroup } from './repeats'
 
 type ClassFor = (node: ElementNode) => string | undefined
 type TakeName = (wanted: string, alternative?: string) => string
+/** Sites: page addresses that become router links, where Link/useNavigate come from, and how to call navigate. */
+export type RouterLinks = { paths: Set<string>; lib: string; go: (target: string, typed: boolean) => string }
+
+const linksFor = (router?: RouterLinks) => (router ? { paths: router.paths, used: false, navigate: false, go: router.go } : undefined)
+/** `import { Link, useNavigate } from '…'` for what the file used. */
+function linkImport(ctx: JsxContext, router?: RouterLinks): string[] {
+  const names = [ctx.links?.used && 'Link', ctx.links?.navigate && 'useNavigate'].filter(Boolean)
+  return names.length && router ? [`import { ${names.join(', ')} } from '${router.lib}'`] : []
+}
+/** The hook line for components with "click goes to" boxes. */
+const navigateHook = (ctx: JsxContext) => (ctx.links?.navigate ? ['  const navigate = useNavigate()'] : [])
 
 /** One .tsx file in src/components. */
 export type ComponentFile = { name: string; code: string }
@@ -15,17 +26,19 @@ const rowLiteral = (row: Record<string, PropValue>) =>
   `  { ${Object.entries(row).filter(([, value]) => value !== undefined).map(([key, value]) => `${key}: ${JSON.stringify(value)}`).join(', ')} },`
 
 /** An item component: typed props, the item's markup with the props filled in. */
-function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, name: string): ComponentFile {
-  const ctx: JsxContext = { nodes, classFor, props: group.fields }
+function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, name: string, router?: RouterLinks): ComponentFile {
+  const ctx: JsxContext = { nodes, classFor, props: group.fields, links: linksFor(router) }
+  const body = writeElement(ctx, group.ids[0]!, BODY_PAD)
   const fields = group.props.map((prop) => `  ${prop.name}${prop.optional ? '?' : ''}: ${prop.kind}`)
   const params = group.props.map((prop) => prop.name).join(', ')
   return {
     name,
     code: [
+      ...linkImport(ctx, router), ...(ctx.links?.used ? [''] : []),
       `export type ${name}Props = {`, ...fields, '}', '',
       `/** One of the repeated items. Change the look here; change the words in the list that uses it. */`,
       `export default function ${name}({ ${params} }: ${name}Props) {`,
-      '  return (', writeElement(ctx, group.ids[0]!, BODY_PAD), '  )', '}', '',
+      ...navigateHook(ctx), '  return (', body, '  )', '}', '',
     ].join('\n'),
   }
 }
@@ -34,7 +47,7 @@ function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, n
  * The component for one part of the page (header, a section, the footer).
  * Repeated items inside it become their own component plus a typed list.
  */
-export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string, name: string, takeName: TakeName): ComponentFile[] {
+export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string, name: string, takeName: TakeName, router?: RouterLinks): ComponentFile[] {
   const groups = findRepeats(nodes, rootId, classFor)
   const repeats = new Map<string, RepeatSlot>()
   const items: ComponentFile[] = []
@@ -46,18 +59,20 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
     // Taken already (two kinds of "Card")? Prefix the part's name, unless it is already there.
     const itemName = takeName(base, base.startsWith(name) ? undefined : `${name}${base}`)
     const listName = `${lowerFirst(itemName)}Items`
-    items.push(itemComponent(nodes, classFor, group, itemName))
+    items.push(itemComponent(nodes, classFor, group, itemName, router))
     imports.push(`import ${itemName}, { type ${itemName}Props } from './${itemName}'`)
     lists.push(`const ${listName}: ${itemName}Props[] = [`, ...group.rows.map(rowLiteral), ']', '')
     repeats.set(group.ids[0]!, { ids: group.ids, expression: `{${listName}.map((item, index) => <${itemName} key={index} {...item} />)}` })
   }
 
-  const ctx: JsxContext = { nodes, classFor, repeats }
+  const ctx: JsxContext = { nodes, classFor, repeats, links: linksFor(router) }
+  const body = writeElement(ctx, rootId, BODY_PAD)
+  const allImports = [...linkImport(ctx, router), ...imports]
   const code = [
-    ...imports, ...(imports.length ? [''] : []),
+    ...allImports, ...(allImports.length ? [''] : []),
     ...lists,
     `export default function ${name}() {`,
-    '  return (', writeElement(ctx, rootId, BODY_PAD), '  )', '}', '',
+    ...navigateHook(ctx), '  return (', body, '  )', '}', '',
   ].join('\n')
   return [{ name, code }, ...items]
 }

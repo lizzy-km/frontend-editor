@@ -1,13 +1,14 @@
 /** The fixed files of the exported Vite + React + TypeScript project (same versions this app uses). */
 
-export function packageJson(name: string): string {
+/** package.json; `extra` adds libraries (a router, React Query…). */
+export function packageJson(name: string, extra: Record<string, string> = {}): string {
   return `${JSON.stringify({
     name,
     private: true,
     version: '0.1.0',
     type: 'module',
     scripts: { dev: 'vite', build: 'tsc -b && vite build', preview: 'vite preview' },
-    dependencies: { react: '^19.3.0', 'react-dom': '^19.3.0' },
+    dependencies: { react: '^19.3.0', 'react-dom': '^19.3.0', ...extra },
     devDependencies: {
       '@types/react': '^19.3.0', '@types/react-dom': '^19.3.0', '@vitejs/plugin-react': '^6.1.1',
       typescript: '~5.9.0', vite: '^8.3.1',

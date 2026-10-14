@@ -86,6 +86,15 @@ Put the Worker's URL in `.env` as `VITE_ASSETS_URL`.
 
 Stack: Vite · React 19 · TypeScript · Zustand · Konva · Quill · Firebase (Auth + Firestore) · Cloudflare R2.
 
+## One page or a whole website
+
+Choose "One page" or "A website with several pages" when you start (or turn
+a page into a website later). A website has a Pages tab, a header and footer
+shared by every page, "Go to a page" links and "Click goes to" boxes. Its
+React download is a routed app (React Router or TanStack Router) with a
+shared Layout, one file per page, and a demo sign-in with a route guard for
+"signed-in only" pages.
+
 ## Downloads
 
 Web page (.html), files for a developer (.zip), a **React project** (.zip:

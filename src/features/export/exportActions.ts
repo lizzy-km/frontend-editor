@@ -1,8 +1,12 @@
 import { buildPageParts, partsToSingleFile } from '@/features/editor/model/serialize/buildPage'
+import { isMultiPage } from '@/features/editor/model/pages'
 import { getDoc } from '@/features/editor/store/doc.store'
+import { useViewStore } from '@/features/editor/store/view.store'
 import { downloadFile, toFileName } from '@/lib/download'
 import { partsToSplitFiles } from './buildFiles'
 import { capturePng } from './capturePng'
+import type { RouterKind } from './react/routerTemplates'
+import { currentPageDoc, siteToSplitFiles } from './siteFiles'
 import { zipFiles } from './zip'
 
 /** null = whole page, otherwise the id of the part to export. */
@@ -20,7 +24,9 @@ function baseName(scope: ExportScope): string {
   return scope ? `${name}-part` : name
 }
 
-const partsFor = (scope: ExportScope) => buildPageParts(getDoc(), scope ?? undefined)
+/** The page being edited (sites: links to other pages point at their .html files). */
+const pageForExport = () => currentPageDoc(getDoc(), useViewStore.getState().pageId, true)
+const partsFor = (scope: ExportScope) => buildPageParts(pageForExport(), scope ?? undefined)
 
 /** One .html file that opens anywhere (CSS and JS inside). */
 export async function prepareHtml(scope: ExportScope): Promise<Deliver> {
@@ -30,15 +36,19 @@ export async function prepareHtml(scope: ExportScope): Promise<Deliver> {
 
 /** A .zip with index.html, styles.css and script.js — for developers / hosting. */
 export async function prepareZip(scope: ExportScope): Promise<Deliver> {
-  const zip = zipFiles(partsToSplitFiles(partsFor(scope)))
+  // A whole site: one .html per page; a part or a one-page document: index.html.
+  const files = !scope && isMultiPage(getDoc()) ? siteToSplitFiles(getDoc()) : partsToSplitFiles(partsFor(scope))
+  const zip = zipFiles(files)
   return () => downloadFile(`${baseName(scope)}.zip`, zip)
 }
 
 /** A .zip with a React + TypeScript project (Vite), one component per part. Loaded only when used. */
-export async function prepareReact(scope: ExportScope): Promise<Deliver> {
-  const { buildReactProject } = await import('./react/buildReactProject')
+export async function prepareReact(scope: ExportScope, router: RouterKind = 'react-router'): Promise<Deliver> {
   const folder = `${baseName(scope)}-react`
-  const files = buildReactProject(getDoc(), scope ?? undefined)
+  // A whole site becomes a routed app; one page (or one part) a single App.
+  const files = !scope && isMultiPage(getDoc())
+    ? (await import('./react/buildSiteProject')).buildSiteProject(getDoc(), { router })
+    : (await import('./react/buildReactProject')).buildReactProject(pageForExport(), scope ?? undefined)
   const zip = zipFiles(Object.fromEntries(Object.entries(files).map(([path, text]) => [`${folder}/${path}`, text])))
   return () => downloadFile(`${folder}.zip`, zip)
 }

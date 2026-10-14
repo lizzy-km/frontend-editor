@@ -20,7 +20,8 @@ export type AnalyticsEvents = {
   auth_error: { code: string }
 
   // Paste → editor
-  paste_code: { elements: number; scripts: number; tailwind: boolean; where: Where }
+  paste_code: { elements: number; scripts: number; tailwind: boolean; where: Where; kind: 'page' | 'site' }
+  start_blank: { kind: 'page' | 'site'; where: Where }
   paste_rejected: { reason: string }
   /** A ready-made AI prompt was copied (which one, and whether the brief was changed). */
   prompt_copy: { preset: string; edited: boolean }
@@ -40,6 +41,9 @@ export type AnalyticsEvents = {
   page_create: { remix: boolean }
   page_delete: Record<string, never>
   page_rename: Record<string, never>
+  make_site: Record<string, never>
+  /** A page added to a site (blank, from pasted code, or a copy) and how many pages it now has. */
+  page_add: { from: 'blank' | 'code' | 'copy'; pages: number }
   page_limit_reached: { plan: string }
   share: { method: 'public' | 'private'; content_type: 'page' }
 

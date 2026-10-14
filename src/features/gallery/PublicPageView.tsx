@@ -28,6 +28,7 @@ export default function PublicPageView() {
   const page = useAsync(() => loadPublicPage(projectId), projectId)
   const uid = useAuthStore((state) => state.user?.uid)
   const [size, setSize] = useState<Breakpoint>('desktop')
+  const [pageId, setPageId] = useState<string | null>(null) // sites: which page the visitor is on
   const { makeCopy, busy } = useMakeCopy(projectId, page.data?.doc)
   useEffect(startAuth, [])
 
@@ -57,7 +58,8 @@ export default function PublicPageView() {
           : <Button size="small" variant="primary" icon="copy" loading={busy} onClick={makeCopy}>Make my own copy</Button>}
       </header>
       <div className={styles.stage}>
-        <SafePageFrame doc={doc} title={meta.name} className={styles.frame} width={size === 'desktop' ? '100%' : BREAKPOINTS[size].frameWidth} />
+        <SafePageFrame doc={doc} title={meta.name} className={styles.frame} width={size === 'desktop' ? '100%' : BREAKPOINTS[size].frameWidth}
+          pageId={pageId} onOpenPage={setPageId} />
       </div>
     </div>
   )
