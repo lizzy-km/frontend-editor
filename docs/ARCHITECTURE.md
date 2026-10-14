@@ -275,6 +275,14 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Sign-in pages (`model/authPages.ts`)
+
+- `AUTH_PAGES` are HTML templates built from the form helpers in
+  `model/formBlocks.ts`; `addAuthPages(doc)` adds the missing ones (by address).
+  A form's `data-fe-submit` is its kind (`FormSettings.submit`); anything but
+  `send` makes the React form call `useAuth()` (`forms/authForm.ts`) and makes
+  `needsAuth` true. Preview/downloads only show the thank-you text for these.
+
 ## Forms (`model/forms.ts`)
 
 - Fields come from the HTML (`fieldsOf(nodes, formId)`); only the editor

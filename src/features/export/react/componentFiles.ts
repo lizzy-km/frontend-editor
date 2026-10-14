@@ -74,7 +74,7 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
   ctx.lists = dataLists.lists
   items.push(...dataLists.files)
   // Forms set up in the editor become their own React Hook Form + Zod components.
-  const forms = formComponents({ nodes, classFor }, rootId, takeName, data?.base ?? '..')
+  const forms = formComponents({ nodes, classFor }, rootId, takeName, data?.base ?? '..', router)
   ctx.forms = forms.forms
   items.push(...forms.files)
   const body = writeElement(ctx, rootId, BODY_PAD)

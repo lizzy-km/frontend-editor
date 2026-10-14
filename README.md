@@ -95,6 +95,11 @@ React download is a routed app (React Router or TanStack Router) with a
 shared Layout, one file per page, and route guards for pages only some
 people may open.
 
+Under **Pages → Add sign-in pages** you get Log in, Create account, Forgot
+password, Set a new password and Confirm email pages. They are normal pages:
+change any word or color. In the React download they really work (demo
+accounts and a pretend email until you connect your API).
+
 ## Who can see what
 
 "Who can see this" shows an element or page to everyone, signed-in people

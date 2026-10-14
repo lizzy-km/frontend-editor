@@ -3,6 +3,24 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/auth-pages — 2026-10-14
+- **Add sign-in pages** (Pages tab): Log in, Create account, Forgot password,
+  Set a new password and Confirm email as ordinary editable pages
+  (`model/authPages.ts`), each a form with its own look and rules. The first
+  three are for signed-out visitors only (a signed-in person is sent home).
+  Existing pages with the same address are kept.
+- Form section: **It will** (send the answers / log people in / create an
+  account / email a reset link / set a new password / confirm email).
+- React: sign-in forms call `useAuth()` (`export/react/forms/authForm.ts`):
+  after logging in people go to the page they wanted; register asks to confirm
+  the email when the API says so; reset reads `?token=`; the confirm page
+  confirms the emailed link. The standard fallback login is skipped when the
+  site has its own `/login`.
+- Redirect fix: the guard no longer consumes the saved destination (the login
+  form and the guard raced); it is cleared once the page is reached.
+- Verified by building both routers and running register + confirm link,
+  protected page → login → back, forgot → reset → new password in Chrome.
+
 ## feature/forms — 2026-10-14
 - **Forms** are plain HTML (`model/forms.ts`): fields, labels and the browser's
   own rules (required, min/max length, number range, pattern) are read from the
