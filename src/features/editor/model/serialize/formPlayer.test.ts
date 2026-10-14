@@ -19,7 +19,7 @@ describe('form player', () => {
   it('is added only when a form was set up', () => {
     const doc = (html: string) => parseHtmlDocument(`<body>${html}</body>`)
     expect(withForms(doc('<form><input></form>')).scripts).toHaveLength(0)
-    expect(forVisitors(doc(CONTACT_FORM_HTML)).scripts.some((script) => script.code.includes('data-fe-submit'))).toBe(true)
+    expect(forVisitors(doc(CONTACT_FORM_HTML)).scripts.some((script) => script.code?.includes('data-fe-submit'))).toBe(true)
   })
 
   it('stops a send with a problem and keeps the form', () => {
