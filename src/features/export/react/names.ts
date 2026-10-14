@@ -22,7 +22,8 @@ export function meaningfulName(node: ElementNode): string | null {
 }
 
 /** The most telling name for an element: its id, else its first meaningful class, else its tag. */
-export const describeName = (node: ElementNode): string => meaningfulName(node) ?? pascalCase(node.tag)
+export const describeName = (node: ElementNode): string =>
+  meaningfulName(node) ?? (node.attrs['data-fe-animate'] ? 'AnimatedBox' : pascalCase(node.tag))
 
 /**
  * Hands out unique component names, avoiding React's own names. If the

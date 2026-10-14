@@ -5,7 +5,7 @@ import { toFileName } from '@/lib/download'
 import type { ExportFiles } from '../buildFiles'
 import { partComponent, type ComponentFile, type RouterLinks } from './componentFiles'
 import type { ListOptions } from './listTemplates'
-import { openTag, visibleChildren, type JsxContext } from './jsxWriter'
+import { closeTag, openTag, visibleChildren, type JsxContext } from './jsxWriter'
 import { describeName } from './names'
 import { handlerEvents, linkTags, planScripts } from './pageScripts'
 import { GITIGNORE, packageJson, TSCONFIG, VITE_CONFIG } from './projectTemplates'
@@ -41,7 +41,7 @@ export function renderParts(nodes: NodeMap, ids: string[], takeName: TakeName, p
     else {
       parts.jsx.push(`${pad}${openTag(ctx, node)}`)
       inner.forEach((child) => add(child, `${pad}  `))
-      parts.jsx.push(`${pad}</main>`)
+      parts.jsx.push(`${pad}${closeTag(ctx, node)}`)
     }
   }
   return parts

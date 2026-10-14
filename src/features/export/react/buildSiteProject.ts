@@ -8,6 +8,7 @@ import type { RouterLinks } from './componentFiles'
 import { createNameRegistry, pascalCase } from './names'
 import { projectShell, renderParts, type Parts } from './projectShell'
 import { DATA_README, readme } from './projectTemplates'
+import { animationDeps, animationFiles } from './animationTemplates'
 import { dataFiles, DATA_DEPS } from './dataTemplates'
 import { listUiFiles } from './listTemplates'
 import { mainFile } from './mainTemplate'
@@ -72,7 +73,7 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
   })
 
   const sources = doc.data ?? []
-  const shell = projectShell(allPagesDoc(doc), { ...ROUTERS[router].deps, ...(sources.length ? DATA_DEPS : {}) })
+  const shell = projectShell(allPagesDoc(doc), { ...ROUTERS[router].deps, ...(sources.length ? DATA_DEPS : {}), ...animationDeps(doc.nodes) })
   const withAuth = routes.some((route) => route.private)
   if (withAuth) {
     files['src/auth/AuthProvider.tsx'] = AUTH_PROVIDER
@@ -85,6 +86,7 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
     ...files,
     ...dataFiles(sources),
     ...listUiFiles(doc),
+    ...animationFiles(doc.nodes),
     'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}${sources.length ? DATA_README : ''}`,
     'src/main.tsx': mainFile({ root: router, query: sources.length > 0, auth: withAuth }),
     'src/router.tsx': routerSource(router, routes, (route) => (route.private ? `<RequireAuth><${route.component} /></RequireAuth>` : `<${route.component} />`)),

@@ -2,7 +2,8 @@ import { rowTypeName } from '@/features/editor/model/data'
 import { bindingsOf, isListBox, listInfo, type ListInfo } from '@/features/editor/model/dataLists'
 import { collectSubtreeIds } from '@/features/editor/model/tree/queries'
 import { isElement, type DataSource, type ElementNode, type NodeMap } from '@/features/editor/model/types'
-import { openTag, writeElement, type JsxContext } from './jsxWriter'
+import { motionImports, motionState, staggerItem } from './jsxExtras'
+import { closeTag, openTag, writeElement, type JsxContext } from './jsxWriter'
 
 type ComponentFile = { name: string; code: string }
 type TakeName = (wanted: string, alternative?: string) => string
@@ -76,12 +77,15 @@ function cardFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: str
   const type = rowTypeName(source.name)
   const fields = usedFields(ctx.nodes, info.templateId!, source)
   // Links in a card stay plain <a> (the card file has no router imports).
-  const card: JsxContext = { nodes: ctx.nodes, classFor: ctx.classFor, row: new Map(source.fields.map((field) => [field.name, field.type])) }
+  const card: JsxContext = { nodes: ctx.nodes, classFor: ctx.classFor, row: new Map(source.fields.map((field) => [field.name, field.type])), motion: motionState() }
+  // A "one by one" list box: every card is a Motion item.
+  const item = staggerItem(ctx.nodes[info.id] as ElementNode)
+  if (item) card.motion!.items.set(info.templateId!, item)
   const body = writeElement(card, info.templateId!, '    ')
   return {
     name,
     code: [
-      `import type { ${type} } from '${base}/data/types'`, '',
+      ...motionImports(card.motion, base), `import type { ${type} } from '${base}/data/types'`, '',
       `/** One ${type} card. Change the design here; the words and pictures come from "${source.name}". */`,
       `export default function ${name}(${fields.length ? `{ ${fields.join(', ')} }` : '_card'}: ${type}) {`,
       '  return (', body, '  )', '}', '',
@@ -89,22 +93,25 @@ function cardFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: str
   }
 }
 
-function listFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: string, card: string, base: string): ComponentFile {
+function listFile(parent: JsxContext, info: ListInfo, source: DataSource, name: string, card: string, base: string): ComponentFile {
+  const ctx: JsxContext = { nodes: parent.nodes, classFor: parent.classFor, motion: motionState() }
   const box = ctx.nodes[info.id] as ElementNode
   const hook = `use${pascal(source.name)}${info.load === 'scroll' ? 'Infinite' : ''}`
   const items = info.load === 'scroll'
     ? [`      <InfiniteScroll query={query} render={(item) => <${card} key={item.id} {...item} />} />`]
     : ['      {query.isPending && <p>Loading…</p>}', `      {query.data?.map((item) => <${card} key={item.id} {...item} />)}`]
+  const opening = openTag(ctx, box) // first: it decides the motion imports
   return {
     name,
     code: [
+      ...motionImports(ctx.motion, base),
       `import { ${hook} } from '${base}/api/${source.name}'`,
       ...(info.load === 'scroll' ? [`import InfiniteScroll from '${base}/components/ui/InfiniteScroll'`] : []),
       `import ${card} from './${card}'`, '',
       `/** ${pascal(source.name)} from the data${info.load === 'scroll' ? `, ${info.pageSize} at a time, more as visitors scroll` : ''}. */`,
       `export default function ${name}() {`,
       `  const query = ${hook}(${info.load === 'scroll' ? info.pageSize : ''})`,
-      '  return (', `    ${openTag(ctx, box)}`, ...items, `    </${box.tag}>`, '  )', '}', '',
+      '  return (', `    ${opening}`, ...items, `    ${closeTag(ctx, box)}`, '  )', '}', '',
     ].join('\n'),
   }
 }

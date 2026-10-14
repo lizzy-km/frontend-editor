@@ -1,6 +1,7 @@
 import type { ElementNode, NodeMap } from '@/features/editor/model/types'
 import { writeElement, type JsxContext, type RepeatSlot } from './jsxWriter'
 import { lowerFirst, pascalCase } from './names'
+import { motionImports, motionState } from './jsxExtras'
 import { listComponents, type ListOptions } from './listTemplates'
 import { findRepeats, type PropValue, type RepeatGroup } from './repeats'
 
@@ -27,15 +28,15 @@ const rowLiteral = (row: Record<string, PropValue>) =>
   `  { ${Object.entries(row).filter(([, value]) => value !== undefined).map(([key, value]) => `${key}: ${JSON.stringify(value)}`).join(', ')} },`
 
 /** An item component: typed props, the item's markup with the props filled in. */
-function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, name: string, router?: RouterLinks): ComponentFile {
-  const ctx: JsxContext = { nodes, classFor, props: group.fields, links: linksFor(router) }
+function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, name: string, router?: RouterLinks, base = '..'): ComponentFile {
+  const ctx: JsxContext = { nodes, classFor, props: group.fields, links: linksFor(router), motion: motionState() }
   const body = writeElement(ctx, group.ids[0]!, BODY_PAD)
   const fields = group.props.map((prop) => `  ${prop.name}${prop.optional ? '?' : ''}: ${prop.kind}`)
   const params = group.props.map((prop) => prop.name).join(', ')
   return {
     name,
     code: [
-      ...linkImport(ctx, router), ...(ctx.links?.used ? [''] : []),
+      ...linkImport(ctx, router), ...motionImports(ctx.motion, base), ...(ctx.links?.used || ctx.motion?.animation || ctx.motion?.item ? [''] : []),
       `export type ${name}Props = {`, ...fields, '}', '',
       `/** One of the repeated items. Change the look here; change the words in the list that uses it. */`,
       `export default function ${name}({ ${params} }: ${name}Props) {`,
@@ -60,20 +61,20 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
     // Taken already (two kinds of "Card")? Prefix the part's name, unless it is already there.
     const itemName = takeName(base, base.startsWith(name) ? undefined : `${name}${base}`)
     const listName = `${lowerFirst(itemName)}Items`
-    items.push(itemComponent(nodes, classFor, group, itemName, router))
+    items.push(itemComponent(nodes, classFor, group, itemName, router, data?.base))
     imports.push(`import ${itemName}, { type ${itemName}Props } from './${itemName}'`)
     lists.push(`const ${listName}: ${itemName}Props[] = [`, ...group.rows.map(rowLiteral), ']', '')
     repeats.set(group.ids[0]!, { ids: group.ids, expression: `{${listName}.map((item, index) => <${itemName} key={index} {...item} />)}` })
   }
 
-  const ctx: JsxContext = { nodes, classFor, repeats, links: linksFor(router) }
+  const ctx: JsxContext = { nodes, classFor, repeats, links: linksFor(router), motion: motionState() }
   // "List from data" boxes become their own list + card components.
   const dataLists = data ? listComponents({ nodes, classFor }, rootId, takeName, data) : { lists: new Map<string, string>(), files: [] }
   ctx.lists = dataLists.lists
   items.push(...dataLists.files)
   const body = writeElement(ctx, rootId, BODY_PAD)
   const listImports = [...dataLists.lists.values()].map((list) => `import ${list} from './${list}'`)
-  const allImports = [...linkImport(ctx, router), ...listImports, ...imports]
+  const allImports = [...linkImport(ctx, router), ...motionImports(ctx.motion, data?.base ?? '..'), ...listImports, ...imports]
   const code = [
     ...allImports, ...(allImports.length ? [''] : []),
     ...lists,

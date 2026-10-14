@@ -44,6 +44,8 @@ export type AnalyticsEvents = {
   make_site: Record<string, never>
   /** A data source added in the Data panel (which preset). */
   data_add: { preset: string }
+  /** An element got an animation (which effect). */
+  animation_set: { effect: string }
   /** A page added to a site (blank, from pasted code, or a copy) and how many pages it now has. */
   page_add: { from: 'blank' | 'code' | 'copy'; pages: number }
   page_limit_reached: { plan: string }
