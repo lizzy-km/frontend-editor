@@ -108,6 +108,9 @@ button opens or closes under "When clicked", and make any button or link ask
 is made from your pages and hides items visitors may not open; on phones it
 becomes a ☰ button. Log in, Sign up and Log out are added when you have a Log in page.
 
+**Colors:** the Colors tab lists every color of your project. Change one and it
+changes everywhere; colors defined as CSS variables (theme colors) come first.
+
 ## Who can see what
 
 "Who can see this" shows an element or page to everyone, signed-in people

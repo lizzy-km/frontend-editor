@@ -3,6 +3,20 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/global-colors — 2026-10-15
+- **Colors tab**: every color of the project in one list, most used first.
+  Change one (picker or #hex) and it changes everywhere it is used: the page
+  CSS, each element's styles at every screen size, SVG fill/stroke; one undo
+  step even while dragging the picker. Each use keeps its own transparency
+  (`rgba(…, .4)` stays 40%).
+- **Theme colors** (CSS variables such as `--primary: #c2410c` found in the
+  pasted CSS) are listed first; changing one changes the variable, so all
+  `var(--primary)` uses follow.
+- `lib/colorTokens.ts` (hex, rgb(), hsl(), white/black), `model/paletteCss.ts`
+  (only declaration blocks, so `#fade { … }` selectors and comments are never
+  colors), `model/palette.ts` (`paletteOf`, `replaceColor`, `setThemeColor`).
+  The React download gets the new colors through the same CSS and class files.
+
 ## feature/layouts — 2026-10-14
 - **Layouts** (Pages tab → Layout): **Top bar**, **Side menu** or **Both**
   (`model/layouts.ts`, `layoutCss.ts`). They are ordinary boxes (`data-fe-layout`)
