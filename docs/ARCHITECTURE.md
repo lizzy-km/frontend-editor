@@ -254,6 +254,13 @@ run, inside a locked frame.
   helpers (`export/react/animationTemplates.ts`). The JSX writer turns animated
   elements into `motion.*` (`jsxExtras.motionFor`).
 
+## Conditions (`model/conditions.ts`)
+
+- `conditionOf(node)`, `visibleTo(condition, viewer)`, `hiddenFor(nodes, viewer)`.
+  `view.store.viewer` is "Viewing as"; `viewCss(doc, pageId, viewer)` hides
+  elements in the frame; `forVisitors(doc, viewer)` removes them for Preview
+  and downloads.
+
 ## Import and saving
 
 - `features/import/PasteScreen` goes through `analyzePaste` (which calls
