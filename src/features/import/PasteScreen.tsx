@@ -4,9 +4,10 @@ import { track } from '@/features/analytics/track'
 import { AiPromptHelper } from '@/features/prompts/AiPromptHelper'
 import { preloadCodeEditor } from '@/shared/code/LazyCodeEditor'
 import type { PageDoc } from '@/features/editor/model/types'
-import { Button, Icon } from '@/shared/ui'
+import { Button, Icon, type IconName } from '@/shared/ui'
 import { analyzePaste } from './analyzePaste'
 import { CodeBox } from './CodeBox'
+import { asKind, blankDoc, type ProjectKind } from './projectKind'
 import styles from './PasteScreen.module.css'
 
 type Props = {
@@ -18,12 +19,18 @@ type Props = {
   where: Where
 }
 
+const KINDS: { value: ProjectKind; icon: IconName; title: string; text: string }[] = [
+  { value: 'page', icon: 'desktop', title: 'One page', text: 'A landing page, invitation, portfolio, menu…' },
+  { value: 'site', icon: 'layers', title: 'A website with several pages', text: 'Home, About, Contact… with a shared header and footer' },
+]
+
 /** The front door: paste code from an AI (or anywhere) and open it in the editor. */
 export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', where }: Props) {
   const [html, setHtml] = useState('')
   const [css, setCss] = useState('')
   const [js, setJs] = useState('')
   const [split, setSplit] = useState(false)
+  const [kind, setKind] = useState<ProjectKind>('page')
   // Parsing a big page on every key press would lag typing; defer it.
   const deferredHtml = useDeferredValue(html)
   const deferredCss = useDeferredValue(split ? css : '')
@@ -39,8 +46,12 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
 
   const open = () => {
     if (!summary.doc || !summary.stats) return
-    track('paste_code', { ...summary.stats, where })
-    onOpen(summary.doc)
+    track('paste_code', { ...summary.stats, where, kind })
+    onOpen(asKind(summary.doc, kind))
+  }
+  const startBlank = () => {
+    track('start_blank', { kind, where })
+    onOpen(blankDoc(kind))
   }
 
   return (
@@ -50,6 +61,16 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
         <p className={styles.lead}>
           Copy the whole answer from ChatGPT, Claude, Gemini… and paste it below. We'll pick out the code for you.
         </p>
+
+        <div className={styles.kinds} role="radiogroup" aria-label="What are you making?">
+          {KINDS.map((option) => (
+            <button key={option.value} type="button" role="radio" aria-checked={kind === option.value}
+              className={styles.kind} onClick={() => setKind(option.value)}>
+              <Icon name={option.icon} size={18} />
+              <span><strong>{option.title}</strong><small>{option.text}</small></span>
+            </button>
+          ))}
+        </div>
 
         <CodeBox label={split ? 'HTML' : 'Your code'} value={html} onChange={setHtml} autoFocus acceptFiles
           placeholder={'Paste here (Ctrl+V)…\n\nor drop an .html file'} />
@@ -86,6 +107,7 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
           <Button variant="primary" size="large" icon="sparkle" disabled={!summary.ok} onClick={open}>
             Open in editor
           </Button>
+          <Button size="large" variant="ghost" icon="plus" onClick={startBlank}>Start with a blank page</Button>
           {secondary}
         </div>
       </div>

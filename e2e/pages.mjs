@@ -6,8 +6,15 @@ const sidebar = page.locator('aside').first()
 const visible = (selector) => frame.$eval(selector, (el) => el.getClientRects().length > 0).catch(() => false)
 const pageList = () => sidebar.getByRole('list', { name: 'Pages' }).getByRole('listitem')
 
-await sidebar.getByRole('tab', { name: 'Pages' }).click()
-check('one-page projects explain pages', await sidebar.getByText(/This project is one page/).isVisible())
+check('one-page projects have no Pages tab', (await sidebar.getByRole('tab', { name: 'Pages' }).count()) === 0)
+// Click empty space on the page (selects the page itself), then turn it into a website
+const frameBox = await page.locator('iframe[title="Your page"]').boundingBox()
+await page.mouse.move(frameBox.x + frameBox.width / 2, frameBox.y + frameBox.height - 30)
+await page.mouse.click(frameBox.x + frameBox.width / 2, frameBox.y + frameBox.height - 30)
+await page.waitForTimeout(300)
+await page.locator('aside').last().getByRole('button', { name: /Make this a website/ }).click()
+await page.waitForTimeout(300)
+check('"Make this a website" opens the Pages tab with Home', (await pageList().count()) === 1 && (await pageList().first().textContent()).includes('Home'))
 
 // Empty page
 await sidebar.getByRole('button', { name: 'Add a page' }).click()

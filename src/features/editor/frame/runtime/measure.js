@@ -47,7 +47,9 @@
     if (payload.x < 0 || payload.y < 0 || payload.x > innerWidth || payload.y > innerHeight) return null
     var hit = document.elementFromPoint(payload.x, payload.y)
     var found = hit && hit.closest('[data-fe-id]')
-    return found ? found.getAttribute('data-fe-id') : null
+    if (found) return found.getAttribute('data-fe-id')
+    // Empty space below a short page is <html>: that is still "the page".
+    return hit === document.documentElement ? fe.rootId : null
   }
 
   /** Every computed style of an element (plus handy shorthands). */

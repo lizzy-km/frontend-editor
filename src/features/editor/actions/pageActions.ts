@@ -1,5 +1,5 @@
 import { track } from '@/features/analytics/track'
-import { addPage, deletePage, movePage, updatePage, type NewPage } from '../model/pageOps'
+import { addPage, deletePage, movePage, toSite, updatePage, type NewPage } from '../model/pageOps'
 import { listPages } from '../model/pages'
 import { getDoc } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
@@ -10,6 +10,15 @@ import { updateDoc } from './commit'
 export function openPage(pageId: string) {
   useSelectionStore.getState().select(null)
   useViewStore.getState().setPageId(pageId)
+}
+
+/** Turns a one-page project into a website: header/footer shared, the rest becomes "Home". Opens the Pages tab. */
+export function makeSite() {
+  updateDoc(toSite)
+  const first = listPages(getDoc())[0]
+  if (first) openPage(first.id)
+  useViewStore.getState().setSidePanel('pages')
+  track('make_site')
 }
 
 /** Adds a page (turning a one-page document into a site first) and opens it. One undo step. */

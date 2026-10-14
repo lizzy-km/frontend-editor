@@ -23,3 +23,13 @@
 @media (max-width: 560px) {
   .card { padding: 20px; border-radius: 18px; }
 }
+
+.kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kind {
+  display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 12px 14px; border-radius: 14px; cursor: pointer;
+  border: 1.5px solid var(--border); background: var(--surface); color: var(--text-soft);
+}
+.kind strong { display: block; color: var(--text); font-size: 14.5px; }
+.kind small { font-size: 12.5px; }
+.kind[aria-checked='true'] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+@media (max-width: 560px) { .kinds { grid-template-columns: 1fr; } }
