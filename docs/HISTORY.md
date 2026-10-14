@@ -3,6 +3,17 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/data-json-import — 2026-10-15
+- **Import from JSON** in Data → Edit fields and rows: paste JSON (an API
+  answer or an export, like fakestoreapi.com/products) or choose / drop a
+  `.json` file. The list of objects is found even inside
+  `{ "data": { "items": [...] } }`; every key becomes a field with a guessed
+  kind (number, yes/no, date, picture link, link, long text); nested objects
+  are flattened (`rating.rate` → `ratingRate`); lists of words become "a, b".
+  A preview shows what was found and what was left out; then **Replace
+  everything** or **Add to the rows I have** (one undo step).
+- `model/dataImport.ts` (`parseJsonData`, `findList`, `importData`).
+
 ## feature/ux-redesign — 2026-10-15
 - **Left side**: a slim icon rail (Layers, Add, Pages, Design, Data, Code, each
   with its name under the icon) replaces the row of tabs that got cut off. The
