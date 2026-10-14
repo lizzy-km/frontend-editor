@@ -3,6 +3,19 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/data-panel — 2026-10-14
+- **Data tab**: data sources (`PageDoc.data`) with typed fields (text, long
+  text, number, yes/no, picture link, date, link), sample rows and an optional
+  API (address, where the list is, page and page-size parameters). Start from
+  Products, Blog posts, Team members, Reviews, Events or empty. Fields and rows
+  are edited in a table dialog; every change is one undo step.
+- **React export** (one page and sites): `src/data/types.ts` (one type per
+  source, an `id` added for React keys), `src/data/mockData.ts` (global mock
+  data), `src/api/client.ts` (axios + `pickList`), `src/api/<name>.ts` with
+  `fetchX`, `useX()` and `useXInfinite()` (React Query), `.env.example`
+  (`VITE_USE_MOCK`, `VITE_API_URL`) and a `QueryClientProvider` in `main.tsx`.
+- Checked: projects with paged and unpaged APIs pass strict `tsc` and `vite build`.
+
 ## feature/multi-page — 2026-10-14
 - **One page or a website**: Try-it and New page ask "What are you making?"
   and can **start with a blank page** (a site's blank start has a shared

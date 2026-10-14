@@ -228,6 +228,15 @@ run, inside a locked frame.
   guard, login). One-page documents keep `buildReactProject` (App.tsx).
 - `import/projectKind.ts`: the paste screen's "one page / website" choice and blank starts.
 
+## Data sources (`model/data.ts`, `sidebar/data/`)
+
+- `PageDoc.data: DataSource[]` (`{ id, name, fields, rows, api? }`), edited by
+  pure ops in `model/data.ts` (code-safe names, rows follow field renames and
+  type changes) committed through `actions/dataActions.ts`.
+- React: `export/react/dataTemplates.ts` writes types, mock data, the axios
+  client and per-source React Query hooks; `mainTemplate.ts` composes the
+  providers (React Query outside, auth inside).
+
 ## Import and saving
 
 - `features/import/PasteScreen` goes through `analyzePaste` (which calls

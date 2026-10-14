@@ -3,7 +3,9 @@ import type { PageDoc } from '@/features/editor/model/types'
 import type { ExportFiles } from '../buildFiles'
 import { createNameRegistry } from './names'
 import { projectShell, renderParts, type Parts } from './projectShell'
-import { MAIN_TSX, readme } from './projectTemplates'
+import { dataFiles, DATA_DEPS } from './dataTemplates'
+import { mainFile } from './mainTemplate'
+import { DATA_README, readme } from './projectTemplates'
 
 function appSource(parts: Parts): string {
   return [
@@ -29,11 +31,13 @@ export function buildReactProject(fullDoc: PageDoc, onlyId?: string): ExportFile
   const doc = onlyId && onlyId !== fullDoc.rootId ? onlyPart(fullDoc, onlyId) : fullDoc
   const body = getElement(doc.nodes, doc.rootId)
   const parts = renderParts(doc.nodes, body?.children ?? [], createNameRegistry(), '      ')
-  const shell = projectShell(doc)
+  const sources = doc.data ?? []
+  const shell = projectShell(doc, sources.length ? DATA_DEPS : {})
   const files: ExportFiles = {
     ...shell.files,
-    'README.md': readme(doc.title, parts.names, shell.hasScripts),
-    'src/main.tsx': MAIN_TSX,
+    'README.md': readme(doc.title, parts.names, shell.hasScripts) + (sources.length ? DATA_README : ''),
+    ...dataFiles(sources),
+    'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: false }),
     'src/App.tsx': appSource(parts),
   }
   for (const file of parts.files) files[`src/components/${file.name}.tsx`] = file.code

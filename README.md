@@ -95,6 +95,13 @@ React download is a routed app (React Router or TanStack Router) with a
 shared Layout, one file per page, and a demo sign-in with a route guard for
 "signed-in only" pages.
 
+## Data
+
+The Data tab holds lists your page can show (products, posts, team…):
+typed fields, sample rows, and an optional API. The React download turns them
+into TypeScript types, a mock data file and React Query + axios hooks, using
+the sample rows until you switch to the real API.
+
 ## Downloads
 
 Web page (.html), files for a developer (.zip), a **React project** (.zip:

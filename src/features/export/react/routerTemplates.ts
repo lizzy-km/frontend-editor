@@ -64,22 +64,6 @@ export function routerSource(kind: RouterKind, routes: RouteFile[], guard: (rout
   ].join('\n')
 }
 
-/** src/main.tsx: the router takes over the page (inside AuthProvider when some pages are signed-in only). */
-export function mainSource(kind: RouterKind, withAuth: boolean): string {
-  const app = withAuth ? '<AuthProvider>\n    <RouterProvider router={router} />\n  </AuthProvider>' : '<RouterProvider router={router} />'
-  return [
-    "import { createRoot } from 'react-dom/client'",
-    `import { RouterProvider } from '${ROUTERS[kind].lib}'`,
-    ...(withAuth ? ["import { AuthProvider } from './auth/AuthProvider'"] : []),
-    "import { router } from './router'",
-    "import './styles/page.css'",
-    '',
-    "// No <StrictMode>: the page's own scripts (public/scripts) expect the page to be put on screen once.",
-    `createRoot(document.getElementById('root')!).render(\n  ${app},\n)`,
-    '',
-  ].join('\n')
-}
-
 /** src/pages/NotFoundPage.tsx */
 export const notFoundSource = (kind: RouterKind) => `import { Link } from '${ROUTERS[kind].lib}'
 

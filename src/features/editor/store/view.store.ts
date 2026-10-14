@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Breakpoint } from '../model/types'
 
-export type SidePanel = 'pages' | 'layers' | 'add' | 'code'
+export type SidePanel = 'pages' | 'layers' | 'add' | 'data' | 'code'
 export type ZoomMode = 'fit' | number
 
 type ViewState = {

@@ -4,6 +4,7 @@ import { useDocStore } from '../store/doc.store'
 import { useViewStore, type SidePanel } from '../store/view.store'
 import { AddPanel } from './AddPanel'
 import { CodePanel } from './CodePanel'
+import { DataPanel } from './data/DataPanel'
 import { LayersPanel } from './LayersPanel'
 import { PagesPanel } from './pages/PagesPanel'
 import styles from './Sidebar.module.css'
@@ -12,10 +13,11 @@ const TABS: { id: SidePanel; label: string; icon: IconName }[] = [
   { id: 'pages', label: 'Pages', icon: 'globe' },
   { id: 'layers', label: 'Layers', icon: 'layers' },
   { id: 'add', label: 'Add', icon: 'plus' },
+  { id: 'data', label: 'Data', icon: 'box' },
   { id: 'code', label: 'Code', icon: 'code' },
 ]
 
-/** Left column: Pages / Layers / Add / Code. */
+/** Left column: Pages / Layers / Add / Data / Code. */
 export function Sidebar() {
   const site = useDocStore((state) => isMultiPage(state.doc))
   const chosen = useViewStore((state) => state.sidePanel)
@@ -37,6 +39,7 @@ export function Sidebar() {
         {panel === 'pages' && <PagesPanel />}
         {panel === 'layers' && <LayersPanel />}
         {panel === 'add' && <AddPanel />}
+        {panel === 'data' && <DataPanel />}
         {panel === 'code' && <CodePanel />}
       </div>
     </div>
