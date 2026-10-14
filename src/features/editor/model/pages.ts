@@ -11,6 +11,8 @@ import { isElement, type EditorNode, type ElementNode, type NodeMap, type PageDo
 export const PAGE_ATTR = 'data-fe-page'
 export const PATH_ATTR = 'data-fe-path'
 export const TITLE_ATTR = 'data-fe-title'
+/** On any element: clicking it opens this page of the site (e.g. a whole card). */
+export const GO_ATTR = 'data-fe-go'
 /** Only signed-in visitors may open the page (used by the React export's route guard). */
 export const PRIVATE_ATTR = 'data-fe-private'
 

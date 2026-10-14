@@ -5,12 +5,17 @@ import { findRepeats, type PropValue, type RepeatGroup } from './repeats'
 
 type ClassFor = (node: ElementNode) => string | undefined
 type TakeName = (wanted: string, alternative?: string) => string
-/** Sites: page addresses that become router links, and where Link is imported from. */
-export type RouterLinks = { paths: Set<string>; lib: string }
+/** Sites: page addresses that become router links, where Link/useNavigate come from, and how to call navigate. */
+export type RouterLinks = { paths: Set<string>; lib: string; go: (target: string, typed: boolean) => string }
 
-const linksFor = (router?: RouterLinks) => (router ? { paths: router.paths, used: false } : undefined)
-/** `import { Link } from '…'` when the file used a router link. */
-const linkImport = (ctx: JsxContext, router?: RouterLinks) => (ctx.links?.used && router ? [`import { Link } from '${router.lib}'`] : [])
+const linksFor = (router?: RouterLinks) => (router ? { paths: router.paths, used: false, navigate: false, go: router.go } : undefined)
+/** `import { Link, useNavigate } from '…'` for what the file used. */
+function linkImport(ctx: JsxContext, router?: RouterLinks): string[] {
+  const names = [ctx.links?.used && 'Link', ctx.links?.navigate && 'useNavigate'].filter(Boolean)
+  return names.length && router ? [`import { ${names.join(', ')} } from '${router.lib}'`] : []
+}
+/** The hook line for components with "click goes to" boxes. */
+const navigateHook = (ctx: JsxContext) => (ctx.links?.navigate ? ['  const navigate = useNavigate()'] : [])
 
 /** One .tsx file in src/components. */
 export type ComponentFile = { name: string; code: string }
@@ -33,7 +38,7 @@ function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, n
       `export type ${name}Props = {`, ...fields, '}', '',
       `/** One of the repeated items. Change the look here; change the words in the list that uses it. */`,
       `export default function ${name}({ ${params} }: ${name}Props) {`,
-      '  return (', body, '  )', '}', '',
+      ...navigateHook(ctx), '  return (', body, '  )', '}', '',
     ].join('\n'),
   }
 }
@@ -67,7 +72,7 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
     ...allImports, ...(allImports.length ? [''] : []),
     ...lists,
     `export default function ${name}() {`,
-    '  return (', body, '  )', '}', '',
+    ...navigateHook(ctx), '  return (', body, '  )', '}', '',
   ].join('\n')
   return [{ name, code }, ...items]
 }

@@ -1,6 +1,7 @@
 import { Icon } from '@/shared/ui'
 import { getElement } from '../model/tree/queries'
 import { collectTextPieces, isTextEditable } from '../model/tree/textRules'
+import { isPageNode } from '../model/pages'
 import { isElement, type ElementNode, type NodeMap } from '../model/types'
 import { useDocStore } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
@@ -10,6 +11,7 @@ import styles from './Inspector.module.css'
 import { InspectorHeader } from './InspectorHeader'
 import { AdvancedSection } from './sections/AdvancedSection'
 import { FormFieldSection, HAS_PLACEHOLDER } from './sections/FormFieldSection'
+import { GoToPageSection } from './sections/GoToPageSection'
 import { LinkSection } from './sections/LinkSection'
 import { PageSection } from './sections/PageSection'
 import { PictureSection } from './sections/PictureSection'
@@ -64,6 +66,7 @@ export function Inspector() {
       {node.id === rootId && <PageSection />}
       {context.hasText && !context.isTextEditable && <WordsSection id={node.id} />}
       {node.tag === 'a' && <LinkSection node={node} />}
+      {node.tag !== 'a' && node.id !== rootId && !isPageNode(node) && <GoToPageSection node={node} />}
       {node.tag === 'img' && <PictureSection node={node} />}
       {HAS_PLACEHOLDER.has(node.tag) && <FormFieldSection node={node} />}
       {computed && <StyleSections id={node.id} context={context} computed={computed} overrides={overrides} />}

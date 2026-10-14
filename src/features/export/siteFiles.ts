@@ -1,5 +1,5 @@
 import { buildPageParts } from '@/features/editor/model/serialize/buildPage'
-import { allPagesDoc, pageDoc, pageFileName } from '@/features/editor/model/serialize/sitePages'
+import { allPagesForFiles, pageDoc, pageFileName } from '@/features/editor/model/serialize/sitePages'
 import { listPages, resolvePage } from '@/features/editor/model/pages'
 import type { PageDoc } from '@/features/editor/model/types'
 import { partsToSplitFiles, type ExportFiles } from './buildFiles'
@@ -19,7 +19,7 @@ export function currentPageDoc(doc: PageDoc, pageId: string | null, fileLinks = 
  * the home page) sharing one styles.css and script.js.
  */
 export function siteToSplitFiles(doc: PageDoc): ExportFiles {
-  const shared = partsToSplitFiles(buildPageParts(allPagesDoc(doc)))
+  const shared = partsToSplitFiles(buildPageParts(allPagesForFiles(doc)))
   const files: ExportFiles = { ...shared }
   delete files['index.html']
   for (const page of listPages(doc)) {

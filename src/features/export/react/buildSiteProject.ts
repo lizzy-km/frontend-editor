@@ -48,7 +48,7 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
   const body = getElement(doc.nodes, doc.rootId)!
   const first = body.children.indexOf(pages[0]!.id)
   const isPage = (id: string) => pages.some((page) => page.id === id)
-  const links: RouterLinks = { paths: new Set(pages.map((page) => page.path)), lib: ROUTERS[router].lib }
+  const links: RouterLinks = { paths: new Set(pages.map((page) => page.path)), lib: ROUTERS[router].lib, go: ROUTERS[router].go }
   const takeName = createNameRegistry()
   const files: ExportFiles = {}
   const write = (parts: Parts, folder: string) => { for (const file of parts.files) files[`src/components/${folder}/${file.name}.tsx`] = file.code }

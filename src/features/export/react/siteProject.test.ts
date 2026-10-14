@@ -40,6 +40,16 @@ describe('React site project', () => {
     expect(ts['src/auth/RequireAuth.tsx']).toContain('throw redirect')
   })
 
+  it('makes "click goes to" boxes navigate (React Router and TanStack)', () => {
+    const doc = addPage(parseHtmlDocument('<body><section class="cards"><div class="card" data-fe-go="/about"><h3>A</h3></div></section></body>'), { title: 'About', path: '/about', from: 'blank' }).doc
+    const rr = buildSiteProject(doc, { router: 'react-router' })['src/components/home/Cards.tsx']!
+    expect(rr).toContain("import { useNavigate } from 'react-router'")
+    expect(rr).toContain('const navigate = useNavigate()')
+    expect(rr).toContain(`onClick={() => navigate("/about")}`)
+    const ts = buildSiteProject(doc, { router: 'tanstack' })['src/components/home/Cards.tsx']!
+    expect(ts).toContain(`onClick={() => void navigate({ to: "/about" })}`)
+  })
+
   it('has no auth files when every page is public', () => {
     const open = buildSiteProject(addPage(parseHtmlDocument('<p>x</p>'), { title: 'B', path: '/b', from: 'blank' }).doc, { router: 'react-router' })
     expect(Object.keys(open).some((path) => path.startsWith('src/auth/'))).toBe(false)

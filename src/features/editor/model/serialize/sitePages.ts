@@ -1,4 +1,4 @@
-import { isPageNode, listPages, resolvePage } from '../pages'
+import { GO_ATTR, isPageNode, listPages, resolvePage } from '../pages'
 import { collectSubtreeIds, getElement } from '../tree/queries'
 import { isElement, type NodeMap, type PageDoc } from '../types'
 
@@ -13,15 +13,28 @@ export function pageFileName(path: string): string {
   return `${name || 'index'}.html`
 }
 
-/** Links to site pages point at their files ("/about" -> "about.html"), so a downloaded site works offline. */
+/** Links and "click goes to" boxes point at page files ("/about" -> "about.html"), so a downloaded site works offline. */
 function linkToFiles(nodes: NodeMap, paths: Map<string, string>): NodeMap {
   const next: NodeMap = { ...nodes }
   for (const node of Object.values(nodes)) {
-    if (!isElement(node) || node.tag !== 'a') continue
-    const target = paths.get(node.attrs.href ?? '')
-    if (target) next[node.id] = { ...node, attrs: { ...node.attrs, href: target } }
+    if (!isElement(node)) continue
+    const href = node.tag === 'a' ? paths.get(node.attrs.href ?? '') : undefined
+    const go = paths.get(node.attrs[GO_ATTR] ?? '')
+    if (href || go) next[node.id] = { ...node, attrs: { ...node.attrs, ...(href ? { href } : {}), ...(go ? { [GO_ATTR]: go } : {}) } }
   }
   return next
+}
+
+/** For downloads: a tiny script that makes "click goes to" boxes open their page (links work by themselves). */
+const GO_SCRIPT = `document.addEventListener('click', function (event) {
+  var box = event.target.closest && event.target.closest('[${GO_ATTR}]')
+  if (box && !event.target.closest('a, button, input, select, textarea, label')) location.href = box.getAttribute('${GO_ATTR}')
+})`
+
+function withGoScript(doc: PageDoc): PageDoc {
+  if (!Object.values(doc.nodes).some((node) => isElement(node) && node.attrs[GO_ATTR])) return doc
+  return { ...doc, css: `${doc.css}
+[${GO_ATTR}] { cursor: pointer; }`, scripts: [...doc.scripts, { code: GO_SCRIPT, inHead: false }] }
 }
 
 /** The document with page containers replaced by their content: every page (keep) or one page. */
@@ -53,8 +66,15 @@ export function pageDoc(doc: PageDoc, pageId: string | null, options: { fileLink
   const single = unwrap(doc, (id) => id === page.id)
   if (!options.fileLinks) return single
   const paths = new Map(listPages(doc).map((info) => [info.path, pageFileName(info.path)]))
-  return { ...single, nodes: linkToFiles(single.nodes, paths) }
+  return withGoScript({ ...single, nodes: linkToFiles(single.nodes, paths) })
 }
 
 /** Every page's content in one document (for a stylesheet that covers all pages). */
 export const allPagesDoc = (doc: PageDoc): PageDoc => unwrap(doc, () => true)
+
+/** All pages, prepared like downloaded pages (file links, click-goes-to script): the site's shared files. */
+export function allPagesForFiles(doc: PageDoc): PageDoc {
+  const paths = new Map(listPages(doc).map((info) => [info.path, pageFileName(info.path)]))
+  const all = allPagesDoc(doc)
+  return withGoScript({ ...all, nodes: linkToFiles(all.nodes, paths) })
+}

@@ -12,8 +12,8 @@ type Props = {
   onOpenPage?: (pageId: string) => void
 }
 
-/** In a site, links to other pages ask the parent to show that page (the frame can't navigate itself). */
-const NAVIGATE = `<script>document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="/"]');if(!a)return;e.preventDefault();parent.postMessage({tweakOpenPath:a.getAttribute('href')},'*')})</script>`
+/** In a site, links and "click goes to" boxes ask the parent to show that page (the frame can't navigate itself). */
+const NAVIGATE = `<style>[data-fe-go]{cursor:pointer}</style><script>document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('a[href^="/"],[data-fe-go]');if(!t)return;var link=t.tagName==='A';if(!link&&e.target.closest('a,button,input,select,textarea,label'))return;e.preventDefault();parent.postMessage({tweakOpenPath:link?t.getAttribute('href'):t.getAttribute('data-fe-go')},'*')})</script>`
 
 /**
  * Shows someone else's page. Their code is untrusted, so the sandbox allows

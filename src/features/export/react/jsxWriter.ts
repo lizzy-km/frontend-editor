@@ -1,5 +1,6 @@
 import { VOID_TAGS } from '@/features/editor/model/serialize/escape'
 import { isElement, type ElementNode, type NodeMap } from '@/features/editor/model/types'
+import { GO_ATTR } from '@/features/editor/model/pages'
 import { jsxAttr, jsxAttrName } from './jsxAttrs'
 
 /** A run of repeated siblings written as one `{list.map(...)}` line. */
@@ -13,8 +14,18 @@ export type JsxContext = {
   props?: Map<string, string>
   /** Repeated runs to replace, keyed by their first item's id. */
   repeats?: Map<string, RepeatSlot>
-  /** Sites: links to these page addresses become the router's <Link to>; `used` tells the file to import it. */
-  links?: { paths: Set<string>; used: boolean }
+  /**
+   * Sites: links to these page addresses become the router's <Link to> (`used`), and "click goes to"
+   * boxes call navigate (`navigate`); both tell the file what to import. `go` writes the navigate call.
+   */
+  links?: { paths: Set<string>; used: boolean; navigate: boolean; go: (target: string, typed: boolean) => string }
+}
+
+/** "Click goes to": the whole box opens the page, by mouse or keyboard. */
+function goHandlers(ctx: JsxContext, target: string, typed: boolean): string {
+  ctx.links!.navigate = true
+  const go = ctx.links!.go(target, typed)
+  return ` role="link" tabIndex={0} style={{ cursor: 'pointer' }} onClick={() => ${go}} onKeyDown={(event) => { if (event.key === 'Enter') ${go} }}`
 }
 
 /** <a href="/about"> -> <Link to="/about"> when /about is a page of the site (not inside item templates' changing links). */
@@ -72,6 +83,7 @@ function attrsJsx(ctx: JsxContext, node: ElementNode, inSvg: boolean): string {
   const names = [...new Set([...Object.keys(attrs), ...propNames])]
   return names.map((name) => {
     const prop = ctx.props?.get(`${node.id}@${name}`)
+    if (name === GO_ATTR && ctx.links) return goHandlers(ctx, prop ?? JSON.stringify(attrs[name]), !prop)
     if (!prop) return jsxAttr(node.tag, name, attrs[name]!, inSvg)
     const jsxName = jsxAttrName(node.tag, name, inSvg)
     return jsxName ? ` ${jsxName}={${prop}}` : ''

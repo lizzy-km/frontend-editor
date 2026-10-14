@@ -3,9 +3,12 @@ export type RouterKind = 'react-router' | 'tanstack'
 
 export type RouteFile = { path: string; component: string; file: string; private: boolean }
 
-export const ROUTERS: Record<RouterKind, { label: string; lib: string; deps: Record<string, string> }> = {
-  'react-router': { label: 'React Router', lib: 'react-router', deps: { 'react-router': '^7.9.0' } },
-  tanstack: { label: 'TanStack Router', lib: '@tanstack/react-router', deps: { '@tanstack/react-router': '^1.130.0' } },
+type Router = { label: string; lib: string; deps: Record<string, string>; go: (target: string, typed: boolean) => string }
+
+export const ROUTERS: Record<RouterKind, Router> = {
+  'react-router': { label: 'React Router', lib: 'react-router', deps: { 'react-router': '^7.9.0' }, go: (target) => `navigate(${target})` },
+  // TanStack checks addresses against the routes; a value only known at run time (a list item's prop) is not one of them.
+  tanstack: { label: 'TanStack Router', lib: '@tanstack/react-router', deps: { '@tanstack/react-router': '^1.130.0' }, go: (target, typed) => `void navigate({ to: ${target}${typed ? '' : ' as never'} })` },
 }
 
 const pageImports = (routes: RouteFile[]) => routes.map((route) => `import ${route.component} from './pages/${route.file}'`)
