@@ -1,0 +1,36 @@
+// Data panel: add sample data, edit fields and rows, connect an API, undo.
+import { check, OUT, openExample } from './browser.mjs'
+
+const { browser, page, errors } = await openExample()
+const sidebar = page.locator('aside').first()
+await sidebar.getByRole('tab', { name: 'Data' }).click()
+await sidebar.getByLabel('Start from').selectOption('Products')
+await sidebar.getByRole('button', { name: 'Add data' }).click()
+const list = sidebar.getByRole('list', { name: 'Data' })
+check('products added with sample rows', (await list.textContent()).includes('products') && (await list.textContent()).includes('6 rows'))
+check('row type shown', (await sidebar.getByText(/Each row is a/).textContent()).includes('Product'))
+
+await sidebar.getByRole('button', { name: 'Edit fields and rows' }).click()
+const dialog = page.getByRole('dialog')
+await dialog.getByLabel('New field name').fill('Sale price')
+await dialog.getByLabel('New field kind').selectOption('number')
+await dialog.getByRole('button', { name: 'Add field' }).click()
+check('new field becomes a column', (await dialog.locator('th').allTextContents()).includes('salePrice'))
+await dialog.getByLabel('name, row 1').fill('Linen shirt XL')
+await dialog.getByRole('button', { name: 'Add row' }).click()
+check('row added', (await dialog.locator('tbody tr').count()) === 7)
+await page.screenshot({ path: OUT + 'data-table.png' })
+await dialog.getByRole('button', { name: 'Done' }).click()
+
+await sidebar.getByLabel('API address').fill('https://api.example.com/products')
+await sidebar.getByLabel('API address').press('Enter')
+await page.waitForTimeout(200)
+check('API marked on the source', (await list.textContent()).includes('API'))
+await page.screenshot({ path: OUT + 'data-panel.png' })
+
+await page.mouse.click(700, 845)
+await page.keyboard.press('Control+z')
+await page.waitForTimeout(200)
+check('undo removes the API', !(await list.textContent()).includes('API'))
+check('no console errors', errors.length === 0, errors.join(' | '))
+await browser.close()
