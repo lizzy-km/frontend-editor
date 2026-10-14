@@ -1,7 +1,7 @@
 import type { ElementNode, NodeMap } from '@/features/editor/model/types'
 import { writeElement, type JsxContext, type RepeatSlot } from './jsxWriter'
 import { lowerFirst, pascalCase } from './names'
-import { motionImports, motionState, showImport } from './jsxExtras'
+import { motionImports, motionState, newShow, showImport } from './jsxExtras'
 import { formComponents } from './forms/formTemplates'
 import { listComponents, type ListOptions } from './listTemplates'
 import { findRepeats, type PropValue, type RepeatGroup } from './repeats'
@@ -30,14 +30,14 @@ const rowLiteral = (row: Record<string, PropValue>) =>
 
 /** An item component: typed props, the item's markup with the props filled in. */
 function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, name: string, router?: RouterLinks, base = '..'): ComponentFile {
-  const ctx: JsxContext = { nodes, classFor, props: group.fields, links: linksFor(router), motion: motionState(), show: { used: false } }
+  const ctx: JsxContext = { nodes, classFor, props: group.fields, links: linksFor(router), motion: motionState(), show: newShow() }
   const body = writeElement(ctx, group.ids[0]!, BODY_PAD)
   const fields = group.props.map((prop) => `  ${prop.name}${prop.optional ? '?' : ''}: ${prop.kind}`)
   const params = group.props.map((prop) => prop.name).join(', ')
   return {
     name,
     code: [
-      ...linkImport(ctx, router), ...motionImports(ctx.motion, base), ...showImport(ctx.show, base), ...(ctx.links?.used || ctx.motion?.animation || ctx.motion?.item || ctx.show?.used ? [''] : []),
+      ...linkImport(ctx, router), ...motionImports(ctx.motion, base), ...showImport(ctx.show, base), ...(ctx.links?.used || ctx.motion?.animation || ctx.motion?.item || showImport(ctx.show, base).length ? [''] : []),
       `export type ${name}Props = {`, ...fields, '}', '',
       `/** One of the repeated items. Change the look here; change the words in the list that uses it. */`,
       `export default function ${name}({ ${params} }: ${name}Props) {`,
@@ -68,7 +68,7 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
     repeats.set(group.ids[0]!, { ids: group.ids, expression: `{${listName}.map((item, index) => <${itemName} key={index} {...item} />)}` })
   }
 
-  const ctx: JsxContext = { nodes, classFor, repeats, links: linksFor(router), motion: motionState(), show: { used: false } }
+  const ctx: JsxContext = { nodes, classFor, repeats, links: linksFor(router), motion: motionState(), show: newShow() }
   // "List from data" boxes become their own list + card components.
   const dataLists = data ? listComponents({ nodes, classFor }, rootId, takeName, data) : { lists: new Map<string, string>(), files: [] }
   ctx.lists = dataLists.lists

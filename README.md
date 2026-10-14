@@ -100,6 +100,10 @@ password, Set a new password and Confirm email pages. They are normal pages:
 change any word or color. In the React download they really work (demo
 accounts and a pretend email until you connect your API).
 
+**Pop-ups and questions:** add a Pop-up (a button plus the box), choose what a
+button opens or closes under "When clicked", and make any button or link ask
+"Are you sure?" first. They work in Preview, downloads and the React project.
+
 ## Who can see what
 
 "Who can see this" shows an element or page to everyone, signed-in people

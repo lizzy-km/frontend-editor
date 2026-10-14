@@ -104,6 +104,12 @@ that break things if you ignore them.
     name). Never hard-code them in the export; the redirect after login uses
     `sessionStorage['auth:redirect']`, cleared only when the wanted page loads.
 
+25. **Pop-ups are plain boxes while editing** (never hidden or fixed in the
+    model); the visitors' player and the React `<Modal>` add the overlay. A
+    button's click goes through `export/react/popups/jsxPopups.clickAttrs`, so
+    never add a second `onClick` in the JSX writer. Generated file names must
+    not differ only by case.
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

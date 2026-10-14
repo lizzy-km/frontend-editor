@@ -3,6 +3,25 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/popups — 2026-10-14
+- **Pop-ups** (`model/popups.ts`): a ready-made **Pop-up** block (a button plus
+  the box). The box is an ordinary box while editing (`data-fe-modal="name"`);
+  "When clicked" lets any element **open** a pop-up (`data-fe-open`) or **close**
+  the one it is in (`data-fe-close`). Renaming a pop-up updates its openers
+  (one undo step).
+- **Ask first** (`data-fe-ask`): any button or link can ask "Are you sure?"
+  before it does anything; ready-made **Ask-first button**.
+- Preview and downloads: `serialize/popupPlayer.ts` hides pop-ups, centres
+  them over the page, closes with a button, Esc or a click outside, and shows
+  the question box.
+- React: `<Modal name>` (portal, Esc, click outside, focus), `openModal` /
+  `closeModal` (`ui/popup.ts`), `askFirst` / `useConfirm` / `<ConfirmHost />`
+  (`ui/confirm.tsx`, mounted in main.tsx); onClick handlers combine "click goes
+  to", open, close and ask (`export/react/popups/`). Ask-first on a link follows
+  it after Yes, on a form button submits the (Zod-checked) form.
+- Verified by building the single page, React Router and TanStack output and
+  running pop-ups, questions, links and forms in Chrome.
+
 ## feature/auth-pages — 2026-10-14
 - **Add sign-in pages** (Pages tab): Log in, Create account, Forgot password,
   Set a new password and Confirm email as ordinary editable pages

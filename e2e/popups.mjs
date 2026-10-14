@@ -1,0 +1,38 @@
+// Pop-ups: ready-made Pop-up block, its name, "Opens" on a button, "Ask first", Preview-style behavior is unit tested.
+import { check, openExample } from './browser.mjs'
+
+const { browser, page, frame, box, errors } = await openExample()
+const sidebar = page.locator('aside').first()
+const panel = page.locator('aside').last()
+
+await page.mouse.click(12, 845)
+await sidebar.getByRole('tab', { name: 'Add' }).click()
+await sidebar.getByRole('button', { name: 'Pop-up', exact: true }).click()
+await page.waitForTimeout(600)
+check('pop-up and its button added, pop-up shown as a normal box', (await frame.$$eval('[data-fe-modal]', (all) => all.length)) === 1 && (await frame.$eval('[data-fe-modal]', (el) => el.getClientRects().length)) > 0)
+
+await frame.evaluate(() => document.querySelector('[data-fe-open]').scrollIntoView({ block: 'center' }))
+await page.waitForTimeout(300)
+const opener = await box('[data-fe-open]')
+await page.mouse.click(opener.x + 6, opener.y + 6)
+await page.waitForTimeout(300)
+check('button opens the pop-up by name', (await panel.getByLabel('Opens pop-up').inputValue()) === 'welcome')
+await panel.getByLabel('Ask first question').fill('Open it now?')
+await panel.getByLabel('Ask first question').press('Enter')
+await page.waitForTimeout(300)
+check('ask first saved on the button', (await frame.$eval('[data-fe-open]', (el) => el.getAttribute('data-fe-ask'))) === 'Open it now?')
+
+const modal = await box('[data-fe-modal]')
+await page.mouse.click(modal.x + 6, modal.y + 6)
+await page.waitForTimeout(300)
+await panel.getByLabel('Pop-up name').fill('news')
+await panel.getByLabel('Pop-up name').press('Enter')
+await page.waitForTimeout(300)
+check('renaming the pop-up updates its opener', (await frame.$eval('[data-fe-open]', (el) => el.getAttribute('data-fe-open'))) === 'news')
+
+await page.mouse.click(12, 845)
+await page.keyboard.press('Control+z')
+await page.waitForTimeout(300)
+check('undo renames everything back in one step', (await frame.$eval('[data-fe-open]', (el) => el.getAttribute('data-fe-open'))) === 'welcome')
+check('no console errors', errors.length === 0, errors.join(' | '))
+await browser.close()

@@ -4,7 +4,8 @@ import { BIND_ATTR, BIND_PREFIX } from '@/features/editor/model/dataLists'
 import { GO_ATTR } from '@/features/editor/model/pages'
 import { attrTag, jsxAttr, jsxAttrName } from './jsxAttrs'
 import { formAttrs, formHandlesAttr, withFormExtras, type FormSlot } from './forms/formJsx'
-import { asRouterLink, fieldExpression, goHandlers, isEditorAttr, motionFor, showWhen, type MotionState } from './jsxExtras'
+import { asRouterLink, fieldExpression, isEditorAttr, motionFor, showWhen, type MotionState, type ShowState } from './jsxExtras'
+import { clickAttrs, modalNode } from './popups/jsxPopups'
 
 /** A run of repeated siblings written as one `{list.map(...)}` line. */
 export type RepeatSlot = { ids: string[]; expression: string }
@@ -29,7 +30,7 @@ export type JsxContext = {
   /** Animated elements (Motion): what the file used. */
   motion?: MotionState
   /** "Who can see this": elements wrapped in <Show>; `used` tells the file to import it. */
-  show?: { used: boolean }
+  show?: ShowState
   /** Forms written as their own component instead: form id -> component name. */
   forms?: Map<string, string>
   /** Inside a form component: its fields register with React Hook Form. */
@@ -68,6 +69,10 @@ function selectDefault(nodes: NodeMap, node: ElementNode): string | undefined {
   return option.attrs.value ?? text
 }
 
+/** "Click goes to": the page address (a prop inside list items). */
+const goTarget = (ctx: JsxContext, node: ElementNode) =>
+  (GO_ATTR in node.attrs ? { value: ctx.props?.get(`${node.id}@${GO_ATTR}`) ?? JSON.stringify(node.attrs[GO_ATTR]), typed: !ctx.props?.has(`${node.id}@${GO_ATTR}`) } : undefined)
+
 function attrsJsx(ctx: JsxContext, node: ElementNode, inSvg: boolean): string {
   const attrs: Record<string, string> = { ...node.attrs }
   const className = ctx.classFor(node)
@@ -89,11 +94,11 @@ function attrsJsx(ctx: JsxContext, node: ElementNode, inSvg: boolean): string {
   const names = [...new Set([...Object.keys(attrs), ...propNames])].filter((name) => !isEditorAttr(name) && !formHandlesAttr(ctx, node.id, name))
   return fromRow.join('') + names.map((name) => {
     const prop = ctx.props?.get(`${node.id}@${name}`)
-    if (name === GO_ATTR && ctx.links) return goHandlers(ctx, prop ?? JSON.stringify(attrs[name]), !prop)
+    if (name === GO_ATTR) return ''
     if (!prop) return jsxAttr(attrTag(node.tag, node.attrs.type), name, attrs[name]!, inSvg)
     const jsxName = jsxAttrName(attrTag(node.tag, node.attrs.type), name, inSvg)
     return jsxName ? ` ${jsxName}={${prop}}` : ''
-  }).join('') + formAttrs(ctx, node.id)
+  }).join('') + clickAttrs(ctx, node, goTarget(ctx, node)) + formAttrs(ctx, node.id)
 }
 
 /** Children on one line (elements with text in them): keeps the spaces between words and tags. */
@@ -139,7 +144,7 @@ function writeOne(ctx: JsxContext, id: string, pad: string, inSvg = false, inPre
   if (!isElement(original)) return ''
   const list = ctx.lists?.get(id) ?? ctx.forms?.get(id)
   if (list) return `${pad}<${list} />`
-  const node = asRouterLink(ctx, original)
+  const node = modalNode(ctx, asRouterLink(ctx, original))
   const { tag, extra } = motionFor(ctx, node)
   const bound = ctx.row && node.attrs[BIND_ATTR] ? fieldExpression(ctx, node.attrs[BIND_ATTR], true) : null
   if (bound) return `${pad}<${tag}${attrsJsx(ctx, node, inSvg)}${extra}>{${bound}}</${tag}>`
@@ -168,6 +173,6 @@ export function openTag(ctx: JsxContext, node: ElementNode): string {
 
 /** The closing tag matching openTag (motion.<tag> when animated). */
 export function closeTag(ctx: JsxContext, node: ElementNode): string {
-  const animated = Boolean(ctx.motion) && node.tag !== 'Link' && (ctx.motion!.items.has(node.id) || Boolean(node.attrs['data-fe-animate']))
+  const animated = Boolean(ctx.motion) && node.tag !== 'Link' && node.tag !== 'Modal' && (ctx.motion!.items.has(node.id) || Boolean(node.attrs['data-fe-animate']))
   return `</${animated ? `motion.${node.tag}` : node.tag}>`
 }

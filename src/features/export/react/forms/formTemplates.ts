@@ -4,7 +4,7 @@ import { collectSubtreeIds } from '@/features/editor/model/tree/queries'
 import { isElement, type ElementNode, type NodeMap } from '@/features/editor/model/types'
 import { AUTH_DEPS } from '../auth/authFiles'
 import { clientFiles } from '../dataTemplates'
-import { motionImports, motionState, showImport } from '../jsxExtras'
+import { motionImports, motionState, newShow, showImport } from '../jsxExtras'
 import { closeTag, openTag, writeElement, type JsxContext } from '../jsxWriter'
 import { FORM_DEPS, formKitFiles } from './formKit'
 import { authForm, isAuthKind } from './authForm'
@@ -40,7 +40,7 @@ function formFile(parent: JsxContext, form: ElementNode, name: string, base: str
   const { address, success, submit } = formSettings(form)
   const auth = router && isAuthKind(submit) ? authForm(submit, router.lib) : null
   const ctx: JsxContext = {
-    nodes: parent.nodes, classFor: parent.classFor, motion: motionState(), show: { used: false },
+    nodes: parent.nodes, classFor: parent.classFor, motion: motionState(), show: newShow(),
     form: { id: form.id, fields: new Map(fields.flatMap((field) => field.ids.map((id) => [id, field.name]))), last: new Set(fields.map((field) => field.ids.at(-1)!)) },
   }
   const schema = `${name.charAt(0).toLowerCase()}${name.slice(1)}Schema`

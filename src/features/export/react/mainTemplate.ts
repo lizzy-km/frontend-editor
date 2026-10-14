@@ -7,17 +7,24 @@ type Options = {
   query: boolean
   /** Signed-in only pages: the AuthProvider. */
   auth: boolean
+  /** "Ask first" buttons: the question box is mounted once. */
+  confirm?: boolean
 }
 
 /** src/main.tsx: the app, wrapped in the providers it needs (React Query outside, auth inside). */
-export function mainFile({ root, query, auth }: Options): string {
+export function mainFile({ root, query, auth, confirm = false }: Options): string {
   let app = root === 'app' ? '<App />' : '<RouterProvider router={router} />'
+  if (confirm) app = `<>
+    ${app}
+    <ConfirmHost />
+  </>`
   if (auth) app = `<AuthProvider>\n    ${app}\n  </AuthProvider>`
   if (query) app = `<QueryClientProvider client={queryClient}>\n    ${app.replace(/\n/g, '\n  ')}\n  </QueryClientProvider>`
   return [
     "import { createRoot } from 'react-dom/client'",
     ...(query ? ["import { QueryClient, QueryClientProvider } from '@tanstack/react-query'"] : []),
     ...(root === 'app' ? ["import App from './App'"] : [`import { RouterProvider } from '${ROUTERS[root].lib}'`, "import { router } from './router'"]),
+    ...(confirm ? ["import { ConfirmHost } from './components/ui/confirm'"] : []),
     ...(auth ? ["import { AuthProvider } from './auth/AuthProvider'"] : []),
     "import './styles/page.css'",
     '',

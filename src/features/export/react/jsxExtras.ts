@@ -3,6 +3,7 @@ import { animationOf, type Animation } from '@/features/editor/model/animations'
 import { conditionOf, hasCondition } from '@/features/editor/model/conditions'
 import type { ElementNode } from '@/features/editor/model/types'
 import type { JsxContext } from './jsxWriter'
+import { uiImports, type UiUse } from './popups/jsxPopups'
 
 /** Sites and data: list-card fields, editor-only attributes, "click goes to" handlers, router links. */
 
@@ -56,7 +57,7 @@ export function motionFor(ctx: JsxContext, node: ElementNode): { tag: string; ex
   const state = ctx.motion
   const animation = animationOf(node)
   const item = state?.items.get(node.id)
-  if (!state || node.tag === 'Link' || (!animation && !item)) return { tag: node.tag, extra: '' }
+  if (!state || node.tag === 'Link' || node.tag === 'Modal' || (!animation && !item)) return { tag: node.tag, extra: '' }
   let extra = ''
   if (item) {
     state.item = true
@@ -99,5 +100,10 @@ export function showWhen(node: ElementNode): string | null {
   return `{{ ${parts.join(', ')} }}`
 }
 
-/** `import { Show } …` when the file used it. */
-export const showImport = (show: { used: boolean } | undefined, base: string) => (show?.used ? [`import { Show } from '${base}/auth/Show'`] : [])
+/** What one generated file used from src/auth and src/components/ui: Show, Modal, the pop-up helpers, askFirst. */
+export type ShowState = { used: boolean; ui: UiUse }
+export const newShow = (): ShowState => ({ used: false, ui: new Set() })
+
+/** The import lines for what the file used (`import { Show } …`, Modal, askFirst…). */
+export const showImport = (show: ShowState | undefined, base: string) =>
+  show ? [...(show.used ? [`import { Show } from '${base}/auth/Show'`] : []), ...uiImports(show.ui, base)] : []
