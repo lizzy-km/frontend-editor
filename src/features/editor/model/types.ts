@@ -64,6 +64,8 @@ export type PageDoc = {
   data?: DataSource[]
   /** The site's roles and flags for "Who can see this" (defaults: member, admin; no flags). */
   access?: { roles: string[]; flags: string[] }
+  /** The sign-in API: address paths for login, register… (missing = the usual /auth/… paths). */
+  authApi?: Partial<Record<string, string>>
 }
 
 /** What kind of value a data field holds (decides the TypeScript type and how it is shown). */

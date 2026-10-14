@@ -36,7 +36,8 @@ describe('React site project', () => {
     expect(rr['src/main.tsx']).toContain('<AuthProvider>')
     expect(rr['src/pages/LoginPage.tsx']).toContain('signIn')
     const ts = buildSiteProject(site(), { router: 'tanstack' })
-    expect(ts['src/router.tsx']).toContain('beforeLoad: requireSignIn')
+    expect(ts['src/router.tsx']).toContain('beforeLoad: requireAccess({})')
+    expect(ts['src/router.tsx']).toContain("path: '/no-access'")
     expect(ts['src/auth/RequireAuth.tsx']).toContain('throw redirect')
   })
 

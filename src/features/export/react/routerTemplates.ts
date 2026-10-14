@@ -1,7 +1,8 @@
 /** The two routers people can pick for a site, and the files that differ between them. */
 export type RouterKind = 'react-router' | 'tanstack'
 
-export type RouteFile = { path: string; component: string; file: string; private: boolean }
+/** One route: its page component, the element React Router renders, and TanStack's beforeLoad guard. */
+export type RouteFile = { path: string; component: string; file: string; element: string; beforeLoad?: string }
 
 type Router = { label: string; lib: string; deps: Record<string, string>; go: (target: string, typed: boolean) => string }
 
@@ -12,57 +13,44 @@ export const ROUTERS: Record<RouterKind, Router> = {
 }
 
 const pageImports = (routes: RouteFile[]) => routes.map((route) => `import ${route.component} from './pages/${route.file}'`)
+const routeName = (route: RouteFile) => `${route.component.charAt(0).toLowerCase()}${route.component.slice(1)}Route`
 
-/** src/router.tsx: every page under the shared Layout, plus "page not found". */
-export function routerSource(kind: RouterKind, routes: RouteFile[], guard: (route: RouteFile) => string): string {
-  if (kind === 'react-router') {
-    return [
-      "import { createBrowserRouter } from 'react-router'",
-      "import Layout from './layout/Layout'",
-      "import NotFoundPage from './pages/NotFoundPage'",
-      ...pageImports(routes),
-      ...(routes.some((route) => route.private) ? ["import LoginPage from './pages/LoginPage'", "import { RequireAuth } from './auth/RequireAuth'"] : []),
-      '',
-      '/** Every page of the site, inside the shared Layout (header, footer…). */',
-      'export const router = createBrowserRouter([',
-      '  {',
-      '    element: <Layout />,',
-      '    children: [',
-      ...routes.map((route) => `      { path: '${route.path}', element: ${guard(route)} },`),
-      ...(routes.some((route) => route.private) ? ["      { path: '/login', element: <LoginPage /> },"] : []),
-      "      { path: '*', element: <NotFoundPage /> },",
-      '    ],',
-      '  },',
-      '])',
-      '',
-    ].join('\n')
-  }
-  const name = (route: RouteFile) => `${route.component.charAt(0).toLowerCase()}${route.component.slice(1)}Route`
+function reactRouterSource(routes: RouteFile[], imports: string[]): string {
+  return [
+    "import { createBrowserRouter } from 'react-router'",
+    "import Layout from './layout/Layout'",
+    "import NotFoundPage from './pages/NotFoundPage'",
+    ...pageImports(routes), ...imports, '',
+    '/** Every page of the site, inside the shared Layout (header, footer…). */',
+    'export const router = createBrowserRouter([',
+    '  {',
+    '    element: <Layout />,',
+    '    children: [',
+    ...routes.map((route) => `      { path: '${route.path}', element: ${route.element} },`),
+    "      { path: '*', element: <NotFoundPage /> },",
+    '    ],', '  },', '])', '',
+  ].join('\n')
+}
+
+function tanstackSource(routes: RouteFile[], imports: string[]): string {
   return [
     "import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router'",
     "import Layout from './layout/Layout'",
     "import NotFoundPage from './pages/NotFoundPage'",
-    ...pageImports(routes),
-    ...(routes.some((route) => route.private) ? ["import LoginPage from './pages/LoginPage'", "import { requireSignIn } from './auth/RequireAuth'"] : []),
-    '',
+    ...pageImports(routes), ...imports, '',
     '/** The shared Layout (header, footer…) around every page. */',
-    'const rootRoute = createRootRoute({ component: Layout, notFoundComponent: NotFoundPage })',
+    'const rootRoute = createRootRoute({ component: Layout, notFoundComponent: NotFoundPage })', '',
+    ...routes.map((route) => `const ${routeName(route)} = createRoute({ getParentRoute: () => rootRoute, path: '${route.path}', ${route.beforeLoad ? `beforeLoad: ${route.beforeLoad}, ` : ''}component: ${route.component} })`),
     '',
-    ...routes.map((route) => `const ${name(route)} = createRoute({ getParentRoute: () => rootRoute, path: '${route.path}', ${route.private ? 'beforeLoad: requireSignIn, ' : ''}component: ${route.component} })`),
-    ...(routes.some((route) => route.private) ? ["const loginRoute = createRoute({ getParentRoute: () => rootRoute, path: '/login', component: LoginPage })"] : []),
-    '',
-    `const routeTree = rootRoute.addChildren([${[...routes.map(name), ...(routes.some((route) => route.private) ? ['loginRoute'] : [])].join(', ')}])`,
-    '',
-    'export const router = createRouter({ routeTree, scrollRestoration: true })',
-    '',
-    "declare module '@tanstack/react-router' {",
-    '  interface Register {',
-    '    router: typeof router',
-    '  }',
-    '}',
-    '',
+    `const routeTree = rootRoute.addChildren([${routes.map(routeName).join(', ')}])`, '',
+    'export const router = createRouter({ routeTree, scrollRestoration: true })', '',
+    "declare module '@tanstack/react-router' {", '  interface Register {', '    router: typeof router', '  }', '}', '',
   ].join('\n')
 }
+
+/** src/router.tsx: every page under the shared Layout (guards included), plus "page not found". */
+export const routerSource = (kind: RouterKind, routes: RouteFile[], imports: string[] = []) =>
+  (kind === 'react-router' ? reactRouterSource(routes, imports) : tanstackSource(routes, imports))
 
 /** src/pages/NotFoundPage.tsx */
 export const notFoundSource = (kind: RouterKind) => `import { Link } from '${ROUTERS[kind].lib}'

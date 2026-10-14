@@ -3,7 +3,7 @@ import { isElement, type ElementNode, type FieldType, type NodeMap } from '@/fea
 import { BIND_ATTR, BIND_PREFIX } from '@/features/editor/model/dataLists'
 import { GO_ATTR } from '@/features/editor/model/pages'
 import { jsxAttr, jsxAttrName } from './jsxAttrs'
-import { asRouterLink, fieldExpression, goHandlers, isEditorAttr, motionFor, type MotionState } from './jsxExtras'
+import { asRouterLink, fieldExpression, goHandlers, isEditorAttr, motionFor, showWhen, type MotionState } from './jsxExtras'
 
 /** A run of repeated siblings written as one `{list.map(...)}` line. */
 export type RepeatSlot = { ids: string[]; expression: string }
@@ -27,6 +27,8 @@ export type JsxContext = {
   row?: Map<string, FieldType>
   /** Animated elements (Motion): what the file used. */
   motion?: MotionState
+  /** "Who can see this": elements wrapped in <Show>; `used` tells the file to import it. */
+  show?: { used: boolean }
 }
 
 /** Tags that sit in a line of text: the space between two of them is visible. */
@@ -116,8 +118,17 @@ function blockChildren(ctx: JsxContext, ids: string[], pad: string, inSvg: boole
   return lines
 }
 
-/** One element and everything inside it, as JSX, indented by `pad`. */
+/** One element and everything inside it, as JSX, indented by `pad` (wrapped in <Show> when only some visitors see it). */
 export function writeElement(ctx: JsxContext, id: string, pad: string, inSvg = false, inPre = false): string {
+  const node = ctx.nodes[id]
+  const when = ctx.show && isElement(node) ? showWhen(node) : null
+  if (!when) return writeOne(ctx, id, pad, inSvg, inPre)
+  ctx.show!.used = true
+  if (!pad) return `<Show when=${when}>${writeOne(ctx, id, '', inSvg, inPre)}</Show>`
+  return `${pad}<Show when=${when}>\n${writeOne(ctx, id, pad + INDENT, inSvg, inPre)}\n${pad}</Show>`
+}
+
+function writeOne(ctx: JsxContext, id: string, pad: string, inSvg = false, inPre = false): string {
   const original = ctx.nodes[id]
   if (!isElement(original)) return ''
   const list = ctx.lists?.get(id)
