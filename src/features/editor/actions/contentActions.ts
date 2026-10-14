@@ -1,9 +1,11 @@
 import { htmlToChildNodes } from '../model/parse/domToNodes'
+import { resolvePage } from '../model/pages'
 import { getElement } from '../model/tree/queries'
 import { insertSubtree, patchNode, replaceChildren } from '../model/tree/treeOps'
 import type { NodeMap, TextNode } from '../model/types'
 import { getDoc } from '../store/doc.store'
 import { useSelectionStore } from '../store/selection.store'
+import { useViewStore } from '../store/view.store'
 import { updateNodes } from './commit'
 import { countEdit } from './editStats'
 
@@ -32,7 +34,8 @@ const LEAF_TAGS = new Set(['img', 'input', 'br', 'hr', 'textarea', 'select', 'vi
 export function resolveInsertTarget(): { parentId: string; index?: number } {
   const doc = getDoc()
   const selected = getElement(doc.nodes, useSelectionStore.getState().selectedId)
-  if (!selected) return { parentId: doc.rootId }
+  // Nothing selected: the end of the page being edited (sites), else the end of the page.
+  if (!selected) return { parentId: resolvePage(doc, useViewStore.getState().pageId)?.id ?? doc.rootId }
   if (!LEAF_TAGS.has(selected.tag)) return { parentId: selected.id }
 
   const parent = getElement(doc.nodes, selected.parentId)

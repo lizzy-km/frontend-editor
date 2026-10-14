@@ -4,7 +4,8 @@ import type { PageDoc } from '../model/types'
 import { useDocStore } from '../store/doc.store'
 import { createBridge, type FrameBridge } from './bridge'
 import { diffNodes } from './diffNodes'
-import { buildEditorSource, editorOverrideCss, sourceKey } from './editorSource'
+import { useViewStore } from '../store/view.store'
+import { buildEditorSource, editorOverrideCss, sourceKey, viewCss } from './editorSource'
 import { useFrameStore } from './frame.store'
 
 type Props = { width: number; height: number; scale: number }
@@ -42,11 +43,21 @@ export function EditorFrame({ width, height, scale }: Props) {
       pushChanges(bridge, doc, sent)
       sent = doc
     }
+    // Multi-page sites: only the current page is shown (editor-only CSS).
+    let shownView = ''
+    const sendView = () => {
+      const css = viewCss(useDocStore.getState().doc, useViewStore.getState().pageId)
+      if (css !== shownView) bridge.send('css', { view: css })
+      shownView = css
+    }
     sendLatest(useDocStore.getState().doc)
-    const unsubscribe = useDocStore.subscribe((state) => sendLatest(state.doc))
+    sendView()
+    const unsubscribe = useDocStore.subscribe((state) => { sendLatest(state.doc); sendView() })
+    const unsubscribeView = useViewStore.subscribe(sendView)
     useFrameStore.getState().setBridge(bridge)
     return () => {
       unsubscribe()
+      unsubscribeView()
       bridge.dispose()
       useFrameStore.getState().setBridge(null)
     }

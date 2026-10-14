@@ -109,9 +109,10 @@
     })
   }
 
-  /** New page CSS and/or new "your edits" CSS. */
+  /** New page CSS, "your edits" CSS and/or editor-only view CSS (which page is shown). */
   fe.handlers.css = function (payload) {
     if (typeof payload.page === 'string') document.getElementById('fe-page-css').textContent = payload.page
     if (typeof payload.edits === 'string') document.getElementById('fe-edits-css').textContent = payload.edits
+    if (typeof payload.view === 'string') document.getElementById('fe-view-css').textContent = payload.view
   }
 })(window.__fe)

@@ -3,19 +3,29 @@ import { escapeAttr, escapeRawTag } from '../model/serialize/escape'
 import { childrenToHtml, NODE_ID_ATTR } from '../model/serialize/nodeToHtml'
 import { buildOverrideCss, wrapUserCss } from '../model/serialize/styleSheets'
 import { withoutLocalFiles } from '../model/serialize/localFiles'
+import { resolvePage } from '../model/pages'
 import { getElement } from '../model/tree/queries'
 import type { NodeMap, PageDoc } from '../model/types'
 import { RUNTIME_SCRIPTS } from './runtime'
 
 export const PAGE_STYLE_ID = 'fe-page-css'
 export const EDITS_STYLE_ID = 'fe-edits-css'
+/** Editor-only: which page of a multi-page site is shown. */
+export const VIEW_STYLE_ID = 'fe-view-css'
 
 /** Editor-only helpers inside the frame (never exported). */
 const HELPER_CSS = `
 [data-fe-hidden] { opacity: 0.25 !important; filter: grayscale(1); }
 [data-fe-editing] { visibility: hidden !important; }
 html { scroll-behavior: auto !important; }
+[data-fe-page] { display: contents; }
 `
+
+/** Shows only the current page of a site (the others stay in the DOM, hidden). */
+export function viewCss(doc: PageDoc, pageId: string | null): string {
+  const page = resolvePage(doc, pageId)
+  return page ? `[data-fe-page]:not([${NODE_ID_ATTR}="${page.id}"]) { display: none !important; }` : ''
+}
 
 /** The user's edits, targeted by data attribute (doubled for the same weight as the export). */
 export function editorOverrideCss(nodes: NodeMap): string {
@@ -46,6 +56,7 @@ export function buildEditorSource(pageDoc: PageDoc): string {
     `<style id="${PAGE_STYLE_ID}">${escapeRawTag(wrapUserCss(doc.css), 'style')}</style>`,
     `<style id="${EDITS_STYLE_ID}">${escapeRawTag(editorOverrideCss(doc.nodes), 'style')}</style>`,
     `<style>${HELPER_CSS}</style>`,
+    `<style id="${VIEW_STYLE_ID}"></style>`,
     '</head>',
     `<body${attrs(bodyAttrs)}>${body ? childrenToHtml(doc.nodes, body, { withIds: true }) : ''}`,
     `<script type="application/json" id="fe-model">${safeJson({ rootId: doc.rootId, nodes: doc.nodes })}</script>`,

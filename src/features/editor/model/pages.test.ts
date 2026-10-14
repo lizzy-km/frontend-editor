@@ -34,7 +34,9 @@ describe('pages', () => {
   })
 
   it('renames, moves, protects and deletes pages', () => {
-    let { doc, pageId } = addPage(parseHtmlDocument(PAGE), { title: 'Contact', path: '/contact', from: 'blank' })
+    const added = addPage(parseHtmlDocument(PAGE), { title: 'Contact', path: '/contact', from: 'blank' })
+    const pageId = added.pageId
+    let doc = added.doc
     doc = updatePage(doc, pageId, { title: 'Say hi', path: '/', private: true })
     expect(listPages(doc)[1]).toMatchObject({ title: 'Say hi', path: '/page', private: true }) // "/" belongs to Home
     doc = movePage(doc, pageId, -1)

@@ -1,5 +1,5 @@
 import { getElement } from './tree/queries'
-import { isElement, type ElementNode, type NodeMap, type PageDoc } from './types'
+import { isElement, type EditorNode, type ElementNode, type NodeMap, type PageDoc } from './types'
 
 /**
  * Multi-page sites live in ONE document: everything in <body> that is not a
@@ -16,7 +16,8 @@ export const PRIVATE_ATTR = 'data-fe-private'
 
 export type PageInfo = { id: string; key: string; path: string; title: string; private: boolean }
 
-export const isPageNode = (node: unknown): node is ElementNode => isElement(node as ElementNode) && PAGE_ATTR in (node as ElementNode).attrs
+/** Is this node a page container? */
+export const isPageNode = (node: EditorNode | undefined): boolean => isElement(node) && PAGE_ATTR in node.attrs
 
 const toInfo = (node: ElementNode): PageInfo => ({
   id: node.id,
@@ -29,10 +30,16 @@ const toInfo = (node: ElementNode): PageInfo => ({
 /** The pages of a site, in order (empty for a one-page document). */
 export function listPages(doc: Pick<PageDoc, 'nodes' | 'rootId'>): PageInfo[] {
   const body = getElement(doc.nodes, doc.rootId)
-  return (body?.children ?? []).map((id) => doc.nodes[id]).filter(isPageNode).map(toInfo)
+  return (body?.children ?? []).map((id) => doc.nodes[id]).filter((node): node is ElementNode => isPageNode(node)).map(toInfo)
 }
 
 export const isMultiPage = (doc: Pick<PageDoc, 'nodes' | 'rootId'>) => listPages(doc).length > 0
+
+/** The page being worked on: the chosen one if it still exists, else the first; null for one-page documents. */
+export function resolvePage(doc: Pick<PageDoc, 'nodes' | 'rootId'>, pageId: string | null): PageInfo | null {
+  const pages = listPages(doc)
+  return pages.find((page) => page.id === pageId) ?? pages[0] ?? null
+}
 
 /** The page a node belongs to, or null when it is part of the shared layout. */
 export function pageOfNode(nodes: NodeMap, id: string | null): string | null {

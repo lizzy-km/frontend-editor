@@ -1,4 +1,5 @@
 import { getTextContent } from '../model/tree/queries'
+import { isPageNode, TITLE_ATTR } from '../model/pages'
 import type { ElementNode, NodeMap } from '../model/types'
 import { labelForTag, type Label } from './tagLabels'
 
@@ -16,6 +17,7 @@ function looksLikeButton(node: ElementNode): boolean {
 
 /** Friendly name + icon for an element, looking at its tag and classes. */
 export function labelForNode(node: ElementNode): Label {
+  if (isPageNode(node)) return { name: 'Page', icon: 'layers' }
   if (looksLikeButton(node)) return labelForTag('button')
   if (node.tag === 'i' && !isIconFont(node)) return labelForTag('em')
   return labelForTag(node.tag)
@@ -25,6 +27,7 @@ export function labelForNode(node: ElementNode): Label {
 export function describeNode(nodes: NodeMap, node: ElementNode, maxText = 24): string {
   const label = labelForNode(node)
   if (node.tag === 'body') return label.name
+  if (isPageNode(node)) return `Page “${node.attrs[TITLE_ATTR] ?? ''}”`
   if (node.tag === 'img') return node.attrs.alt ? `${label.name} “${node.attrs.alt.slice(0, maxText)}”` : label.name
 
   const text = getTextContent(nodes, node.id)
