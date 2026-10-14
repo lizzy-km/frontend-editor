@@ -6,7 +6,9 @@ import { projectShell, renderParts, type Parts } from './projectShell'
 import { animationDeps, animationFiles } from './animationTemplates'
 import { AUTH_DEPS, authFiles, needsAuth } from './auth/authFiles'
 import { dataFiles, DATA_DEPS } from './dataTemplates'
+import { popupUse } from '@/features/editor/model/popups'
 import { formProject } from './forms/formTemplates'
+import { popupFiles } from './popups/uiTemplates'
 import { listUiFiles } from './listTemplates'
 import { mainFile } from './mainTemplate'
 import { DATA_README, readme } from './projectTemplates'
@@ -45,8 +47,9 @@ export function buildReactProject(fullDoc: PageDoc, onlyId?: string): ExportFile
     ...listUiFiles(doc),
     ...animationFiles(doc.nodes),
     ...forms.files,
+    ...popupFiles(doc.nodes),
     ...authFiles(doc),
-    'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: needsAuth(doc) }),
+    'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: needsAuth(doc), confirm: popupUse(doc.nodes).ask }),
     'src/App.tsx': appSource(parts),
   }
   for (const file of parts.files) files[`src/components/${file.name}.tsx`] = file.code

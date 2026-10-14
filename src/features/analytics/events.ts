@@ -50,6 +50,8 @@ export type AnalyticsEvents = {
   condition_set: { audience: string; roles: number; flags: number }
   /** The sign-in pages were added to a site (how many were new). */
   auth_pages_add: { added: number }
+  /** An element was set to open a pop-up, or to ask first. */
+  popup_set: { kind: 'open' | 'ask' }
   /** A form was set to check and send its answers. */
   form_set: { fields: number }
   /** A page added to a site (blank, from pasted code, or a copy) and how many pages it now has. */

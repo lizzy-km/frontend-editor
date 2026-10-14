@@ -18,9 +18,20 @@ check('five sign-in pages added after Home', (await pageList().count()) === 6 &&
 check('log in page opens with its form', (await frame.$$eval('form[data-fe-submit="sign-in"] input', (all) => all.length)) === 2)
 check('button gone once all pages exist', (await sidebar.getByRole('button', { name: 'Add sign-in pages' }).count()) === 0)
 
-await page.locator('aside').last().getByText('Form', { exact: true }).first().click().catch(() => {})
-await page.keyboard.press('Control+z')
+// A signed-in only page: Preview sends a signed-out visitor to the log in page (and back when viewing as signed in)
+await pageList().filter({ hasText: 'Confirm email' }).getByRole('button').first().click()
+await page.waitForTimeout(300)
+await sidebar.getByRole('group', { name: 'Who can see this' }).getByRole('button', { name: 'Signed in' }).click()
+await page.waitForTimeout(300)
+await page.getByRole('button', { name: 'Preview' }).click()
+const preview = page.frameLocator('iframe[title="Preview of your page"]')
+await page.waitForTimeout(600)
+check('Preview sends a signed-out visitor to log in', (await preview.locator('body').innerText()).includes('Welcome back'), (await preview.locator('body').innerText()).slice(0, 80))
+await page.keyboard.press('Escape')
+await page.waitForTimeout(300)
+await page.keyboard.press('Control+z') // the page's access
+await page.keyboard.press('Control+z') // the five pages, together
 await page.waitForTimeout(400)
-check('undo removes them in one step', (await pageList().count()) === 1)
+check('undo removes the pages in one step', (await pageList().count()) === 1)
 check('no console errors', errors.length === 0, errors.join(' | '))
 await browser.close()

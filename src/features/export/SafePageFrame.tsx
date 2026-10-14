@@ -4,6 +4,7 @@ import { withoutLocalFiles } from '@/features/editor/model/serialize/localFiles'
 import { isMultiPage, listPages } from '@/features/editor/model/pages'
 import { VISITOR, type Viewer } from '@/features/editor/model/conditions'
 import { forVisitors } from '@/features/editor/model/serialize/forVisitors'
+import { guardPage, noticeHtml } from '@/features/editor/model/pageGuard'
 import { pageDoc } from '@/features/editor/model/serialize/sitePages'
 import type { PageDoc } from '@/features/editor/model/types'
 
@@ -28,7 +29,10 @@ export function SafePageFrame({ doc, width = '100%', className, title, pageId = 
   const frame = useRef<HTMLIFrameElement>(null)
   const site = isMultiPage(doc)
   const html = useMemo(() => {
-    const page = partsToSingleFile(buildPageParts(withoutLocalFiles(forVisitors(pageDoc(doc, pageId), viewer))))
+    // Like the React export's route guards: login page, "no access", or the page itself.
+    const guard = site ? guardPage(doc, pageId, viewer) : { pageId }
+    if (guard.notice) return noticeHtml(guard.notice)
+    const page = partsToSingleFile(buildPageParts(withoutLocalFiles(forVisitors(pageDoc(doc, guard.pageId), viewer))))
     return site ? page.replace(/<\/body>/i, `${NAVIGATE}</body>`) : page
   }, [doc, pageId, site, viewer])
 

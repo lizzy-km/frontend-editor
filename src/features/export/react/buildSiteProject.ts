@@ -11,7 +11,9 @@ import { projectShell, renderParts, type Parts } from './projectShell'
 import { DATA_README, readme } from './projectTemplates'
 import { animationDeps, animationFiles } from './animationTemplates'
 import { dataFiles, DATA_DEPS } from './dataTemplates'
+import { popupUse } from '@/features/editor/model/popups'
 import { formProject } from './forms/formTemplates'
+import { popupFiles } from './popups/uiTemplates'
 import { listUiFiles } from './listTemplates'
 import { mainFile } from './mainTemplate'
 import { notFoundSource, routerSource, ROUTERS, type RouteFile, type RouterKind } from './routerTemplates'
@@ -94,9 +96,10 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
     ...listUiFiles(doc),
     ...animationFiles(doc.nodes),
     ...forms.files,
+    ...popupFiles(doc.nodes),
     ...auth,
     'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}${sources.length ? DATA_README : ''}`,
-    'src/main.tsx': mainFile({ root: router, query: sources.length > 0, auth: withAuth }),
+    'src/main.tsx': mainFile({ root: router, query: sources.length > 0, auth: withAuth, confirm: popupUse(doc.nodes).ask }),
     'src/router.tsx': routerSource(router, routes, guarded ? [guardImport] : []),
     'src/layout/Layout.tsx': layoutSource(router, before, after),
     'src/pages/NotFoundPage.tsx': notFoundSource(router),

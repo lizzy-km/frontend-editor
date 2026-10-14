@@ -2,7 +2,7 @@ import { rowTypeName } from '@/features/editor/model/data'
 import { bindingsOf, isListBox, listInfo, type ListInfo } from '@/features/editor/model/dataLists'
 import { collectSubtreeIds } from '@/features/editor/model/tree/queries'
 import { isElement, type DataSource, type ElementNode, type NodeMap } from '@/features/editor/model/types'
-import { motionImports, motionState, showImport, staggerItem } from './jsxExtras'
+import { motionImports, motionState, newShow, showImport, staggerItem } from './jsxExtras'
 import { closeTag, openTag, writeElement, type JsxContext } from './jsxWriter'
 
 type ComponentFile = { name: string; code: string }
@@ -77,7 +77,7 @@ function cardFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: str
   const type = rowTypeName(source.name)
   const fields = usedFields(ctx.nodes, info.templateId!, source)
   // Links in a card stay plain <a> (the card file has no router imports).
-  const card: JsxContext = { nodes: ctx.nodes, classFor: ctx.classFor, row: new Map(source.fields.map((field) => [field.name, field.type])), motion: motionState(), show: { used: false } }
+  const card: JsxContext = { nodes: ctx.nodes, classFor: ctx.classFor, row: new Map(source.fields.map((field) => [field.name, field.type])), motion: motionState(), show: newShow() }
   // A "one by one" list box: every card is a Motion item.
   const item = staggerItem(ctx.nodes[info.id] as ElementNode)
   if (item) card.motion!.items.set(info.templateId!, item)
