@@ -33,15 +33,17 @@ export default defineConfig({
 })
 `
 
-export const MAIN_TSX = `import { createRoot } from 'react-dom/client'
-import App from './App'
-import './styles/page.css'
-
-// No <StrictMode>: the page's own scripts (public/scripts) expect the page to be put on screen once.
-createRoot(document.getElementById('root')!).render(<App />)
-`
-
 export const GITIGNORE = 'node_modules\ndist\n'
+
+/** README part for data sources (src/data, src/api). */
+export const DATA_README = `
+## Data
+
+- \`src/data/types.ts\`: one TypeScript type per data source.
+- \`src/data/mockData.ts\`: the sample rows (global mock data).
+- \`src/api/<name>.ts\`: \`fetchX\`, \`useX()\` (everything) and \`useXInfinite()\` (page by page) with React Query and axios.
+- Copy \`.env.example\` to \`.env\`; set \`VITE_USE_MOCK=false\` to use the real API (and \`VITE_API_URL\` for addresses starting with "/").
+`
 
 export function readme(title: string, components: string[], hasScripts: boolean): string {
   return `# ${title}

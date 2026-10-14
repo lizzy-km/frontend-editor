@@ -7,8 +7,10 @@ import { AUTH_PROVIDER, loginPageSource, requireAuthSource, USE_AUTH } from './a
 import type { RouterLinks } from './componentFiles'
 import { createNameRegistry, pascalCase } from './names'
 import { projectShell, renderParts, type Parts } from './projectShell'
-import { readme } from './projectTemplates'
-import { mainSource, notFoundSource, routerSource, ROUTERS, type RouteFile, type RouterKind } from './routerTemplates'
+import { DATA_README, readme } from './projectTemplates'
+import { dataFiles, DATA_DEPS } from './dataTemplates'
+import { mainFile } from './mainTemplate'
+import { notFoundSource, routerSource, ROUTERS, type RouteFile, type RouterKind } from './routerTemplates'
 import { siteReadme } from './siteReadme'
 
 type Options = { router: RouterKind }
@@ -67,7 +69,8 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
     return { path: (doc.nodes[page.id] as ElementNode).attrs[PATH_ATTR] ?? '/', component, file: component, private: page.private, page }
   })
 
-  const shell = projectShell(allPagesDoc(doc), ROUTERS[router].deps)
+  const sources = doc.data ?? []
+  const shell = projectShell(allPagesDoc(doc), { ...ROUTERS[router].deps, ...(sources.length ? DATA_DEPS : {}) })
   const withAuth = routes.some((route) => route.private)
   if (withAuth) {
     files['src/auth/AuthProvider.tsx'] = AUTH_PROVIDER
@@ -78,8 +81,9 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
   return {
     ...shell.files,
     ...files,
-    'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}`,
-    'src/main.tsx': mainSource(router, withAuth),
+    ...dataFiles(sources),
+    'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}${sources.length ? DATA_README : ''}`,
+    'src/main.tsx': mainFile({ root: router, query: sources.length > 0, auth: withAuth }),
     'src/router.tsx': routerSource(router, routes, (route) => (route.private ? `<RequireAuth><${route.component} /></RequireAuth>` : `<${route.component} />`)),
     'src/layout/Layout.tsx': layoutSource(router, before, after),
     'src/pages/NotFoundPage.tsx': notFoundSource(router),
