@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Button, Icon } from '@/shared/ui'
-import { openPage, removePage, reorderPage } from '../../actions/pageActions'
+import { createAuthPages, openPage, removePage, reorderPage } from '../../actions/pageActions'
+import { missingAuthPages } from '../../model/authPages'
 import { listPages, resolvePage, type PageInfo } from '../../model/pages'
 import { useDocStore } from '../../store/doc.store'
 import { useViewStore } from '../../store/view.store'
@@ -37,6 +38,7 @@ function PageRow({ page, index, count, current }: { page: PageInfo; index: numbe
 export function PagesPanel() {
   const { pages, current } = usePages()
   const [adding, setAdding] = useState(false)
+  const missing = useDocStore((state) => missingAuthPages(state.doc).length)
 
   return (
     <div className={styles.panel}>
@@ -54,6 +56,9 @@ export function PagesPanel() {
         </div>
       )}
       <Button size="small" icon="plus" onClick={() => setAdding(true)}>Add a page</Button>
+      {pages.length > 0 && missing > 0 && (
+        <Button size="small" icon="lock" onClick={createAuthPages}>Add sign-in pages</Button>
+      )}
       {current && <PageSettings key={current.id} page={current} />}
       {pages.length > 0 && <p className={styles.note}>The header and footer are shared: change them on any page and every page follows.</p>}
       {adding && <AddPageDialog onClose={() => setAdding(false)} currentPage={current} />}

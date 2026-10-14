@@ -1,4 +1,5 @@
 import { track } from '@/features/analytics/track'
+import { addAuthPages } from '../model/authPages'
 import { addPage, deletePage, movePage, toSite, updatePage, type NewPage } from '../model/pageOps'
 import { listPages } from '../model/pages'
 import { getDoc } from '../store/doc.store'
@@ -49,3 +50,13 @@ export function removePage(pageId: string) {
 
 /** Moves a page up (-1) or down (+1) in the list. */
 export const reorderPage = (pageId: string, direction: -1 | 1) => updateDoc((doc) => movePage(doc, pageId, direction))
+
+/** Adds the sign-in pages (log in, create account, forgot / new password, confirm email) the site lacks. One undo step. */
+export function createAuthPages() {
+  const before = listPages(getDoc()).length
+  updateDoc((doc) => addAuthPages(doc))
+  const pages = listPages(getDoc())
+  track('auth_pages_add', { added: pages.length - before })
+  const login = pages.find((page) => page.path === '/login')
+  if (login) openPage(login.id)
+}
