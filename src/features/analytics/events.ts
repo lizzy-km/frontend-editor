@@ -46,6 +46,8 @@ export type AnalyticsEvents = {
   data_add: { preset: string }
   /** An element got an animation (which effect). */
   animation_set: { effect: string }
+  /** Who can see something was set (audience, how many roles and flags). */
+  condition_set: { audience: string; roles: number; flags: number }
   /** A page added to a site (blank, from pasted code, or a copy) and how many pages it now has. */
   page_add: { from: 'blank' | 'code' | 'copy'; pages: number }
   page_limit_reached: { plan: string }

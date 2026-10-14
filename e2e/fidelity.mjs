@@ -33,6 +33,7 @@ for (const name of SAMPLES) {
   const reference = await original.newPage({ viewport })
   await reference.setContent(html, { waitUntil: 'networkidle' })
   await reference.waitForTimeout(2000)
+  await reference.evaluate(() => document.fonts.ready) // web fonts change the height
   const expected = await reference.evaluate(measure)
   await reference.close()
 

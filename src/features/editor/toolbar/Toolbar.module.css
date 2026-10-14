@@ -30,3 +30,18 @@
 .saveStatus { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-soft); white-space: nowrap; }
 .saveError { color: var(--danger); font-weight: 600; }
 @media (max-width: 1320px) { .saveStatus { display: none; } .saveStatus.saveError { display: inline-flex; } }
+
+.viewer { position: relative; }
+.viewerButton {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-soft); font-size: 13px; white-space: nowrap;
+}
+.viewerButton strong { color: var(--text); font-weight: 600; }
+.viewerMenu {
+  position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 30; min-width: 220px;
+  padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.viewerOption { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 3px 0; cursor: pointer; }
+.viewerOption input { accent-color: var(--accent); }
+.viewerTitle { font-size: 12px; color: var(--text-soft); margin-top: 6px; }

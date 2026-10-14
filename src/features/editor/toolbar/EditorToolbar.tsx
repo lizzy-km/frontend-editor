@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { DeviceSwitch } from './DeviceSwitch'
 import { HistoryButtons } from './HistoryButtons'
+import { ViewerMenu } from './ViewerMenu'
 import styles from './Toolbar.module.css'
 import { ZoomControl } from './ZoomControl'
 
@@ -20,6 +21,7 @@ export function EditorToolbar({ start, end }: Props) {
         <HistoryButtons />
         <DeviceSwitch />
         <ZoomControl />
+        <ViewerMenu />
       </div>
       <div className={`${styles.side} ${styles.end}`}>{end}</div>
     </header>

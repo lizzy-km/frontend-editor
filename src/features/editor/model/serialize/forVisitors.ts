@@ -1,4 +1,7 @@
 import { ANIMATE_ATTR, easingCss, EFFECTS, poseCss, REST } from '../animations'
+import { hiddenFor, VISITOR, type Viewer } from '../conditions'
+import { isPageNode } from '../pages'
+import { removeNode } from '../tree/treeOps'
 import { isElement, type PageDoc } from '../types'
 import { expandDataLists } from './expandLists'
 
@@ -68,8 +71,18 @@ function withAnimations(doc: PageDoc): PageDoc {
   return animated ? { ...doc, scripts: [...doc.scripts, { code: ANIMATION_SCRIPT, inHead: false }] } : doc
 }
 
+/** Leaves out what this viewer can't see (pages themselves stay: routing decides those). */
+function forViewer(doc: PageDoc, viewer: Viewer): PageDoc {
+  const hidden = hiddenFor(doc.nodes, viewer).filter((id) => !isPageNode(doc.nodes[id]))
+  if (!hidden.length) return doc
+  let nodes = doc.nodes
+  for (const id of hidden) if (nodes[id]) nodes = removeNode(nodes, id)
+  return { ...doc, nodes }
+}
+
 /**
- * The page as visitors get it (Preview, public view, downloads): lists filled
- * with their data rows and the animation player added.
+ * The page as visitors get it (Preview, public view, downloads): only what this
+ * viewer may see (downloads: a signed-out visitor), lists filled with their
+ * data rows, and the animation player added.
  */
-export const forVisitors = (doc: PageDoc): PageDoc => withAnimations(expandDataLists(doc))
+export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR): PageDoc => withAnimations(expandDataLists(forViewer(doc, viewer)))

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { buildPageParts, partsToSingleFile } from '@/features/editor/model/serialize/buildPage'
 import { withoutLocalFiles } from '@/features/editor/model/serialize/localFiles'
 import { isMultiPage, listPages } from '@/features/editor/model/pages'
+import { VISITOR, type Viewer } from '@/features/editor/model/conditions'
 import { forVisitors } from '@/features/editor/model/serialize/forVisitors'
 import { pageDoc } from '@/features/editor/model/serialize/sitePages'
 import type { PageDoc } from '@/features/editor/model/types'
@@ -11,6 +12,8 @@ type Props = {
   /** Sites: the page to show, and what to do when a visitor clicks a link to another page. */
   pageId?: string | null
   onOpenPage?: (pageId: string) => void
+  /** Who is looking (Preview's "Viewing as"); visitors by default. */
+  viewer?: Viewer
 }
 
 /** In a site, links and "click goes to" boxes ask the parent to show that page (the frame can't navigate itself). */
@@ -21,13 +24,13 @@ const NAVIGATE = `<style>[data-fe-go]{cursor:pointer}</style><script>document.ad
  * scripts but NEVER allow-same-origin: it can't read the viewer's account,
  * cookies or this app.
  */
-export function SafePageFrame({ doc, width = '100%', className, title, pageId = null, onOpenPage }: Props) {
+export function SafePageFrame({ doc, width = '100%', className, title, pageId = null, onOpenPage, viewer = VISITOR }: Props) {
   const frame = useRef<HTMLIFrameElement>(null)
   const site = isMultiPage(doc)
   const html = useMemo(() => {
-    const page = partsToSingleFile(buildPageParts(withoutLocalFiles(forVisitors(pageDoc(doc, pageId)))))
+    const page = partsToSingleFile(buildPageParts(withoutLocalFiles(forVisitors(pageDoc(doc, pageId), viewer))))
     return site ? page.replace(/<\/body>/i, `${NAVIGATE}</body>`) : page
-  }, [doc, pageId, site])
+  }, [doc, pageId, site, viewer])
 
   useEffect(() => {
     if (!site || !onOpenPage) return

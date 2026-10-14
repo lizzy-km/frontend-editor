@@ -3,6 +3,18 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/conditions — 2026-10-15
+- **Who can see this** (`model/conditions.ts`) on any element and on pages:
+  everyone / signed in (optionally some roles) / signed out, plus flags that
+  must be on (`data-fe-show`, `data-fe-roles`, `data-fe-flags`; old
+  `data-fe-private` pages still read as "signed in"). The site's roles and
+  flags (`PageDoc.access`, default roles member and admin) are added from the
+  same control.
+- **Viewing as** (toolbar, appears once something uses a condition): visitor,
+  signed in, each role, and flags. The editor hides what that viewer can't
+  see (editor-only view CSS; the page being edited always shows), and
+  Preview follows it. Downloads show what a signed-out visitor sees.
+
 ## feature/animation-box — 2026-10-14
 - **Animations on any element** (`model/animations.ts`, `data-fe-animate`,
   `-trigger`, `-duration`, `-delay`, `-ease`, `-stagger`, `-repeat`): fade, fade
