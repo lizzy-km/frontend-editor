@@ -1,4 +1,5 @@
 import { buildPageParts } from '@/features/editor/model/serialize/buildPage'
+import { expandDataLists } from '@/features/editor/model/serialize/expandLists'
 import { allPagesForFiles, pageDoc, pageFileName } from '@/features/editor/model/serialize/sitePages'
 import { listPages, resolvePage } from '@/features/editor/model/pages'
 import type { PageDoc } from '@/features/editor/model/types'
@@ -10,8 +11,9 @@ const titled = (doc: PageDoc, page: { title: string; path: string }): PageDoc =>
 
 /** The page being edited as a normal document; links to other pages point at their .html files when asked. */
 export function currentPageDoc(doc: PageDoc, pageId: string | null, fileLinks = false): PageDoc {
+  // Lists from data are filled with their rows: nothing loads live in a downloaded page.
   const page = resolvePage(doc, pageId)
-  return page ? titled(pageDoc(doc, page.id, { fileLinks }), page) : doc
+  return expandDataLists(page ? titled(pageDoc(doc, page.id, { fileLinks }), page) : doc)
 }
 
 /**
@@ -19,11 +21,11 @@ export function currentPageDoc(doc: PageDoc, pageId: string | null, fileLinks = 
  * the home page) sharing one styles.css and script.js.
  */
 export function siteToSplitFiles(doc: PageDoc): ExportFiles {
-  const shared = partsToSplitFiles(buildPageParts(allPagesForFiles(doc)))
+  const shared = partsToSplitFiles(buildPageParts(expandDataLists(allPagesForFiles(doc))))
   const files: ExportFiles = { ...shared }
   delete files['index.html']
   for (const page of listPages(doc)) {
-    const html = partsToSplitFiles(buildPageParts(titled(pageDoc(doc, page.id, { fileLinks: true }), page)))['index.html']!
+    const html = partsToSplitFiles(buildPageParts(expandDataLists(titled(pageDoc(doc, page.id, { fileLinks: true }), page))))['index.html']!
     files[pageFileName(page.path)] = html
   }
   return files
