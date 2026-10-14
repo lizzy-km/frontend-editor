@@ -1,6 +1,7 @@
 import { GO_ATTR } from '@/features/editor/model/pages'
 import { animationOf, type Animation } from '@/features/editor/model/animations'
 import { conditionOf, hasCondition } from '@/features/editor/model/conditions'
+import { NAV_ATTR } from '@/features/editor/model/layouts'
 import type { ElementNode } from '@/features/editor/model/types'
 import type { JsxContext } from './jsxWriter'
 import { uiImports, type UiUse } from './popups/jsxPopups'
@@ -29,9 +30,14 @@ export function goHandlers(ctx: JsxContext, target: string, typed: boolean): str
 export function asRouterLink(ctx: JsxContext, node: ElementNode): ElementNode {
   const href = node.attrs.href ?? ''
   if (node.tag !== 'a' || !ctx.links?.paths.has(href) || ctx.props?.has(`${node.id}@href`)) return node
-  ctx.links.used = true
   const attrs: Record<string, string> = { to: href, ...node.attrs }
   delete attrs.href
+  // Menu links (data-fe-nav) highlight the open page: React Router's NavLink adds the "active" class itself.
+  if (NAV_ATTR in node.attrs && ctx.links.lib === 'react-router') {
+    ctx.links.navLink = true
+    return { ...node, tag: 'NavLink', attrs }
+  }
+  ctx.links.used = true
   return { ...node, tag: 'Link', attrs }
 }
 
@@ -57,7 +63,7 @@ export function motionFor(ctx: JsxContext, node: ElementNode): { tag: string; ex
   const state = ctx.motion
   const animation = animationOf(node)
   const item = state?.items.get(node.id)
-  if (!state || node.tag === 'Link' || node.tag === 'Modal' || (!animation && !item)) return { tag: node.tag, extra: '' }
+  if (!state || node.tag === 'Link' || node.tag === 'NavLink' || node.tag === 'Modal' || (!animation && !item)) return { tag: node.tag, extra: '' }
   let extra = ''
   if (item) {
     state.item = true

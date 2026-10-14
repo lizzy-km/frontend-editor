@@ -9,7 +9,7 @@ import { authApiSource, SESSION, TYPES } from './apiTemplates'
 import { guardSource, noAccessSource } from './guardTemplates'
 import { loginFallbackSource } from './loginTemplate'
 import { MOCK } from './mockTemplate'
-import { AUTH_PROVIDER, flagsSource, SHOW, USE_AUTH } from './providerTemplates'
+import { AUTH_PROVIDER, flagsSource, SHOW, SIGN_OUT, USE_AUTH } from './providerTemplates'
 
 export const AUTH_DEPS = { axios: '^1.12.0' }
 
@@ -37,6 +37,7 @@ export function authFiles(doc: PageDoc, router?: RouterKind): Record<string, str
     'src/auth/AuthProvider.tsx': AUTH_PROVIDER,
     'src/auth/useAuth.ts': USE_AUTH,
     'src/auth/Show.tsx': SHOW,
+    'src/auth/signOut.ts': SIGN_OUT,
     'src/config/flags.ts': flagsSource(flagsOf(doc)),
   }
   if (router) {
