@@ -1,5 +1,5 @@
 // Background section: picture and gradient in their own tabs, both can be used together.
-import { check, openExample, OUT } from './browser.mjs'
+import { check, openExample, OUT, openSection } from './browser.mjs'
 
 const DOT = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
 const { browser, page, frame, box, errors } = await openExample()
@@ -63,6 +63,7 @@ await page.waitForTimeout(300)
 check('gradient on the text', (await bg('.hero h1', '-webkit-text-fill-color')) === 'rgba(0, 0, 0, 0)' && (await bg('.hero h1', 'background-clip')) === 'text')
 await page.screenshot({ path: OUT + 'background-gradient-text.png' })
 
+await openSection(page, 'Shadow & see-through')
 check('See-through moved to the effects section', (await panel.getByText('See-through', { exact: true }).count()) === 1)
 check('no console errors', errors.length === 0, errors.join(' | '))
 await browser.close()

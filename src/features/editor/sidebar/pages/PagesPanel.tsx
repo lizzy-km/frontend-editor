@@ -6,7 +6,6 @@ import { listPages, resolvePage, type PageInfo } from '../../model/pages'
 import { useDocStore } from '../../store/doc.store'
 import { useViewStore } from '../../store/view.store'
 import { AddPageDialog } from './AddPageDialog'
-import { LayoutPanel } from './LayoutPanel'
 import { PageSettings } from './PageSettings'
 import styles from './Pages.module.css'
 
@@ -60,7 +59,6 @@ export function PagesPanel() {
       {pages.length > 0 && missing > 0 && (
         <Button size="small" icon="lock" onClick={createAuthPages}>Add sign-in pages</Button>
       )}
-      <LayoutPanel />
       {current && <PageSettings key={current.id} page={current} />}
       {pages.length > 0 && <p className={styles.note}>The header and footer are shared: change them on any page and every page follows.</p>}
       {adding && <AddPageDialog onClose={() => setAdding(false)} currentPage={current} />}

@@ -1,5 +1,5 @@
 // Settings panel: text size, color, spacing, arrange, hide on phone, advanced CSS.
-import { check, openExample, OUT } from './browser.mjs'
+import { check, openExample, OUT, openSection, inspectorTab } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const css = (selector, prop) => frame.$eval(selector, (el, p) => getComputedStyle(el).getPropertyValue(p), prop)
@@ -25,9 +25,9 @@ await page.waitForTimeout(200)
 check('text color changes', (await css('h1', 'color')) === 'rgb(217, 119, 43)', await css('h1', 'color'))
 
 // Card: space inside + rounded corners
-await selectAt('.card:nth-child(2) h3')
-await page.keyboard.press('Escape') // select parent = the card
-await page.waitForTimeout(300)
+await selectAt('.card:nth-child(2) h3') // the first click selects the card
+await openSection(page, 'Spacing')
+await openSection(page, 'Corners & border')
 await panel.getByLabel('Space inside value').fill('40')
 await panel.getByLabel('Round corners value').fill('0')
 await page.waitForTimeout(200)
@@ -38,6 +38,7 @@ check('corners squared', (await css('.card:nth-child(2)', 'border-radius')) === 
 await page.keyboard.press('Escape')
 await page.keyboard.press('Escape')
 await page.waitForTimeout(300)
+await openSection(page, 'Arrange items')
 await panel.getByRole('button', { name: 'Stacked' }).click()
 await page.waitForTimeout(300)
 check('cards stacked', (await css('.cards', 'flex-direction')) === 'column', await css('.cards', 'display'))
@@ -46,6 +47,7 @@ check('cards stacked', (await css('.cards', 'flex-direction')) === 'column', awa
 await page.getByRole('radio', { name: /phone/i }).click()
 await page.waitForTimeout(600)
 await selectAt('.hero img')
+await inspectorTab(page, 'More')
 await panel.getByRole('switch', { name: 'Show on phones' }).click({ force: true })
 await page.waitForTimeout(300)
 check('picture hidden on phone', (await css('.hero img', 'display')) === 'none')

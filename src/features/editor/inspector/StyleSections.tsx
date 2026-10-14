@@ -17,8 +17,10 @@ export function StyleSections({ id, context, computed, overrides }: Props) {
   const split = STYLE_SECTIONS.findIndex((section) => section.id === BACKGROUND_AFTER) + 1
   const before = sections.filter((section) => STYLE_SECTIONS.indexOf(section) < split)
   const after = sections.filter((section) => STYLE_SECTIONS.indexOf(section) >= split)
+  // The first two sections (and any with a change already made) start open; the rest are one click away.
   const render = (list: typeof sections) => list.map((section) => (
-    <Section key={section.id} title={section.title} icon={section.icon} more={section.more && rows(section.more)}>
+    <Section key={section.id} title={section.title} icon={section.icon} more={section.more && rows(section.more)}
+      defaultOpen={sections.indexOf(section) < 2 || [...section.fields, ...(section.more ?? [])].some((field) => field.prop in overrides)}>
       {rows(section.fields)}
     </Section>
   ))

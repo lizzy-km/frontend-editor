@@ -1,5 +1,5 @@
 // Multi-page sites: add pages (empty, pasted, copy), switch, rename, undo, delete. Header/footer are shared.
-import { check, OUT, openExample } from './browser.mjs'
+import { check, OUT, openExample, inspectorTab } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
@@ -63,6 +63,7 @@ const link = await box('nav a:last-child')
 await page.mouse.move(link.x + 4, link.y + 4)
 await page.mouse.click(link.x + 4, link.y + 4)
 await page.waitForTimeout(300)
+await inspectorTab(page, 'Actions')
 await page.locator('aside').last().getByLabel('Link to a page').selectOption('/about-us')
 await page.waitForTimeout(300)
 check('link set to the About us page', (await frame.$eval('nav a:last-child', (a) => a.getAttribute('href'))) === '/about-us')
@@ -81,6 +82,7 @@ const hero = await box('.hero')
 await page.mouse.move(hero.x + 6, hero.y + 6)
 await page.mouse.click(hero.x + 6, hero.y + 6)
 await page.waitForTimeout(300)
+await inspectorTab(page, 'Actions')
 await page.locator('aside').last().getByRole('button', { name: 'Click goes to' }).click()
 await page.locator('aside').last().getByLabel('Click goes to page').selectOption('/about-us')
 await page.waitForTimeout(200)

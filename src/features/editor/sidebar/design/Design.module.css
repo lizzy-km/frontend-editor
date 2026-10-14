@@ -1,0 +1,7 @@
+.layout { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.choice { padding: 8px 6px; font: inherit; font-size: 12.5px; font-weight: 600; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); cursor: pointer; }
+.choice:hover { background: var(--surface-2); }
+.chosen { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.layoutActions { display: flex; gap: 6px; flex-wrap: wrap; }
+.note { font-size: 12.5px; color: var(--text-soft); line-height: 1.5; }

@@ -10,6 +10,7 @@ import { useViewStore } from '../store/view.store'
 import type { SectionContext } from './fieldTypes'
 import styles from './Inspector.module.css'
 import { InspectorHeader } from './InspectorHeader'
+import { hasActions, InspectorTabs } from './InspectorTabs'
 import { AdvancedSection } from './sections/AdvancedSection'
 import { FormFieldSection, HAS_PLACEHOLDER } from './sections/FormFieldSection'
 import { ClickSection, PopupSection } from './sections/ClickSection'
@@ -61,6 +62,8 @@ export function Inspector() {
   const nodes = useDocStore((state) => state.doc.nodes)
   const rootId = useDocStore((state) => state.doc.rootId)
   const breakpoint = useViewStore((state) => state.breakpoint)
+  const chosenTab = useViewStore((state) => state.inspectorTab)
+  const setTab = useViewStore((state) => state.setInspectorTab)
   const computed = useComputedStyle(selectedId)
   const node = getElement(nodes, selectedId)
 
@@ -70,25 +73,41 @@ export function Inspector() {
   const list = listInfo(nodes, node.id)
   const inList = listAround(nodes, node.id)
 
+  const canAct = node.id !== rootId && !isPageNode(node)
+  const tab = chosenTab === 'actions' && !canAct ? 'design' : chosenTab
+
   return (
     <div className={styles.panel}>
       <InspectorHeader node={node} nodes={nodes} />
-      {node.id === rootId && <PageSection />}
-      {context.hasText && !context.isTextEditable && <WordsSection id={node.id} />}
-      {node.tag === 'a' && <LinkSection node={node} />}
-      {node.tag !== 'a' && node.id !== rootId && !isPageNode(node) && <GoToPageSection key={`go-${node.id}`} node={node} />}
-      {MODAL_ATTR in node.attrs && <PopupSection key={`popup-${node.id}`} node={node} />}
-      {node.id !== rootId && !isPageNode(node) && <ClickSection key={`click-${node.id}`} node={node} />}
-      {list && <DataListSection info={list} />}
-      {inList && <ShowDataSection key={`data-${node.id}`} node={node} list={inList} />}
-      {node.tag === 'img' && <PictureSection node={node} />}
-      {node.tag === 'form' && <FormSection key={`form-${node.id}`} node={node} />}
-      {HAS_PLACEHOLDER.has(node.tag) && <FormFieldSection key={`field-${node.id}`} node={node} />}
-      {computed && <StyleSections id={node.id} context={context} computed={computed} overrides={overrides} />}
-      {computed && node.id !== rootId && <VisibilitySection node={node} computedDisplay={computed.display ?? ''} />}
-      {node.id !== rootId && !isPageNode(node) && <WhoSection key={`who-${node.id}`} node={node} />}
-      {node.id !== rootId && !isPageNode(node) && <AnimationSection key={`animation-${node.id}`} node={node} />}
-      <AdvancedSection node={node} />
+      <InspectorTabs tab={tab} onChange={setTab} actions={canAct} actionsUsed={hasActions(node)} />
+      {tab === 'design' && (
+        <>
+          {node.id === rootId && <PageSection />}
+          {context.hasText && !context.isTextEditable && <WordsSection id={node.id} />}
+          {node.tag === 'img' && <PictureSection node={node} />}
+          {computed && <StyleSections id={node.id} context={context} computed={computed} overrides={overrides} />}
+        </>
+      )}
+      {tab === 'actions' && (
+        <>
+          {node.tag === 'a' && <LinkSection node={node} />}
+          {node.tag !== 'a' && <GoToPageSection key={`go-${node.id}`} node={node} />}
+          {MODAL_ATTR in node.attrs && <PopupSection key={`popup-${node.id}`} node={node} />}
+          <ClickSection key={`click-${node.id}`} node={node} />
+          {list && <DataListSection info={list} />}
+          {inList && <ShowDataSection key={`data-${node.id}`} node={node} list={inList} />}
+          {node.tag === 'form' && <FormSection key={`form-${node.id}`} node={node} />}
+          {HAS_PLACEHOLDER.has(node.tag) && <FormFieldSection key={`field-${node.id}`} node={node} />}
+          <WhoSection key={`who-${node.id}`} node={node} />
+          <AnimationSection key={`animation-${node.id}`} node={node} />
+        </>
+      )}
+      {tab === 'more' && (
+        <>
+          {computed && node.id !== rootId && <VisibilitySection node={node} computedDisplay={computed.display ?? ''} />}
+          <AdvancedSection node={node} />
+        </>
+      )}
     </div>
   )
 }

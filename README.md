@@ -108,6 +108,10 @@ button opens or closes under "When clicked", and make any button or link ask
 is made from your pages and hides items visitors may not open; on phones it
 becomes a ☰ button. Log in, Sign up and Log out are added when you have a Log in page.
 
+**Screen layout:** a slim rail on the left (Layers, Add, Pages, Design, Data, Code)
+and, for the selected thing, three tabs on the right: Design (how it looks),
+Actions (what it does) and More.
+
 **Colors:** the Colors tab lists every color of your project. Change one and it
 changes everywhere; colors defined as CSS variables (theme colors) come first.
 

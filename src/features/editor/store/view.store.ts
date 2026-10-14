@@ -2,7 +2,9 @@ import { create } from 'zustand'
 import { VISITOR, type Viewer } from '../model/conditions'
 import type { Breakpoint } from '../model/types'
 
-export type SidePanel = 'pages' | 'layers' | 'add' | 'colors' | 'data' | 'code'
+export type SidePanel = 'pages' | 'layers' | 'add' | 'design' | 'data' | 'code'
+/** The settings panel's tabs: how it looks, what it does, rarely used. */
+export type InspectorTab = 'design' | 'actions' | 'more'
 export type ZoomMode = 'fit' | number
 
 type ViewState = {
@@ -13,6 +15,7 @@ type ViewState = {
   scale: number
   preview: boolean
   sidePanel: SidePanel
+  inspectorTab: InspectorTab
   /** The page shown in the editor (multi-page sites); null = the first page. */
   pageId: string | null
   /** "Viewing as": who the editor and Preview show the page to (signed in, roles, flags). */
@@ -22,6 +25,7 @@ type ViewState = {
   setScale: (scale: number) => void
   setPreview: (preview: boolean) => void
   setSidePanel: (panel: SidePanel) => void
+  setInspectorTab: (tab: InspectorTab) => void
   setPageId: (pageId: string | null) => void
   setViewer: (viewer: Viewer) => void
 }
@@ -35,6 +39,7 @@ export const useViewStore = create<ViewState>((set) => ({
   scale: 1,
   preview: false,
   sidePanel: 'layers',
+  inspectorTab: 'design',
   pageId: null,
   viewer: VISITOR,
   setBreakpoint: (breakpoint) => set({ breakpoint }),
@@ -42,6 +47,7 @@ export const useViewStore = create<ViewState>((set) => ({
   setScale: (scale) => set({ scale }),
   setPreview: (preview) => set({ preview }),
   setSidePanel: (sidePanel) => set({ sidePanel }),
+  setInspectorTab: (inspectorTab) => set({ inspectorTab }),
   setPageId: (pageId) => set({ pageId }),
   setViewer: (viewer) => set({ viewer }),
 }))
