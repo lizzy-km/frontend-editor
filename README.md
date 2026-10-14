@@ -113,6 +113,9 @@ the sample rows until you switch to the real API.
 
 ## Ready-made components
 
+- **Contact form / Sign-up form**: set rules per box (must be filled in, limits,
+  "same as"), choose where answers are sent. Works in Preview and downloads; the
+  React download uses React Hook Form + Zod, one component per form.
 - **List from data**: one card design filled from a data source; in the React
   download it loads page by page as visitors scroll (React Query + a ready-made
   InfiniteScroll).

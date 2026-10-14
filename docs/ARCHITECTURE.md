@@ -275,6 +275,15 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Forms (`model/forms.ts`)
+
+- Fields come from the HTML (`fieldsOf(nodes, formId)`); only the editor
+  extras are `data-fe-*`. Visitors: `serialize/formPlayer.ts` (in
+  `forVisitors`). React: `export/react/forms/` writes one component per form
+  (`JsxContext.forms` / `.form`; the JSX writer drops `name`/`action` and adds
+  `register(...)` + `<FieldError>`). Forms are never grouped as repeated items
+  (`findRepeats` skips them). Radio/checkbox `value` is kept (`attrTag`).
+
 ## Import and saving
 
 - `features/import/PasteScreen` goes through `analyzePaste` (which calls
