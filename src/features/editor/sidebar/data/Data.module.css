@@ -40,3 +40,4 @@
 .table th { position: sticky; top: 0; background: var(--surface-2); text-align: left; padding: 6px 8px; font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
 .table td { padding: 4px 6px; border-top: 1px solid var(--border); }
 .table td .cell { width: 100%; min-width: 120px; }
+details.settings > summary { cursor: pointer; }

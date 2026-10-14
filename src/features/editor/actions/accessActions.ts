@@ -1,4 +1,5 @@
 import { track } from '@/features/analytics/track'
+import type { AuthEndpointKey } from '../model/authApi'
 import { accessOf, conditionAttrs, type Condition } from '../model/conditions'
 import { codeName } from '../model/data'
 import { setAttributes } from './nodeActions'
@@ -26,4 +27,14 @@ export function removeAccessName(kind: 'roles' | 'flags', name: string) {
     const access = accessOf(doc)
     return { ...doc, access: { ...access, [kind]: access[kind].filter((item) => item !== name) } }
   })
+}
+
+/** One sign-in API path (empty = the usual one). Typing in the box is one undo step. */
+export function setAuthEndpoint(key: AuthEndpointKey, path: string) {
+  updateDoc((doc) => {
+    const rest = { ...doc.authApi }
+    delete rest[key]
+    const authApi = path.trim() ? { ...rest, [key]: path.trim() } : rest
+    return { ...doc, authApi: Object.keys(authApi).length ? authApi : undefined }
+  }, `auth-api-${key}`)
 }

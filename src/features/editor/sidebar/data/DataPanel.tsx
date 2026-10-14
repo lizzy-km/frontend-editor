@@ -4,6 +4,7 @@ import { createSource, deleteSource } from '../../actions/dataActions'
 import { DATA_PRESETS } from '../../model/dataPresets'
 import type { DataSource } from '../../model/types'
 import { useDocStore } from '../../store/doc.store'
+import { AuthApiSettings } from './AuthApiSettings'
 import { DataSourceSettings } from './DataSourceSettings'
 import { DataTableDialog } from './DataTableDialog'
 import styles from './Data.module.css'
@@ -50,6 +51,7 @@ export function DataPanel() {
         <Button size="small" icon="plus" onClick={add}>Add data</Button>
       </div>
       {open && <DataSourceSettings key={open.id} source={open} onEditTable={() => setTableId(open.id)} />}
+      <AuthApiSettings />
       {table && <DataTableDialog source={table} onClose={() => setTableId(null)} />}
     </div>
   )

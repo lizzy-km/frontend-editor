@@ -224,8 +224,8 @@ run, inside a locked frame.
   the shared files of the site .zip. `SafePageFrame` posts page changes to its
   parent (`onOpenPage`).
 - React: `export/react/buildSiteProject.ts` (Layout + pages + router),
-  `routerTemplates.ts` (React Router / TanStack), `authTemplates.ts` (mock auth,
-  guard, login). One-page documents keep `buildReactProject` (App.tsx).
+  `routerTemplates.ts` (React Router / TanStack), `auth/` (sign-in,
+  guards, login; see Sign-in below). One-page documents keep `buildReactProject` (App.tsx).
 - `import/projectKind.ts`: the paste screen's "one page / website" choice and blank starts.
 
 ## Data sources (`model/data.ts`, `sidebar/data/`)
@@ -260,6 +260,20 @@ run, inside a locked frame.
   `view.store.viewer` is "Viewing as"; `viewCss(doc, pageId, viewer)` hides
   elements in the frame; `forVisitors(doc, viewer)` removes them for Preview
   and downloads.
+
+## Sign-in in the React download (`export/react/auth/`)
+
+- `authFiles(doc, router?)` adds everything when `needsAuth(doc)` (an element
+  or page has a condition): types, session (tokens, refresh interceptor on
+  the shared axios `api`), `authApi` (paths from `model/authApi.ts`
+  `endpointsOf(doc)`), the mock server, `AuthProvider`/`useAuth`, `Show`,
+  `config/flags.ts`, and with a router the guard, NoAccessPage and a
+  fallback LoginPage.
+- The JSX writer wraps conditional elements in `<Show when>` (`jsxExtras.showWhen`).
+- Guards come from `routeGuard(kind, access, element)`. React Router's
+  signed-out guard does the redirect after sign-in (the login page doesn't
+  navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
+  (a `<Navigate>` in a TanStack route component loops).
 
 ## Import and saving
 

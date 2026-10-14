@@ -4,6 +4,7 @@ import type { ExportFiles } from '../buildFiles'
 import { createNameRegistry } from './names'
 import { projectShell, renderParts, type Parts } from './projectShell'
 import { animationDeps, animationFiles } from './animationTemplates'
+import { AUTH_DEPS, authFiles, needsAuth } from './auth/authFiles'
 import { dataFiles, DATA_DEPS } from './dataTemplates'
 import { listUiFiles } from './listTemplates'
 import { mainFile } from './mainTemplate'
@@ -34,14 +35,15 @@ export function buildReactProject(fullDoc: PageDoc, onlyId?: string): ExportFile
   const body = getElement(doc.nodes, doc.rootId)
   const sources = doc.data ?? []
   const parts = renderParts(doc.nodes, body?.children ?? [], createNameRegistry(), '      ', undefined, { base: '..', sources })
-  const shell = projectShell(doc, { ...(sources.length ? DATA_DEPS : {}), ...animationDeps(doc.nodes) })
+  const shell = projectShell(doc, { ...(sources.length ? DATA_DEPS : {}), ...animationDeps(doc.nodes), ...(needsAuth(doc) ? AUTH_DEPS : {}) })
   const files: ExportFiles = {
     ...shell.files,
     'README.md': readme(doc.title, parts.names, shell.hasScripts) + (sources.length ? DATA_README : ''),
     ...dataFiles(sources),
     ...listUiFiles(doc),
     ...animationFiles(doc.nodes),
-    'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: false }),
+    ...authFiles(doc),
+    'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: needsAuth(doc) }),
     'src/App.tsx': appSource(parts),
   }
   for (const file of parts.files) files[`src/components/${file.name}.tsx`] = file.code

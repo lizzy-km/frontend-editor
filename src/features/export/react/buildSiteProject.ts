@@ -1,9 +1,10 @@
-import { listPages, PATH_ATTR, type PageInfo } from '@/features/editor/model/pages'
+import { listPages, PATH_ATTR } from '@/features/editor/model/pages'
 import { allPagesDoc } from '@/features/editor/model/serialize/sitePages'
 import { getElement } from '@/features/editor/model/tree/queries'
 import type { ElementNode, PageDoc } from '@/features/editor/model/types'
 import type { ExportFiles } from '../buildFiles'
-import { AUTH_PROVIDER, loginPageSource, requireAuthSource, USE_AUTH } from './authTemplates'
+import { AUTH_DEPS, authFiles, needsAuth } from './auth/authFiles'
+import { routeGuard } from './auth/guardTemplates'
 import type { RouterLinks } from './componentFiles'
 import { createNameRegistry, pascalCase } from './names'
 import { projectShell, renderParts, type Parts } from './projectShell'
@@ -63,33 +64,37 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
   write(before, 'layout')
   write(after, 'layout')
 
-  const routes: (RouteFile & { page: PageInfo })[] = pages.map((page) => {
+  const routes: RouteFile[] = pages.map((page) => {
     const component = takeName(`${pascalCase(page.title) || 'Page'}Page`)
     const folder = page.key
     const parts = renderParts(doc.nodes, (doc.nodes[page.id] as ElementNode).children, takeName, '      ', links, data)
     write(parts, folder)
     files[`src/pages/${component}.tsx`] = pageSource(component, page.title, parts, folder)
-    return { path: (doc.nodes[page.id] as ElementNode).attrs[PATH_ATTR] ?? '/', component, file: component, private: page.private, page }
+    const access = { roles: page.access.roles, flags: page.access.flags, signedIn: page.access.audience === 'signed-in', signedOut: page.access.audience === 'signed-out' }
+    return { path: (doc.nodes[page.id] as ElementNode).attrs[PATH_ATTR] ?? '/', component, file: component, ...routeGuard(router, access, `<${component} />`) }
   })
 
   const sources = doc.data ?? []
-  const shell = projectShell(allPagesDoc(doc), { ...ROUTERS[router].deps, ...(sources.length ? DATA_DEPS : {}), ...animationDeps(doc.nodes) })
-  const withAuth = routes.some((route) => route.private)
+  const shell = projectShell(allPagesDoc(doc), { ...ROUTERS[router].deps, ...(sources.length ? DATA_DEPS : {}), ...animationDeps(doc.nodes), ...(needsAuth(doc) ? AUTH_DEPS : {}) })
+  const withAuth = needsAuth(doc)
+  const auth = authFiles(doc, router)
   if (withAuth) {
-    files['src/auth/AuthProvider.tsx'] = AUTH_PROVIDER
-    files['src/auth/useAuth.ts'] = USE_AUTH
-    files['src/auth/RequireAuth.tsx'] = requireAuthSource(router)
-    files['src/pages/LoginPage.tsx'] = loginPageSource(router)
+    // The routes guards send people to: the login page (the site's own, else a standard one) and "No access".
+    if (auth['src/pages/LoginPage.tsx']) routes.push({ path: '/login', component: 'LoginPage', file: 'LoginPage', ...routeGuard(router, { roles: [], flags: [], signedIn: false, signedOut: true }, '<LoginPage />') })
+    routes.push({ path: '/no-access', component: 'NoAccessPage', file: 'NoAccessPage', element: '<NoAccessPage />' })
   }
+  const guardImport = router === 'react-router' ? "import { RequireAuth } from './auth/RequireAuth'" : "import { requireAccess } from './auth/RequireAuth'"
+  const guarded = routes.some((route) => route.beforeLoad || route.element.startsWith('<RequireAuth'))
   return {
     ...shell.files,
     ...files,
     ...dataFiles(sources),
     ...listUiFiles(doc),
     ...animationFiles(doc.nodes),
+    ...auth,
     'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}${sources.length ? DATA_README : ''}`,
     'src/main.tsx': mainFile({ root: router, query: sources.length > 0, auth: withAuth }),
-    'src/router.tsx': routerSource(router, routes, (route) => (route.private ? `<RequireAuth><${route.component} /></RequireAuth>` : `<${route.component} />`)),
+    'src/router.tsx': routerSource(router, routes, guarded ? [guardImport] : []),
     'src/layout/Layout.tsx': layoutSource(router, before, after),
     'src/pages/NotFoundPage.tsx': notFoundSource(router),
   }

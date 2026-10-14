@@ -1,5 +1,6 @@
 import { GO_ATTR } from '@/features/editor/model/pages'
 import { animationOf, type Animation } from '@/features/editor/model/animations'
+import { conditionOf, hasCondition } from '@/features/editor/model/conditions'
 import type { ElementNode } from '@/features/editor/model/types'
 import type { JsxContext } from './jsxWriter'
 
@@ -84,3 +85,19 @@ export function motionImports(state: MotionState | undefined, base: string): str
   const helpers = [state.animation && 'animation', state.item && 'animationItem'].filter(Boolean).join(', ')
   return ["import { motion } from 'motion/react'", `import { ${helpers} } from '${base}/components/ui/animation'`]
 }
+
+/** The <Show when={…}> props for an element with "who can see this", or null. */
+export function showWhen(node: ElementNode): string | null {
+  const condition = conditionOf(node)
+  if (!hasCondition(condition)) return null
+  const parts = [
+    condition.audience === 'signed-in' && 'signedIn: true',
+    condition.audience === 'signed-out' && 'signedIn: false',
+    condition.roles.length && `roles: ${JSON.stringify(condition.roles)}`,
+    condition.flags.length && `flags: ${JSON.stringify(condition.flags)}`,
+  ].filter(Boolean)
+  return `{{ ${parts.join(', ')} }}`
+}
+
+/** `import { Show } …` when the file used it. */
+export const showImport = (show: { used: boolean } | undefined, base: string) => (show?.used ? [`import { Show } from '${base}/auth/Show'`] : [])

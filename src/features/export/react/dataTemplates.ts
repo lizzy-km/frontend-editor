@@ -38,7 +38,7 @@ function mockFile(sources: DataSource[]): string {
   ].join('\n')
 }
 
-const CLIENT = `import axios from 'axios'
+export const CLIENT = `import axios from 'axios'
 
 /** The API client: set VITE_API_URL in .env for addresses that start with "/". */
 export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || undefined, timeout: 15000 })
@@ -107,13 +107,18 @@ export const use${name}Infinite = (pageSize = 12) =>
 }
 
 /** src/data/*, src/api/* and .env.example for the project's data sources (none = no files). */
+/** The API client and .env.example (shared by data and auth). */
+export const clientFiles = (): Record<string, string> => ({
+  'src/api/client.ts': CLIENT,
+  '.env.example': '# Copy to .env\n# Base address for API calls that start with "/"\nVITE_API_URL=\n# Use the real API (and sign-in) instead of the sample data and demo accounts\nVITE_USE_MOCK=true\n# Feature flags to turn on, e.g. beta,newCheckout\nVITE_FLAGS=\n',
+})
+
 export function dataFiles(sources: DataSource[]): Record<string, string> {
   if (sources.length === 0) return {}
   const files: Record<string, string> = {
     'src/data/types.ts': typesFile(sources),
     'src/data/mockData.ts': mockFile(sources),
-    'src/api/client.ts': CLIENT,
-    '.env.example': '# Copy to .env\n# Base address for API calls that start with "/"\nVITE_API_URL=\n# Use the real API instead of the sample data\nVITE_USE_MOCK=true\n',
+    ...clientFiles(),
   }
   for (const source of sources) files[`src/api/${source.name}.ts`] = sourceFile(source)
   return files
