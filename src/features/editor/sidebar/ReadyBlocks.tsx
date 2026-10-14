@@ -29,7 +29,7 @@ const READY = [
     add: () => { insertHtml(popupBlockHtml(uniquePopupName(getDoc().nodes, 'welcome'))); track('add_block', { block: 'popup' }) },
   },
   {
-    id: 'ask-button', label: 'Ask-first button', hint: 'A button that asks “Are you sure?” before it does anything', icon: 'lock' as const,
+    id: 'ask-button', label: 'Ask first', hint: 'A button that asks “Are you sure?” before it does anything', icon: 'lock' as const,
     add: () => { insertHtml(askButtonHtml); track('add_block', { block: 'ask-button' }) },
   },
   {

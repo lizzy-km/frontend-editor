@@ -275,6 +275,12 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Page guard (`model/pageGuard.ts`)
+
+- `guardPage(doc, pageId, viewer)` mirrors the React route guards for
+  `SafePageFrame` (Preview, public view) and `siteFiles.withGuard` (static
+  download). Change both when the React guard rules change.
+
 ## Pop-ups and ask first (`model/popups.ts`)
 
 - Plain attributes: `data-fe-modal`, `data-fe-open`, `data-fe-close`,

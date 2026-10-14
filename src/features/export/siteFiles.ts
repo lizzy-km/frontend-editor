@@ -1,6 +1,8 @@
 import { buildPageParts } from '@/features/editor/model/serialize/buildPage'
 import { forVisitors } from '@/features/editor/model/serialize/forVisitors'
 import { allPagesForFiles, pageDoc, pageFileName } from '@/features/editor/model/serialize/sitePages'
+import { VISITOR } from '@/features/editor/model/conditions'
+import { guardPage } from '@/features/editor/model/pageGuard'
 import { listPages, resolvePage } from '@/features/editor/model/pages'
 import type { PageDoc } from '@/features/editor/model/types'
 import { partsToSplitFiles, type ExportFiles } from './buildFiles'
@@ -17,6 +19,18 @@ export function currentPageDoc(doc: PageDoc, pageId: string | null, fileLinks = 
 }
 
 /**
+ * A page a signed-out visitor may not open sends them to the log in page (or the first page they can see).
+ * Static files can't keep anything secret: real protection needs the React download and your API.
+ */
+function withGuard(doc: PageDoc, pageId: string, html: string): string {
+  const guard = guardPage(doc, pageId, VISITOR)
+  const target = guard.pageId && guard.pageId !== pageId ? listPages(doc).find((page) => page.id === guard.pageId) : undefined
+  if (!target) return html
+  const go = `<script>document.documentElement.style.display='none';location.replace(${JSON.stringify(pageFileName(target.path))})</script>`
+  return html.replace(/<head[^>]*>/i, (head) => `${head}${go}`)
+}
+
+/**
  * A whole site for developers / hosting: one .html per page (index.html is
  * the home page) sharing one styles.css and script.js.
  */
@@ -26,7 +40,7 @@ export function siteToSplitFiles(doc: PageDoc): ExportFiles {
   delete files['index.html']
   for (const page of listPages(doc)) {
     const html = partsToSplitFiles(buildPageParts(forVisitors(titled(pageDoc(doc, page.id, { fileLinks: true }), page))))['index.html']!
-    files[pageFileName(page.path)] = html
+    files[pageFileName(page.path)] = withGuard(doc, page.id, html)
   }
   return files
 }

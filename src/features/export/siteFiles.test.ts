@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { addPage } from '@/features/editor/model/pageOps'
+import { addAuthPages } from '@/features/editor/model/authPages'
+import { addPage, updatePage } from '@/features/editor/model/pageOps'
 import { listPages } from '@/features/editor/model/pages'
 import { parseHtmlDocument } from '@/features/editor/model/parse/parseDocument'
 import { buildPageParts } from '@/features/editor/model/serialize/buildPage'
@@ -44,5 +45,15 @@ describe('site pages', () => {
     expect(files['index.html']).toContain('Bread')
     expect(files['about.html']).toContain('Team')
     expect(files['about.html']).toContain('href="index.html"')
+  })
+
+  it('sends signed-out visitors of a private page to the log in page file', () => {
+    const doc = addAuthPages(SITE())
+    const account = addPage(doc, { title: 'Account', path: '/account', from: 'blank' })
+    const site = updatePage(account.doc, account.pageId, { private: true })
+    const files = siteToSplitFiles(site)
+    expect(files['account.html']).toContain('location.replace("login.html")')
+    expect(files['index.html']).not.toContain('location.replace')
+    expect(files['login.html']).not.toContain('location.replace')
   })
 })

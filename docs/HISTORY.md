@@ -10,7 +10,7 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   the one it is in (`data-fe-close`). Renaming a pop-up updates its openers
   (one undo step).
 - **Ask first** (`data-fe-ask`): any button or link can ask "Are you sure?"
-  before it does anything; ready-made **Ask-first button**.
+  before it does anything; ready-made **Ask-first**.
 - Preview and downloads: `serialize/popupPlayer.ts` hides pop-ups, centres
   them over the page, closes with a button, Esc or a click outside, and shows
   the question box.
@@ -19,6 +19,12 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   (`ui/confirm.tsx`, mounted in main.tsx); onClick handlers combine "click goes
   to", open, close and ask (`export/react/popups/`). Ask-first on a link follows
   it after Yes, on a form button submits the (Zod-checked) form.
+- **Page guard outside React** (`model/pageGuard.ts`): Preview and the public
+  view now do what the React guards do. A signed-out visitor who opens a
+  signed-in page lands on the site's Log in page (a notice when there is none),
+  someone without the role sees "No access", and signed-in people are sent away
+  from Log in. The downloaded site's private pages redirect to `login.html`
+  (a static file can't keep secrets; real protection needs the React download).
 - Verified by building the single page, React Router and TanStack output and
   running pop-ups, questions, links and forms in Chrome.
 
