@@ -1,5 +1,6 @@
 import { track } from '@/features/analytics/track'
 import { addField, addRow, addSource, changeField, removeField, removeRow, removeSource, setCell, updateSource } from '../model/data'
+import { importData, type ParsedJson } from '../model/dataImport'
 import type { DataField, DataSource } from '../model/types'
 import { updateDoc } from './commit'
 
@@ -14,6 +15,12 @@ export function createSource(start: Omit<DataSource, 'id'>, preset: string): str
   })
   track('data_add', { preset })
   return id
+}
+
+/** Fills a data source from pasted JSON: replaces its fields and rows, or adds to them. One undo step. */
+export function importJson(id: string, parsed: ParsedJson, mode: 'replace' | 'add') {
+  updateDoc((doc) => importData(doc, id, parsed, mode))
+  track('data_import', { mode, rows: parsed.rows.length })
 }
 
 export const deleteSource = (id: string) => updateDoc((doc) => removeSource(doc, id))

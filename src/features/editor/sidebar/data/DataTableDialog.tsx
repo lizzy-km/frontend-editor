@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button, Icon, Modal } from '@/shared/ui'
 import { deleteField, deleteRow, editCell, editField, newField, newRow } from '../../actions/dataActions'
+import { JsonImport } from './JsonImport'
 import type { DataField, DataSource, DataValue, FieldType } from '../../model/types'
 import styles from './Data.module.css'
 
@@ -20,6 +21,7 @@ function Cell({ source, row, field, value }: { source: DataSource; row: number; 
 export function DataTableDialog({ source, onClose }: { source: DataSource; onClose: () => void }) {
   const [fieldName, setFieldName] = useState('')
   const [fieldType, setFieldType] = useState<FieldType>('text')
+  const [importing, setImporting] = useState(false)
   const addField = () => {
     if (!fieldName.trim()) return
     newField(source.id, { name: fieldName, type: fieldType })
@@ -29,6 +31,9 @@ export function DataTableDialog({ source, onClose }: { source: DataSource; onClo
   return (
     <Modal open onClose={onClose} title={`Data: ${source.name}`} width={980} footer={<Button variant="primary" onClick={onClose}>Done</Button>}>
       <div className={styles.dialog}>
+        {importing ? <JsonImport source={source} onDone={() => setImporting(false)} /> : (
+          <Button size="small" icon="upload" onClick={() => setImporting(true)}>Import from JSON</Button>
+        )}
         <p className={styles.settingsTitle}>Fields</p>
         <div className={styles.fields}>
           {source.fields.map((field, index) => (

@@ -44,6 +44,8 @@ export type AnalyticsEvents = {
   make_site: Record<string, never>
   /** A data source added in the Data panel (which preset). */
   data_add: { preset: string }
+  /** JSON was imported into a data source (replace or add, and how many rows). */
+  data_import: { mode: 'replace' | 'add'; rows: number }
   /** An element got an animation (which effect). */
   animation_set: { effect: string }
   /** Who can see something was set (audience, how many roles and flags). */

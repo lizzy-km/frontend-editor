@@ -41,3 +41,9 @@
 .table td { padding: 4px 6px; border-top: 1px solid var(--border); }
 .table td .cell { width: 100%; min-width: 120px; }
 details.settings > summary { cursor: pointer; }
+
+.import { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); }
+.importTools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.found { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.problem { font-size: 13px; color: #b91c1c; font-weight: 600; }
+.dialog > button:first-child { align-self: flex-start; }
