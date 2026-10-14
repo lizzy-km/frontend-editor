@@ -1,6 +1,7 @@
 import type { ElementNode, NodeMap } from '@/features/editor/model/types'
 import { writeElement, type JsxContext, type RepeatSlot } from './jsxWriter'
 import { lowerFirst, pascalCase } from './names'
+import { listComponents, type ListOptions } from './listTemplates'
 import { findRepeats, type PropValue, type RepeatGroup } from './repeats'
 
 type ClassFor = (node: ElementNode) => string | undefined
@@ -47,7 +48,7 @@ function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, n
  * The component for one part of the page (header, a section, the footer).
  * Repeated items inside it become their own component plus a typed list.
  */
-export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string, name: string, takeName: TakeName, router?: RouterLinks): ComponentFile[] {
+export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string, name: string, takeName: TakeName, router?: RouterLinks, data?: ListOptions): ComponentFile[] {
   const groups = findRepeats(nodes, rootId, classFor)
   const repeats = new Map<string, RepeatSlot>()
   const items: ComponentFile[] = []
@@ -66,8 +67,13 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
   }
 
   const ctx: JsxContext = { nodes, classFor, repeats, links: linksFor(router) }
+  // "List from data" boxes become their own list + card components.
+  const dataLists = data ? listComponents({ nodes, classFor }, rootId, takeName, data) : { lists: new Map<string, string>(), files: [] }
+  ctx.lists = dataLists.lists
+  items.push(...dataLists.files)
   const body = writeElement(ctx, rootId, BODY_PAD)
-  const allImports = [...linkImport(ctx, router), ...imports]
+  const listImports = [...dataLists.lists.values()].map((list) => `import ${list} from './${list}'`)
+  const allImports = [...linkImport(ctx, router), ...listImports, ...imports]
   const code = [
     ...allImports, ...(allImports.length ? [''] : []),
     ...lists,

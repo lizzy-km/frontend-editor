@@ -5,7 +5,7 @@ import { useDocStore } from '../store/doc.store'
 import { createBridge, type FrameBridge } from './bridge'
 import { diffNodes } from './diffNodes'
 import { useViewStore } from '../store/view.store'
-import { buildEditorSource, editorOverrideCss, sourceKey, viewCss } from './editorSource'
+import { buildEditorSource, dataForFrame, editorOverrideCss, sourceKey, viewCss } from './editorSource'
 import { useFrameStore } from './frame.store'
 
 type Props = { width: number; height: number; scale: number }
@@ -17,6 +17,7 @@ function pushChanges(bridge: FrameBridge, doc: PageDoc, prev: PageDoc) {
     bridge.send('css', { edits: editorOverrideCss(doc.nodes) })
   }
   if (doc.css !== prev.css) bridge.send('css', { page: wrapUserCss(doc.css) })
+  if (doc.data !== prev.data) bridge.send('data', { sources: dataForFrame(doc) })
 }
 
 /**

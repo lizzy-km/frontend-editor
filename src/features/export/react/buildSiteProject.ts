@@ -9,6 +9,7 @@ import { createNameRegistry, pascalCase } from './names'
 import { projectShell, renderParts, type Parts } from './projectShell'
 import { DATA_README, readme } from './projectTemplates'
 import { dataFiles, DATA_DEPS } from './dataTemplates'
+import { listUiFiles } from './listTemplates'
 import { mainFile } from './mainTemplate'
 import { notFoundSource, routerSource, ROUTERS, type RouteFile, type RouterKind } from './routerTemplates'
 import { siteReadme } from './siteReadme'
@@ -52,18 +53,19 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
   const isPage = (id: string) => pages.some((page) => page.id === id)
   const links: RouterLinks = { paths: new Set(pages.map((page) => page.path)), lib: ROUTERS[router].lib, go: ROUTERS[router].go }
   const takeName = createNameRegistry()
+  const data = { base: '../..', sources: doc.data ?? [] }
   const files: ExportFiles = {}
   const write = (parts: Parts, folder: string) => { for (const file of parts.files) files[`src/components/${folder}/${file.name}.tsx`] = file.code }
 
-  const before = renderParts(doc.nodes, body.children.slice(0, first).filter((id) => !isPage(id)), takeName, '      ', links)
-  const after = renderParts(doc.nodes, body.children.slice(first).filter((id) => !isPage(id)), takeName, '      ', links)
+  const before = renderParts(doc.nodes, body.children.slice(0, first).filter((id) => !isPage(id)), takeName, '      ', links, data)
+  const after = renderParts(doc.nodes, body.children.slice(first).filter((id) => !isPage(id)), takeName, '      ', links, data)
   write(before, 'layout')
   write(after, 'layout')
 
   const routes: (RouteFile & { page: PageInfo })[] = pages.map((page) => {
     const component = takeName(`${pascalCase(page.title) || 'Page'}Page`)
     const folder = page.key
-    const parts = renderParts(doc.nodes, (doc.nodes[page.id] as ElementNode).children, takeName, '      ', links)
+    const parts = renderParts(doc.nodes, (doc.nodes[page.id] as ElementNode).children, takeName, '      ', links, data)
     write(parts, folder)
     files[`src/pages/${component}.tsx`] = pageSource(component, page.title, parts, folder)
     return { path: (doc.nodes[page.id] as ElementNode).attrs[PATH_ATTR] ?? '/', component, file: component, private: page.private, page }
@@ -82,6 +84,7 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
     ...shell.files,
     ...files,
     ...dataFiles(sources),
+    ...listUiFiles(doc),
     'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}${sources.length ? DATA_README : ''}`,
     'src/main.tsx': mainFile({ root: router, query: sources.length > 0, auth: withAuth }),
     'src/router.tsx': routerSource(router, routes, (route) => (route.private ? `<RequireAuth><${route.component} /></RequireAuth>` : `<${route.component} />`)),

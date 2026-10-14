@@ -1,7 +1,9 @@
 import { VOID_TAGS } from '@/features/editor/model/serialize/escape'
-import { isElement, type ElementNode, type NodeMap } from '@/features/editor/model/types'
+import { isElement, type ElementNode, type FieldType, type NodeMap } from '@/features/editor/model/types'
+import { BIND_ATTR, BIND_PREFIX } from '@/features/editor/model/dataLists'
 import { GO_ATTR } from '@/features/editor/model/pages'
 import { jsxAttr, jsxAttrName } from './jsxAttrs'
+import { asRouterLink, fieldExpression, goHandlers, isEditorAttr } from './jsxExtras'
 
 /** A run of repeated siblings written as one `{list.map(...)}` line. */
 export type RepeatSlot = { ids: string[]; expression: string }
@@ -19,23 +21,10 @@ export type JsxContext = {
    * boxes call navigate (`navigate`); both tell the file what to import. `go` writes the navigate call.
    */
   links?: { paths: Set<string>; used: boolean; navigate: boolean; go: (target: string, typed: boolean) => string }
-}
-
-/** "Click goes to": the whole box opens the page, by mouse or keyboard. */
-function goHandlers(ctx: JsxContext, target: string, typed: boolean): string {
-  ctx.links!.navigate = true
-  const go = ctx.links!.go(target, typed)
-  return ` role="link" tabIndex={0} style={{ cursor: 'pointer' }} onClick={() => ${go}} onKeyDown={(event) => { if (event.key === 'Enter') ${go} }}`
-}
-
-/** <a href="/about"> -> <Link to="/about"> when /about is a page of the site (not inside item templates' changing links). */
-function asRouterLink(ctx: JsxContext, node: ElementNode): ElementNode {
-  const href = node.attrs.href ?? ''
-  if (node.tag !== 'a' || !ctx.links?.paths.has(href) || ctx.props?.has(`${node.id}@href`)) return node
-  ctx.links.used = true
-  const attrs: Record<string, string> = { to: href, ...node.attrs }
-  delete attrs.href
-  return { ...node, tag: 'Link', attrs }
+  /** "List from data" boxes written as their list component instead: box id -> component name. */
+  lists?: Map<string, string>
+  /** Inside a list's card component: the row's fields and their kinds (bindings become props). */
+  row?: Map<string, FieldType>
 }
 
 /** Tags that sit in a line of text: the space between two of them is visible. */
@@ -80,8 +69,16 @@ function attrsJsx(ctx: JsxContext, node: ElementNode, inSvg: boolean): string {
     if (chosen !== undefined) attrs.value = chosen
   }
   const propNames = [...(ctx.props?.keys() ?? [])].filter((key) => key.startsWith(`${node.id}@`)).map((key) => key.split('@')[1]!)
-  const names = [...new Set([...Object.keys(attrs), ...propNames])]
-  return names.map((name) => {
+  // In a list card, data-fe-bind-src="image" replaces the designed src with the row's value.
+  const fromRow = Object.keys(attrs).filter((name) => ctx.row && name.startsWith(BIND_PREFIX)).map((name) => {
+    const attr = name.slice(BIND_PREFIX.length)
+    const value = fieldExpression(ctx, attrs[name]!, false)
+    delete attrs[attr]
+    const jsxName = jsxAttrName(node.tag, attr, inSvg)
+    return value && jsxName ? ` ${jsxName}={${value}}` : ''
+  })
+  const names = [...new Set([...Object.keys(attrs), ...propNames])].filter((name) => !isEditorAttr(name))
+  return fromRow.join('') + names.map((name) => {
     const prop = ctx.props?.get(`${node.id}@${name}`)
     if (name === GO_ATTR && ctx.links) return goHandlers(ctx, prop ?? JSON.stringify(attrs[name]), !prop)
     if (!prop) return jsxAttr(node.tag, name, attrs[name]!, inSvg)
@@ -121,7 +118,11 @@ function blockChildren(ctx: JsxContext, ids: string[], pad: string, inSvg: boole
 export function writeElement(ctx: JsxContext, id: string, pad: string, inSvg = false, inPre = false): string {
   const original = ctx.nodes[id]
   if (!isElement(original)) return ''
+  const list = ctx.lists?.get(id)
+  if (list) return `${pad}<${list} />`
   const node = asRouterLink(ctx, original)
+  const bound = ctx.row && node.attrs[BIND_ATTR] ? fieldExpression(ctx, node.attrs[BIND_ATTR], true) : null
+  if (bound) return `${pad}<${node.tag}${attrsJsx(ctx, node, inSvg)}>{${bound}}</${node.tag}>`
   const svg = inSvg || node.tag === 'svg'
   const childSvg = svg && node.tag !== 'foreignObject'
   const children = visibleChildren(ctx.nodes, node)

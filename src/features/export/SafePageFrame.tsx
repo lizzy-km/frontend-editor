@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { buildPageParts, partsToSingleFile } from '@/features/editor/model/serialize/buildPage'
 import { withoutLocalFiles } from '@/features/editor/model/serialize/localFiles'
 import { isMultiPage, listPages } from '@/features/editor/model/pages'
+import { expandDataLists } from '@/features/editor/model/serialize/expandLists'
 import { pageDoc } from '@/features/editor/model/serialize/sitePages'
 import type { PageDoc } from '@/features/editor/model/types'
 
@@ -24,7 +25,7 @@ export function SafePageFrame({ doc, width = '100%', className, title, pageId = 
   const frame = useRef<HTMLIFrameElement>(null)
   const site = isMultiPage(doc)
   const html = useMemo(() => {
-    const page = partsToSingleFile(buildPageParts(withoutLocalFiles(pageDoc(doc, pageId))))
+    const page = partsToSingleFile(buildPageParts(withoutLocalFiles(expandDataLists(pageDoc(doc, pageId)))))
     return site ? page.replace(/<\/body>/i, `${NAVIGATE}</body>`) : page
   }, [doc, pageId, site])
 

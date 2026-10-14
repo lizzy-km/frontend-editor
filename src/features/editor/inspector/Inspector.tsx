@@ -1,6 +1,7 @@
 import { Icon } from '@/shared/ui'
 import { getElement } from '../model/tree/queries'
 import { collectTextPieces, isTextEditable } from '../model/tree/textRules'
+import { listAround, listInfo } from '../model/dataLists'
 import { isPageNode } from '../model/pages'
 import { isElement, type ElementNode, type NodeMap } from '../model/types'
 import { useDocStore } from '../store/doc.store'
@@ -11,7 +12,9 @@ import styles from './Inspector.module.css'
 import { InspectorHeader } from './InspectorHeader'
 import { AdvancedSection } from './sections/AdvancedSection'
 import { FormFieldSection, HAS_PLACEHOLDER } from './sections/FormFieldSection'
+import { DataListSection } from './sections/DataListSection'
 import { GoToPageSection } from './sections/GoToPageSection'
+import { ShowDataSection } from './sections/ShowDataSection'
 import { LinkSection } from './sections/LinkSection'
 import { PageSection } from './sections/PageSection'
 import { PictureSection } from './sections/PictureSection'
@@ -59,6 +62,8 @@ export function Inspector() {
   if (!node) return <NothingSelected />
   const context = buildContext(node, nodes)
   const overrides = node.styles[breakpoint] ?? {}
+  const list = listInfo(nodes, node.id)
+  const inList = listAround(nodes, node.id)
 
   return (
     <div className={styles.panel}>
@@ -67,6 +72,8 @@ export function Inspector() {
       {context.hasText && !context.isTextEditable && <WordsSection id={node.id} />}
       {node.tag === 'a' && <LinkSection node={node} />}
       {node.tag !== 'a' && node.id !== rootId && !isPageNode(node) && <GoToPageSection node={node} />}
+      {list && <DataListSection info={list} />}
+      {inList && <ShowDataSection node={node} list={inList} />}
       {node.tag === 'img' && <PictureSection node={node} />}
       {HAS_PLACEHOLDER.has(node.tag) && <FormFieldSection node={node} />}
       {computed && <StyleSections id={node.id} context={context} computed={computed} overrides={overrides} />}

@@ -36,6 +36,7 @@
     var model = JSON.parse(document.getElementById('fe-model').textContent)
     fe.rootId = model.rootId
     fe.nodes = model.nodes
+    fe.initialData = model.data || null
     document.body.setAttribute('data-fe-id', fe.rootId)
     index()
   }
@@ -107,6 +108,7 @@
       fe.dom.delete(id)
       delete fe.nodes[id]
     })
+    if (fe.renderLists) fe.renderLists() // copies of list cards follow the edited design
   }
 
   /** New page CSS, "your edits" CSS and/or editor-only view CSS (which page is shown). */

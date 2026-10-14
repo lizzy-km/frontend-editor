@@ -84,6 +84,11 @@ that break things if you ignore them.
     Showing one page is editor-only view CSS, never a model change. Anything
     that exports or previews a page goes through `serialize/sitePages.ts`.
 
+21. **Data-bound boxes keep ONE design in the model.** Copies are never
+    model nodes: live ones come from `runtime/lists.js` (they reuse the design's
+    `data-fe-id`), static ones from `serialize/expandLists.ts`. `data-fe-*`
+    attributes are the editor's: React output drops them (`isEditorAttr`).
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.
