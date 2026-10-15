@@ -69,6 +69,7 @@ Made with Tweak: your page as a React + TypeScript project (Vite).
   their words, pictures and links are in a list at the top of the part that uses them.
 - \`src/styles/page.css\` has all the styles, including your Tablet and Phone changes.
 - \`index.html\` has the title, fonts and page settings.
+- \`.tweak/\` is hidden and lets you open this project in Tweak again (Start page → Open a React project). Keep it.
 ${hasScripts ? `- \`public/scripts/\` has the page's own JavaScript, unchanged. \`src/runPageScripts.ts\`
   runs it once after React has put the page on screen. Moving these behaviours
   into React (state and event handlers) is a good next step.

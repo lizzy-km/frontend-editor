@@ -6,6 +6,7 @@ import { downloadFile, toFileName } from '@/lib/download'
 import { partsToSplitFiles } from './buildFiles'
 import { capturePng } from './capturePng'
 import type { RouterKind } from './react/routerTemplates'
+import { withSnapshot } from './react/snapshot'
 import { currentPageDoc, siteToSplitFiles } from './siteFiles'
 import { zipFiles } from './zip'
 
@@ -49,7 +50,9 @@ export async function prepareReact(scope: ExportScope, router: RouterKind = 'rea
   const files = !scope && isMultiPage(getDoc())
     ? (await import('./react/buildSiteProject')).buildSiteProject(getDoc(), { router })
     : (await import('./react/buildReactProject')).buildReactProject(pageForExport(), scope ?? undefined)
-  const zip = zipFiles(Object.fromEntries(Object.entries(files).map(([path, text]) => [`${folder}/${path}`, text])))
+  // A whole project also carries the hidden file that lets Tweak open it again.
+  const complete = scope ? files : withSnapshot(files, getDoc())
+  const zip = zipFiles(Object.fromEntries(Object.entries(complete).map(([path, text]) => [`${folder}/${path}`, text])))
   return () => downloadFile(`${folder}.zip`, zip)
 }
 

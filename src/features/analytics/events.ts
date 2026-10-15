@@ -23,6 +23,8 @@ export type AnalyticsEvents = {
   paste_code: { elements: number; scripts: number; tailwind: boolean; where: Where; kind: 'page' | 'site' }
   start_blank: { kind: 'page' | 'site'; where: Where }
   paste_rejected: { reason: string }
+  /** A React project downloaded from Tweak was opened again (and how many of its files were changed outside Tweak). */
+  react_project_open: { where: Where; changed: number }
   /** A ready-made AI prompt was copied (which one, and whether the brief was changed). */
   prompt_copy: { preset: string; edited: boolean }
 

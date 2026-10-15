@@ -128,3 +128,4 @@ that break things if you ignore them.
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.
+- The React download carries `.tweak/project.json` (`export/react/snapshot.ts`): the whole `PageDoc` plus file fingerprints, so the start screen can reopen it. If you change `PageDoc` in a way old snapshots can't be read, bump `VERSION` there.

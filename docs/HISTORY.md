@@ -3,6 +3,16 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/react-reimport — 2026-10-15
+- **Open a React project again.** Every React download now carries a hidden
+  `.tweak/project.json` (the page + a fingerprint of each file). On the start screen,
+  "Open a .zip" / "Choose a folder" restores the page exactly. Files changed outside Tweak
+  are listed with "Open anyway / Cancel"; folders not made by Tweak are refused kindly.
+- Files: `export/react/snapshot.ts`, `import/readProject.ts`, `import/ReactProjectOpener.tsx`.
+- Tests: `snapshot.test.ts` and `e2e/react-reimport.mjs` (zip, folder, changed file, foreign zip).
+- Not in this step: opening arbitrary React projects (see the discussion in the chat:
+  needs in-place source editing and a browser runtime).
+
 ## fix/code-colors — 2026-10-15
 - Code boxes use VS Code's **Dark Modern** colors (dark editor, blue keywords, purple
   control words, teal types and components, light-blue names, orange strings, green

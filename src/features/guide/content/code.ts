@@ -35,6 +35,7 @@ export const CODE: Group = {
           ['VITE_API_KEY (or the name you chose)', 'The key sent to your API. Visitors can see it, so use a website-safe key.'],
           ['VITE_FLAGS', 'Comma-separated feature flags to switch on, like beta,newCheckout.'],
         ] },
+        { kind: 'tip', text: 'Want to keep editing by clicking later? On the start screen press **Open a .zip** (or **Choose a folder**) and pick the project. A hidden **.tweak** folder inside the download makes this work, so keep it. Projects that were not downloaded from Tweak can’t be opened.' },
         { kind: 'p', text: 'Websites use **React Router** (you can choose **TanStack Router** when downloading). Data uses **React Query** and **axios**; forms use **React Hook Form** and **Zod**; animation uses **Motion**.' },
       ],
     },

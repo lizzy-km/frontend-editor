@@ -33,3 +33,6 @@
 .kind small { font-size: 12.5px; }
 .kind[aria-checked='true'] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 @media (max-width: 560px) { .kinds { grid-template-columns: 1fr; } }
+
+.opener { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: 14px; border: 1px dashed var(--border); }
+.openerRow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
