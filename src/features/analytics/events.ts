@@ -44,6 +44,8 @@ export type AnalyticsEvents = {
   make_site: Record<string, never>
   /** A data source added in the Data panel (which preset). */
   data_add: { preset: string }
+  /** A data source was connected to a real API (with a key or without, and how many sample items came back). */
+  api_connect: { auth: boolean; rows: number }
   /** JSON was imported into a data source (replace or add, and how many rows). */
   data_import: { mode: 'replace' | 'add'; rows: number }
   /** An element got an animation (which effect). */

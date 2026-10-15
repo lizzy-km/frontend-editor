@@ -43,6 +43,8 @@ export const DATA_README = `
 - \`src/data/mockData.ts\`: the sample rows (global mock data).
 - \`src/api/<name>.ts\`: \`fetchX\`, \`useX()\` (everything) and \`useXInfinite()\` (page by page) with React Query and axios.
 - Copy \`.env.example\` to \`.env\`; set \`VITE_USE_MOCK=false\` to use the real API (and \`VITE_API_URL\` for addresses starting with "/").
+- APIs that need a key: put the key in \`.env\` (the name is listed in \`.env.example\`). It is sent as a header with every request and is never written into the code. A website's visitors can still see it in their browser, so only use keys meant for websites (read-only or public keys), never a private server key. Restart \`npm run dev\` after changing \`.env\`.
+- The API's answer is mapped to the typed items in \`toRow\` in each \`src/api/<name>.ts\` (the \`FIELDS\` list says where each field sits in the answer).
 `
 
 export function readme(title: string, components: string[], hasScripts: boolean): string {

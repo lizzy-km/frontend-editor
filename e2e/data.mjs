@@ -22,6 +22,7 @@ check('row added', (await dialog.locator('tbody tr').count()) === 7)
 await page.screenshot({ path: OUT + 'data-table.png' })
 await dialog.getByRole('button', { name: 'Done' }).click()
 
+await sidebar.getByText('More options').click()
 await sidebar.getByLabel('API address').fill('https://api.example.com/products')
 await sidebar.getByLabel('API address').press('Enter')
 await page.waitForTimeout(200)

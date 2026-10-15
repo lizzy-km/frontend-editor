@@ -136,7 +136,7 @@ you switch to your API.
 ## Data
 
 The Data tab holds lists your page can show (products, posts, team…):
-typed fields, sample rows (type them, or **import from JSON**), and an optional API. The React download turns them
+typed fields, sample rows (type them, **import from JSON**, or **connect your API** and test it live), and an optional API key that your project reads from `.env`. The React download turns them
 into TypeScript types, a mock data file and React Query + axios hooks, using
 the sample rows until you switch to the real API.
 

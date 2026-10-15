@@ -47,3 +47,7 @@ details.settings > summary { cursor: pointer; }
 .found { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
 .problem { font-size: 13px; color: #b91c1c; font-weight: 600; }
 .dialog > button:first-child { align-self: flex-start; }
+.keyBox { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); }
+.more { display: flex; flex-direction: column; gap: 8px; }
+.more > summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent); }
+.more[open] > summary { margin-bottom: 8px; }
