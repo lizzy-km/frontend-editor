@@ -30,7 +30,7 @@ check('button added', (await count('a')) === before + 1)
 check('new button selected', await page.getByRole('toolbar', { name: 'Quick actions' }).isVisible())
 
 // Paste more code (a whole AI reply)
-await sidebar.getByLabel('Paste more code').fill('Here:\n```html\n<section class="pricing"><h2>Prices</h2><p>From $5</p></section>\n```')
+await sidebar.getByLabel('Paste HTML').fill('Here:\n```html\n<section class="pricing"><h2>Prices</h2><p>From $5</p></section>\n```')
 await sidebar.getByRole('button', { name: 'Add this code' }).click()
 await page.waitForTimeout(300)
 check('pasted section added', (await count('.pricing h2')) === 1)
