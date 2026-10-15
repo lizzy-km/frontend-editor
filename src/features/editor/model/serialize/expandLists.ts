@@ -1,11 +1,12 @@
 import { createId } from '@/lib/ids'
 import { bindingsOf, isListBox, listInfo, rowsFor, showValue } from '../dataLists'
+import { isRecordBox, pickRow, recordInfo } from '../dataRecords'
 import { cloneSubtree } from '../tree/cloneSubtree'
 import { collectSubtreeIds } from '../tree/queries'
 import { isElement, type DataValue, type ElementNode, type NodeMap, type PageDoc } from '../types'
 
 /** One filled-in card: bound text replaced, bound attributes set. */
-function fillCard(nodes: NodeMap, topId: string, row: Record<string, DataValue>): NodeMap {
+export function fillCard(nodes: NodeMap, topId: string, row: Record<string, DataValue>): NodeMap {
   const next: NodeMap = { ...nodes }
   for (const id of collectSubtreeIds(nodes, topId)) {
     const node = nodes[id]
@@ -47,6 +48,20 @@ export function expandDataLists(doc: PageDoc): PageDoc {
     for (const gone of collectSubtreeIds(nodes, info.templateId)) delete nodes[gone]
     const current = nodes[box.id] as ElementNode
     nodes[box.id] = { ...current, children: current.children.flatMap((id) => (id === info.templateId ? cards : nodes[id] ? [id] : [])) }
+  }
+  return { ...doc, nodes }
+}
+
+/** "One record" boxes with their row's values in place (the first row, or the row number; "?id" boxes get the first row, then recordPlayer picks the right one). */
+export function expandRecords(doc: PageDoc): PageDoc {
+  const boxes = Object.values(doc.nodes).filter(isRecordBox)
+  if (!boxes.length) return doc
+  let nodes: NodeMap = { ...doc.nodes }
+  for (const box of boxes) {
+    const info = recordInfo(nodes, box.id)
+    const source = (doc.data ?? []).find((item) => item.name === info?.source)
+    const row = source ? pickRow(source.rows, info!.row) : undefined
+    if (row) nodes = fillCard(nodes, box.id, row)
   }
   return { ...doc, nodes }
 }

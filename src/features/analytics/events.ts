@@ -60,6 +60,8 @@ export type AnalyticsEvents = {
   palette_change: { kind: 'color' | 'theme' }
   /** Edited React markup of a component was applied to the page (lines of markup). */
   component_edit: { lines: number }
+  /** A box was wired to a data source (every row, or one record). */
+  data_wire: { mode: 'list' | 'record' }
   /** A form was set to check and send its answers. */
   form_set: { fields: number }
   /** A page added to a site (blank, from pasted code, or a copy) and how many pages it now has. */

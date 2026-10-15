@@ -1,7 +1,7 @@
 import { Icon } from '@/shared/ui'
 import { getElement } from '../model/tree/queries'
 import { collectTextPieces, isTextEditable } from '../model/tree/textRules'
-import { listAround, listInfo } from '../model/dataLists'
+import { dataAround } from '../model/dataRecords'
 import { isPageNode } from '../model/pages'
 import { isElement, type ElementNode, type NodeMap } from '../model/types'
 import { useDocStore } from '../store/doc.store'
@@ -16,7 +16,7 @@ import { FormFieldSection, HAS_PLACEHOLDER } from './sections/FormFieldSection'
 import { ClickSection, PopupSection } from './sections/ClickSection'
 import { FormSection } from './sections/FormSection'
 import { AnimationSection } from './sections/AnimationSection'
-import { DataListSection } from './sections/DataListSection'
+import { DataSection } from './sections/DataSection'
 import { GoToPageSection } from './sections/GoToPageSection'
 import { ShowDataSection } from './sections/ShowDataSection'
 import { MODAL_ATTR } from '../model/popups'
@@ -70,8 +70,7 @@ export function Inspector() {
   if (!node) return <NothingSelected />
   const context = buildContext(node, nodes)
   const overrides = node.styles[breakpoint] ?? {}
-  const list = listInfo(nodes, node.id)
-  const inList = listAround(nodes, node.id)
+  const inData = dataAround(nodes, node.id)
 
   const canAct = node.id !== rootId && !isPageNode(node)
   const tab = chosenTab === 'actions' && !canAct ? 'design' : chosenTab
@@ -94,8 +93,8 @@ export function Inspector() {
           {node.tag !== 'a' && <GoToPageSection key={`go-${node.id}`} node={node} />}
           {MODAL_ATTR in node.attrs && <PopupSection key={`popup-${node.id}`} node={node} />}
           <ClickSection key={`click-${node.id}`} node={node} />
-          {list && <DataListSection info={list} />}
-          {inList && <ShowDataSection key={`data-${node.id}`} node={node} list={inList} />}
+          <DataSection key={`wire-${node.id}`} node={node} />
+          {inData && <ShowDataSection key={`data-${node.id}`} node={node} box={inData} />}
           {node.tag === 'form' && <FormSection key={`form-${node.id}`} node={node} />}
           {HAS_PLACEHOLDER.has(node.tag) && <FormFieldSection key={`field-${node.id}`} node={node} />}
           <WhoSection key={`who-${node.id}`} node={node} />

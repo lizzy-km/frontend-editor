@@ -3,10 +3,11 @@ import { hiddenFor, VISITOR, type Viewer } from '../conditions'
 import { isPageNode } from '../pages'
 import { removeNode } from '../tree/treeOps'
 import { isElement, type PageDoc } from '../types'
-import { expandDataLists } from './expandLists'
+import { expandDataLists, expandRecords } from './expandLists'
 import { withForms } from './formPlayer'
 import { withLayouts } from './layoutPlayer'
 import { withPopups } from './popupPlayer'
+import { withRecords } from './recordPlayer'
 
 const effects = Object.fromEntries(EFFECTS.map((effect) => [effect.value, { from: poseCss(effect.from), hover: poseCss(effect.hover) }]))
 const eases = { smooth: easingCss('smooth'), spring: easingCss('spring'), linear: easingCss('linear') }
@@ -88,4 +89,4 @@ function forViewer(doc: PageDoc, viewer: Viewer): PageDoc {
  * viewer may see (downloads: a signed-out visitor), lists filled with their
  * data rows, and the animation, form, pop-up and layout players added.
  */
-export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR): PageDoc => withLayouts(withPopups(withForms(withAnimations(expandDataLists(forViewer(doc, viewer))))))
+export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR): PageDoc => withLayouts(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(doc, viewer))))))))

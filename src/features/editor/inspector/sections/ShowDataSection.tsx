@@ -1,5 +1,6 @@
 import { setAttribute } from '../../actions/nodeActions'
-import { BIND_ATTR, BIND_PREFIX, bindingsOf, type ListInfo } from '../../model/dataLists'
+import { BIND_ATTR, BIND_PREFIX, bindingsOf } from '../../model/dataLists'
+import type { DataBox } from '../../model/dataRecords'
 import type { DataSource, ElementNode, FieldType } from '../../model/types'
 import { useDocStore } from '../../store/doc.store'
 import { SelectControl } from '../controls/ChoiceControls'
@@ -10,8 +11,8 @@ const EMPTY: DataSource[] = []
 const TEXT_TYPES: FieldType[] = ['text', 'longText', 'number', 'boolean', 'date', 'url']
 
 /** What a part of the card shows from the data (its own text, or a field). */
-export function ShowDataSection({ node, list }: { node: ElementNode; list: ListInfo }) {
-  const source = useDocStore((state) => (state.doc.data ?? EMPTY).find((item) => item.name === list.source))
+export function ShowDataSection({ node, box }: { node: ElementNode; box: DataBox }) {
+  const source = useDocStore((state) => (state.doc.data ?? EMPTY).find((item) => item.name === box.source))
   if (!source) return null
   const bindings = bindingsOf(node)
   const fields = (types?: FieldType[]) => [
@@ -35,7 +36,7 @@ export function ShowDataSection({ node, list }: { node: ElementNode; list: ListI
         row('Text', BIND_ATTR, bindings.text ?? '', TEXT_TYPES)
       )}
       {node.tag === 'a' && row('Goes to', `${BIND_PREFIX}href`, bindings.href ?? '', ['url', 'text'])}
-      <p className={styles.label}>Each card shows its own row of “{source.name}”.</p>
+      <p className={styles.label}>{box.mode === 'list' ? `Each card shows its own row of “${source.name}”.` : `Shows the chosen record of “${source.name}”.`}</p>
     </Section>
   )
 }

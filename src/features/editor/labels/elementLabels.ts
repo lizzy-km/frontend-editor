@@ -1,5 +1,6 @@
 import { getTextContent } from '../model/tree/queries'
 import { LIST_ATTR, listInfo } from '../model/dataLists'
+import { RECORD_ATTR } from '../model/dataRecords'
 import { isPageNode, TITLE_ATTR } from '../model/pages'
 import type { ElementNode, NodeMap } from '../model/types'
 import { labelForTag, type Label } from './tagLabels'
@@ -20,6 +21,7 @@ function looksLikeButton(node: ElementNode): boolean {
 export function labelForNode(node: ElementNode): Label {
   if (isPageNode(node)) return { name: 'Page', icon: 'layers' }
   if (LIST_ATTR in node.attrs) return { name: 'List from data', icon: 'layers' }
+  if (RECORD_ATTR in node.attrs) return { name: 'Data box', icon: 'box' }
   if (looksLikeButton(node)) return labelForTag('button')
   if (node.tag === 'i' && !isIconFont(node)) return labelForTag('em')
   return labelForTag(node.tag)
@@ -32,6 +34,7 @@ export function describeNode(nodes: NodeMap, node: ElementNode, maxText = 24): s
   if (isPageNode(node)) return `Page “${node.attrs[TITLE_ATTR] ?? ''}”`
   if (listInfo(nodes, node.parentId ?? '')?.templateId === node.id) return `${label.name} (card design)`
   if (listInfo(nodes, node.id)) return `List from data “${node.attrs[LIST_ATTR]}”`
+  if (RECORD_ATTR in node.attrs) return `Data box “${node.attrs[RECORD_ATTR]}”`
   if (node.tag === 'img') return node.attrs.alt ? `${label.name} “${node.attrs.alt.slice(0, maxText)}”` : label.name
 
   const text = getTextContent(nodes, node.id)
