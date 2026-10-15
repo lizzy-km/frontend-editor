@@ -9,6 +9,13 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/add-code-parts — 2026-10-15
+- Add → **Paste more code** takes **HTML, CSS and JavaScript** (tabs; any one of them is enough).
+  HTML can be a section or a whole page: its own `<style>` and `<script>` tags, stylesheet links
+  (fonts) are merged into the page too, without adding the same style or script twice. One undo step
+  (`model/addCode.ts`, `actions/addCodeActions.ts`, `sidebar/AddCodeBox.tsx`).
+- Tests: `addCode.test.ts`, `e2e/add-code.mjs`.
+
 ## feature/filter-choices — 2026-10-15
 - A filter's choices can come from **another data source** (for example a "categories" list): Actions →
   *Filter by* (the item field to match) and *Choices from* (another list + which field to show). Buttons and

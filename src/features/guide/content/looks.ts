@@ -78,7 +78,7 @@ export const LOOKS: Group = {
           '**Basics**: Heading, Text, Button, Picture, Link, List, Box, Two columns, Divider line, Empty space.',
           '**Ready-made**: List from data, Animation box, Pop-up, Ask first, Contact form, Sign-up form.',
           '**Inputs**, **Tabs and menus**, **Tables, search and filters**: parts that already work (see “Inputs, tabs and tables”).',
-          '**Paste more code** adds a section written by your AI.',
+          '**Paste more code** adds HTML, CSS and JavaScript from your AI: pick a tab for each, fill one or all, then press **Add this code**. A section’s own styles and scripts come along.',
         ] },
       ],
     },
