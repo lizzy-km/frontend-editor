@@ -1,3 +1,4 @@
+import { isParamSegment } from './routes'
 import { conditionOf, type Condition } from './conditions'
 import { getElement } from './tree/queries'
 import { isElement, type EditorNode, type ElementNode, type NodeMap, type PageDoc } from './types'
@@ -58,12 +59,16 @@ export function slugify(text: string): string {
   return text.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_-]+/g, '-').replace(/^-|-$/g, '') || 'page'
 }
 
-/** A clean, unique address: "/about", "/about-2"… ("/" stays "/"). */
+/** A clean, unique address (a segment like :id stays a changing part): "/about", "/about-2"… ("/" stays "/"). */
 export function uniquePath(wanted: string, taken: string[]): string {
-  const clean = wanted.trim() === '/' ? '/' : `/${wanted.split('/').filter(Boolean).map(slugify).join('/')}`
+  const clean = wanted.trim() === '/' ? '/' : `/${wanted.split('/').filter(Boolean).map((segment) => (isParamSegment(segment) ? segment : slugify(segment))).join('/')}`
   const base = clean === '/' && taken.includes('/') ? '/page' : clean
+  const parts = base.split('/').filter(Boolean)
+  // The number goes on the last fixed word (/user-2/:id): a changing part's name can't take one.
+  const at = parts.map(isParamSegment).lastIndexOf(false)
+  const numbered = (n: number) => (at < 0 ? `${base}-${n}` : `/${parts.map((part, index) => (index === at ? `${part}-${n}` : part)).join('/')}`)
   let path = base
-  for (let n = 2; taken.includes(path); n++) path = `${base}-${n}`
+  for (let n = 2; taken.includes(path); n++) path = numbered(n)
   return path
 }
 

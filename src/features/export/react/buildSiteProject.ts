@@ -1,8 +1,9 @@
 import type { Origin } from './componentViews'
+import { isDynamicPath } from '@/features/editor/model/routes'
 import { listPages, PATH_ATTR } from '@/features/editor/model/pages'
 import { allPagesDoc } from '@/features/editor/model/serialize/sitePages'
 import { getElement } from '@/features/editor/model/tree/queries'
-import type { ElementNode, PageDoc } from '@/features/editor/model/types'
+import type { DataSource, ElementNode, PageDoc } from '@/features/editor/model/types'
 import type { ExportFiles } from '../buildFiles'
 import { AUTH_DEPS, authFiles, needsAuth } from './auth/authFiles'
 import { routeGuard } from './auth/guardTemplates'
@@ -13,6 +14,7 @@ import { DATA_README, readme } from './projectTemplates'
 import { animationDeps, animationFiles } from './animationTemplates'
 import { dataFiles, DATA_DEPS } from './dataTemplates'
 import { popupUse } from '@/features/editor/model/popups'
+import { handlerFiles } from './handlers'
 import { formProject } from './forms/formTemplates'
 import { popupFiles } from './popups/uiTemplates'
 import { listUiFiles } from './listTemplates'
@@ -58,9 +60,10 @@ export function buildSiteProject(doc: PageDoc, { router, origins }: Options): Ex
   const body = getElement(doc.nodes, doc.rootId)!
   const first = body.children.indexOf(pages[0]!.id)
   const isPage = (id: string) => pages.some((page) => page.id === id)
-  const links: RouterLinks = { paths: new Set(pages.map((page) => page.path)), lib: ROUTERS[router].lib, go: ROUTERS[router].go }
+  const links: RouterLinks = { paths: new Set(pages.map((page) => page.path)), dynamic: pages.map((page) => page.path).filter(isDynamicPath), lib: ROUTERS[router].lib, go: ROUTERS[router].go }
   const takeName = createNameRegistry()
-  const data = { base: '../..', sources: doc.data ?? [] }
+  const handlers = new Map<string, DataSource>()
+  const data = { base: '../..', sources: doc.data ?? [], handlers }
   const files: ExportFiles = {}
   const write = (parts: Parts, folder: string) => {
     for (const file of parts.files) {
@@ -105,6 +108,7 @@ export function buildSiteProject(doc: PageDoc, { router, origins }: Options): Ex
     ...listUiFiles(doc),
     ...animationFiles(doc.nodes),
     ...forms.files,
+    ...handlerFiles(handlers),
     ...popupFiles(doc.nodes),
     ...auth,
     'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}${sources.length ? DATA_README : ''}`,

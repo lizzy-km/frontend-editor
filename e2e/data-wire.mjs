@@ -24,18 +24,18 @@ await page.waitForTimeout(200)
 
 await panel.getByLabel('Data to show').selectOption('storeProducts')
 await page.waitForTimeout(300)
-check('one record is the default way', (await panel.getByRole('group', { name: 'How the data shows' }).getByRole('button', { pressed: true }).innerText()) === 'One record')
+check('one record is the default way', (await panel.getByRole('group', { name: 'How the data shows' }).getByRole('button', { pressed: true }).innerText()) === 'One item')
 check('the box is a Data box in the layers', (await sidebar.innerText()).length > 0 && (await frame.$eval('.card:nth-child(2)', (el) => el.getAttribute('data-fe-record'))) === 'storeProducts')
 
-await panel.getByRole('button', { name: 'Connect fields for me' }).click()
+await panel.getByRole('button', { name: 'Fill in the fields for me' }).click()
 await page.waitForTimeout(400)
 check('heading connected to a text field', (await frame.$eval('.card:nth-child(2) h3', (el) => el.getAttribute('data-fe-bind'))) === 'title')
 check('paragraph connected to the description', (await frame.$eval('.card:nth-child(2) p', (el) => el.getAttribute('data-fe-bind'))) === 'description')
 
-await panel.getByLabel('Which record').selectOption('number')
+await panel.getByLabel('Which item').selectOption('number')
 await page.waitForTimeout(300)
 check('row choice saved', (await frame.$eval('.card:nth-child(2)', (el) => el.getAttribute('data-fe-row'))) === '1')
-await panel.getByLabel('Which record').selectOption('param')
+await panel.getByLabel('Which item').selectOption('param')
 await page.waitForTimeout(300)
 check('page address choice saved', (await frame.$eval('.card:nth-child(2)', (el) => el.getAttribute('data-fe-row'))) === '?id')
 

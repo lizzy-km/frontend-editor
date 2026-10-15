@@ -1,3 +1,4 @@
+import { fillPath } from './routes'
 import { getElement } from './tree/queries'
 import { isElement, type DataSource, type DataValue, type ElementNode, type NodeMap } from './types'
 
@@ -15,6 +16,8 @@ export const PAGE_SIZE_ATTR = 'data-fe-page-size'
 export const LOAD_ATTR = 'data-fe-load'
 export const BIND_ATTR = 'data-fe-bind'
 export const BIND_PREFIX = 'data-fe-bind-'
+/** On a list's card design: clicking a card calls this function with its row (React download). */
+export const CALL_ATTR = 'data-fe-call'
 
 export type ListInfo = { id: string; source: string; pageSize: number; load: 'scroll' | 'all'; templateId: string | null }
 
@@ -52,6 +55,12 @@ export function bindingsOf(node: ElementNode): Record<string, string> {
   }
   return bindings
 }
+
+/**
+ * What a binding shows for a row: a field's value, or — when it starts with "/" — an address
+ * with the row's values put in ("/products/:id" -> "/products/3").
+ */
+export const resolveBinding = (spec: string, row: Record<string, DataValue>): string => (spec.startsWith('/') ? fillPath(spec, row) : showValue(row[spec]))
 
 /** A value as page text ("true" -> "Yes"). */
 export const showValue = (value: DataValue | undefined): string => (value === true ? 'Yes' : value === false ? 'No' : String(value ?? ''))

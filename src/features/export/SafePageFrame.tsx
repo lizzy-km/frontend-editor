@@ -5,6 +5,7 @@ import { isMultiPage, listPages } from '@/features/editor/model/pages'
 import { VISITOR, type Viewer } from '@/features/editor/model/conditions'
 import { forVisitors } from '@/features/editor/model/serialize/forVisitors'
 import { guardPage, noticeHtml } from '@/features/editor/model/pageGuard'
+import { matchPage, type Params } from '@/features/editor/model/routes'
 import { pageDoc } from '@/features/editor/model/serialize/sitePages'
 import type { PageDoc } from '@/features/editor/model/types'
 
@@ -12,7 +13,9 @@ type Props = {
   doc: PageDoc; width?: number | string; className?: string; title: string
   /** Sites: the page to show, and what to do when a visitor clicks a link to another page. */
   pageId?: string | null
-  onOpenPage?: (pageId: string) => void
+  onOpenPage?: (pageId: string, params: Params) => void
+  /** The changing parts of the open page's address (/products/3 -> { id: "3" }). */
+  params?: Params
   /** Who is looking (Preview's "Viewing as"); visitors by default. */
   viewer?: Viewer
 }
@@ -25,24 +28,24 @@ const NAVIGATE = `<style>[data-fe-go]{cursor:pointer}</style><script>document.ad
  * scripts but NEVER allow-same-origin: it can't read the viewer's account,
  * cookies or this app.
  */
-export function SafePageFrame({ doc, width = '100%', className, title, pageId = null, onOpenPage, viewer = VISITOR }: Props) {
+export function SafePageFrame({ doc, width = '100%', className, title, pageId = null, onOpenPage, viewer = VISITOR, params }: Props) {
   const frame = useRef<HTMLIFrameElement>(null)
   const site = isMultiPage(doc)
   const html = useMemo(() => {
     // Like the React export's route guards: login page, "no access", or the page itself.
     const guard = site ? guardPage(doc, pageId, viewer) : { pageId }
     if (guard.notice) return noticeHtml(guard.notice)
-    const page = partsToSingleFile(buildPageParts(withoutLocalFiles(forVisitors(pageDoc(doc, guard.pageId), viewer))))
+    const page = partsToSingleFile(buildPageParts(withoutLocalFiles(forVisitors(pageDoc(doc, guard.pageId), viewer, params))))
     return site ? page.replace(/<\/body>/i, `${NAVIGATE}</body>`) : page
-  }, [doc, pageId, site, viewer])
+  }, [doc, pageId, site, viewer, params])
 
   useEffect(() => {
     if (!site || !onOpenPage) return
     const onMessage = (event: MessageEvent) => {
       if (event.source !== frame.current?.contentWindow) return
       const path = (event.data as { tweakOpenPath?: unknown })?.tweakOpenPath
-      const target = listPages(doc).find((page) => page.path === path)
-      if (target) onOpenPage(target.id)
+      const hit = typeof path === 'string' ? matchPage(listPages(doc), path) : null
+      if (hit) onOpenPage(hit.page.id, hit.params)
     }
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)

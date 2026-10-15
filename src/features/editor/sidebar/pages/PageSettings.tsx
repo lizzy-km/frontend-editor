@@ -1,5 +1,6 @@
 import { changePage } from '../../actions/pageActions'
 import type { PageInfo } from '../../model/pages'
+import { isDynamicPath, routeParams } from '../../model/routes'
 import { TextControl } from '../../inspector/controls/TextControl'
 import { WhoControl } from '../../inspector/sections/WhoControl'
 import styles from './Pages.module.css'
@@ -17,6 +18,9 @@ export function PageSettings({ page }: { page: PageInfo }) {
         <span>Address</span>
         <TextControl label="Page address" value={page.path} placeholder="/about" onChange={(path) => changePage(page.id, { path })} />
       </label>
+      {isDynamicPath(page.path)
+        ? <p className={styles.hint}>A changing page: one page for every item. In <code>{page.path}</code> the part {routeParams(page.path).map((name) => `:${name}`).join(' ')} stands for any value, like <code>{page.path.replace(/:\w+/g, '3')}</code>. Boxes set to “The one in the link” show the matching item.</p>
+        : <p className={styles.hint}>Tip: for one page that shows a different item each time, add a “Detail page” instead of writing an address yourself.</p>}
       <p className={styles.settingsTitle}>Who can open this page</p>
       <WhoControl id={page.id} condition={page.access} />
       <p className={styles.hint}>Visitors who can't open a page are sent to the login page (or see “No access”) in the React project.</p>

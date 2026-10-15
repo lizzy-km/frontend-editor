@@ -5,6 +5,7 @@ import { GO_ATTR } from '@/features/editor/model/pages'
 import { attrTag, jsxAttr, jsxAttrName } from './jsxAttrs'
 import { formAttrs, formHandlesAttr, withFormExtras, type FormSlot } from './forms/formJsx'
 import { asRouterLink, fieldExpression, isEditorAttr, motionFor, showWhen, type MotionState, type ShowState } from './jsxExtras'
+import { matchPath } from '@/features/editor/model/routes'
 import { clickAttrs, modalNode } from './popups/jsxPopups'
 
 /** A run of repeated siblings written as one `{list.map(...)}` line. */
@@ -22,7 +23,7 @@ export type JsxContext = {
    * Sites: links to these page addresses become the router's <Link to> (`used`), and "click goes to"
    * boxes call navigate (`navigate`); both tell the file what to import. `go` writes the navigate call.
    */
-  links?: { paths: Set<string>; lib: string; used: boolean; navLink?: boolean; navigate: boolean; go: (target: string, typed: boolean) => string }
+  links?: { paths: Set<string>; dynamic?: string[]; lib: string; used: boolean; navLink?: boolean; navigate: boolean; go: (target: string, typed: boolean) => string }
   /** "List from data" boxes written as their list component instead: box id -> component name. */
   lists?: Map<string, string>
   /** Inside a list's card component: the row's fields and their kinds (bindings become props). */
@@ -71,9 +72,18 @@ function selectDefault(nodes: NodeMap, node: ElementNode): string | undefined {
   return option.attrs.value ?? text
 }
 
+/** An address like /products/3 that only fits a page with a changing part (TanStack can't check it as a route). */
+const dynamicTarget = (ctx: JsxContext, target: string) => !ctx.links?.paths.has(target) && Boolean(ctx.links?.dynamic?.some((pattern) => matchPath(pattern, target)))
+
 /** "Click goes to": the page address (a prop inside list items). */
-const goTarget = (ctx: JsxContext, node: ElementNode) =>
-  (GO_ATTR in node.attrs ? { value: ctx.props?.get(`${node.id}@${GO_ATTR}`) ?? JSON.stringify(node.attrs[GO_ATTR]), typed: !ctx.props?.has(`${node.id}@${GO_ATTR}`) } : undefined)
+function goTarget(ctx: JsxContext, node: ElementNode): { value: string; typed: boolean } | undefined {
+  const spec = node.attrs[GO_ATTR]
+  if (spec === undefined) return undefined
+  const prop = ctx.props?.get(`${node.id}@${GO_ATTR}`)
+  // In a data card, "/user/:id" takes the row's values: `/user/${id}`.
+  const template = !prop && ctx.row && spec.startsWith('/') && spec.includes(':') ? fieldExpression(ctx, spec, true) : null
+  return { value: prop ?? template ?? JSON.stringify(spec), typed: !prop && !template && !dynamicTarget(ctx, spec) }
+}
 
 function attrsJsx(ctx: JsxContext, node: ElementNode, inSvg: boolean): string {
   const attrs: Record<string, string> = { ...node.attrs }

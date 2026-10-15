@@ -1,4 +1,5 @@
 import { GO_ATTR, isPageNode, listPages, resolvePage } from '../pages'
+import { fileSafePath, isDynamicPath, matchPage } from '../routes'
 import { collectSubtreeIds, getElement } from '../tree/queries'
 import { isElement, type NodeMap, type PageDoc } from '../types'
 
@@ -9,17 +10,25 @@ import { isElement, type NodeMap, type PageDoc } from '../types'
 
 /** "/" -> "index.html", "/about" -> "about.html", "/shop/new" -> "shop-new.html" (downloads). */
 export function pageFileName(path: string): string {
-  const name = path.split('/').filter(Boolean).join('-')
-  return `${name || 'index'}.html`
+  return `${fileSafePath(path) || 'index'}.html`
 }
 
-/** Links and "click goes to" boxes point at page files ("/about" -> "about.html"), so a downloaded site works offline. */
-function linkToFiles(nodes: NodeMap, paths: Map<string, string>): NodeMap {
+/** "/about" -> "about.html"; an address with a changing part ("/products/3") -> "products-_id.html?id=3". */
+function fileFor(pages: { path: string }[], address: string | undefined): string | undefined {
+  // An address that is still a template ("/user/:id", filled in per card later) is left as it is.
+  const match = address?.startsWith('/') && !isDynamicPath(address) ? matchPage(pages, address) : null
+  if (!match) return undefined
+  const query = new URLSearchParams(match.params).toString()
+  return `${pageFileName(match.page.path)}${query ? `?${query}` : ''}`
+}
+
+/** Links and "click goes to" boxes point at page files, so a downloaded site works offline. */
+export function linkToFiles(nodes: NodeMap, pages: { path: string }[]): NodeMap {
   const next: NodeMap = { ...nodes }
   for (const node of Object.values(nodes)) {
     if (!isElement(node)) continue
-    const href = node.tag === 'a' ? paths.get(node.attrs.href ?? '') : undefined
-    const go = paths.get(node.attrs[GO_ATTR] ?? '')
+    const href = node.tag === 'a' ? fileFor(pages, node.attrs.href) : undefined
+    const go = fileFor(pages, node.attrs[GO_ATTR])
     if (href || go) next[node.id] = { ...node, attrs: { ...node.attrs, ...(href ? { href } : {}), ...(go ? { [GO_ATTR]: go } : {}) } }
   }
   return next
@@ -65,8 +74,7 @@ export function pageDoc(doc: PageDoc, pageId: string | null, options: { fileLink
   if (!page) return doc
   const single = unwrap(doc, (id) => id === page.id)
   if (!options.fileLinks) return single
-  const paths = new Map(listPages(doc).map((info) => [info.path, pageFileName(info.path)]))
-  return withGoScript({ ...single, nodes: linkToFiles(single.nodes, paths) })
+  return withGoScript({ ...single, nodes: linkToFiles(single.nodes, listPages(doc)) })
 }
 
 /** Every page's content in one document (for a stylesheet that covers all pages). */
@@ -74,7 +82,6 @@ export const allPagesDoc = (doc: PageDoc): PageDoc => unwrap(doc, () => true)
 
 /** All pages, prepared like downloaded pages (file links, click-goes-to script): the site's shared files. */
 export function allPagesForFiles(doc: PageDoc): PageDoc {
-  const paths = new Map(listPages(doc).map((info) => [info.path, pageFileName(info.path)]))
   const all = allPagesDoc(doc)
-  return withGoScript({ ...all, nodes: linkToFiles(all.nodes, paths) })
+  return withGoScript({ ...all, nodes: linkToFiles(all.nodes, listPages(doc)) })
 }

@@ -1,8 +1,10 @@
 import { createId } from '@/lib/ids'
-import { bindingsOf, isListBox, listInfo, rowsFor, showValue } from '../dataLists'
+import { bindingsOf, isListBox, listInfo, resolveBinding, rowsFor } from '../dataLists'
+import { GO_ATTR } from '../pages'
 import { isRecordBox, pickRow, recordInfo } from '../dataRecords'
 import { cloneSubtree } from '../tree/cloneSubtree'
 import { collectSubtreeIds } from '../tree/queries'
+import type { Params } from '../routes'
 import { isElement, type DataValue, type ElementNode, type NodeMap, type PageDoc } from '../types'
 
 /** One filled-in card: bound text replaced, bound attributes set. */
@@ -12,14 +14,17 @@ export function fillCard(nodes: NodeMap, topId: string, row: Record<string, Data
     const node = nodes[id]
     if (!isElement(node)) continue
     const bindings = bindingsOf(node)
-    if (!Object.keys(bindings).length) continue
+    // "Click goes to" with a changing address ("/user/:id") takes this row's values.
+    const go = node.attrs[GO_ATTR]?.startsWith('/') && node.attrs[GO_ATTR].includes(':') ? resolveBinding(node.attrs[GO_ATTR], row) : undefined
+    if (!Object.keys(bindings).length && go === undefined) continue
     const attrs = { ...node.attrs }
-    for (const [attr, field] of Object.entries(bindings)) if (attr !== 'text') attrs[attr] = showValue(row[field])
+    if (go !== undefined) attrs[GO_ATTR] = go
+    for (const [attr, field] of Object.entries(bindings)) if (attr !== 'text') attrs[attr] = resolveBinding(field, row)
     let children = node.children
     if (bindings.text) {
       for (const child of node.children) for (const gone of collectSubtreeIds(next, child)) delete next[gone]
       const textId = createId()
-      next[textId] = { id: textId, kind: 'text', parentId: id, text: showValue(row[bindings.text]) }
+      next[textId] = { id: textId, kind: 'text', parentId: id, text: resolveBinding(bindings.text, row) }
       children = [textId]
     }
     next[id] = { ...node, attrs, children }
@@ -52,15 +57,15 @@ export function expandDataLists(doc: PageDoc): PageDoc {
   return { ...doc, nodes }
 }
 
-/** "One record" boxes with their row's values in place (the first row, or the row number; "?id" boxes get the first row, then recordPlayer picks the right one). */
-export function expandRecords(doc: PageDoc): PageDoc {
+/** "One record" boxes with their row's values in place: the first row, the row number, or for "?id" boxes the row whose id is in `params` (the page address; downloads use recordPlayer). */
+export function expandRecords(doc: PageDoc, params: Params = {}): PageDoc {
   const boxes = Object.values(doc.nodes).filter(isRecordBox)
   if (!boxes.length) return doc
   let nodes: NodeMap = { ...doc.nodes }
   for (const box of boxes) {
     const info = recordInfo(nodes, box.id)
     const source = (doc.data ?? []).find((item) => item.name === info?.source)
-    const row = source ? pickRow(source.rows, info!.row) : undefined
+    const row = source ? pickRow(source.rows, info!.row, info!.row.kind === 'param' ? params[info!.row.name] ?? null : null) : undefined
     if (row) nodes = fillCard(nodes, box.id, row)
   }
   return { ...doc, nodes }

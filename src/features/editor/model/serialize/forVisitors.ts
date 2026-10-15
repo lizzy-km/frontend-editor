@@ -1,6 +1,7 @@
 import { ANIMATE_ATTR, easingCss, EFFECTS, poseCss, REST } from '../animations'
 import { hiddenFor, VISITOR, type Viewer } from '../conditions'
 import { isPageNode } from '../pages'
+import type { Params } from '../routes'
 import { removeNode } from '../tree/treeOps'
 import { isElement, type PageDoc } from '../types'
 import { expandDataLists, expandRecords } from './expandLists'
@@ -89,4 +90,4 @@ function forViewer(doc: PageDoc, viewer: Viewer): PageDoc {
  * viewer may see (downloads: a signed-out visitor), lists filled with their
  * data rows, and the animation, form, pop-up and layout players added.
  */
-export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR): PageDoc => withLayouts(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(doc, viewer))))))))
+export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR, params: Params = {}): PageDoc => withLayouts(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(doc, viewer)), params))))))

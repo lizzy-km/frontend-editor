@@ -95,10 +95,11 @@ ${paged
 export const use${name} = () =>
   useQuery({ queryKey: ['${source.name}'], queryFn: async () => (await fetch${name}(1, 100)).items })
 
-/** One row of ${source.name}: the first, the Nth (1 = first), or the one whose id is in the page address (?id=3). */
-export function use${name}Record(which: 'first' | number | { param: string } = 'first') {
+/** One row of ${source.name}: the first, the Nth (1 = first), or the one whose id is in the page address (/products/3 or ?id=3). */
+export function use${name}Record(which: 'first' | number | { param: string; value?: string } = 'first') {
   const query = use${name}()
-  const wanted = typeof which === 'object' ? new URLSearchParams(window.location.search).get(which.param) : null
+  // The page address wins (/products/3 gives value "3"); else ?id=3.
+  const wanted = typeof which === 'object' ? which.value ?? new URLSearchParams(window.location.search).get(which.param) : null
   const rows = query.data ?? []
   const data: ${type} | undefined = typeof which === 'number'
     ? rows[which - 1] ?? rows[0]

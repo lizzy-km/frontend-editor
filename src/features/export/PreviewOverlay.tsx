@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { Params } from '@/features/editor/model/routes'
 import { BREAKPOINTS } from '@/features/editor/model/breakpoints'
 import { getDoc } from '@/features/editor/store/doc.store'
 import { useViewStore } from '@/features/editor/store/view.store'
@@ -18,6 +19,7 @@ export function PreviewOverlay() {
   const pageId = useViewStore((state) => state.pageId)
   const setPageId = useViewStore((state) => state.setPageId)
   const viewer = useViewStore((state) => state.viewer)
+  const [params, setParams] = useState<Params>({})
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setPreview(false)
@@ -34,7 +36,7 @@ export function PreviewOverlay() {
       </header>
       <div className={styles.stage}>
         <SafePageFrame
-          doc={doc} title="Preview of your page" className={styles.frame} pageId={pageId} onOpenPage={setPageId} viewer={viewer}
+          doc={doc} title="Preview of your page" className={styles.frame} pageId={pageId} onOpenPage={(id, next) => { setPageId(id); setParams(next) }} params={params} viewer={viewer}
           width={breakpoint === 'desktop' ? '100%' : BREAKPOINTS[breakpoint].frameWidth}
         />
       </div>

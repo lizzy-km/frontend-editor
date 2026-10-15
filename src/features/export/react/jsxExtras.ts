@@ -2,6 +2,7 @@ import { GO_ATTR } from '@/features/editor/model/pages'
 import { animationOf, type Animation } from '@/features/editor/model/animations'
 import { conditionOf, hasCondition } from '@/features/editor/model/conditions'
 import { NAV_ATTR } from '@/features/editor/model/layouts'
+import { isParamSegment, matchPath, routeParams, tanstackPath } from '@/features/editor/model/routes'
 import type { ElementNode } from '@/features/editor/model/types'
 import type { JsxContext } from './jsxWriter'
 import { uiImports, type UiUse } from './popups/jsxPopups'
@@ -10,6 +11,11 @@ import { uiImports, type UiUse } from './popups/jsxPopups'
 
 /** A row field as JSX text or an attribute value of the right type. */
 export function fieldExpression(ctx: JsxContext, field: string, asText: boolean): string | null {
+  // An address with the row's values in it ("/products/:id").
+  if (field.startsWith('/')) {
+    const names = routeParams(field).filter((name) => ctx.row?.has(name))
+    return `\`${field.split('/').map((segment) => (isParamSegment(segment) && names.includes(segment.slice(1)) ? `\${encodeURIComponent(String(${segment.slice(1)}))}` : segment)).join('/')}\``
+  }
   const type = ctx.row?.get(field)
   if (!type) return null
   if (type === 'boolean') return `${field} ? 'Yes' : 'No'`
@@ -29,9 +35,16 @@ export function goHandlers(ctx: JsxContext, target: string, typed: boolean): str
 /** <a href="/about"> -> <Link to="/about"> when /about is a page of the site (not inside item templates' changing links). */
 export function asRouterLink(ctx: JsxContext, node: ElementNode): ElementNode {
   const href = node.attrs.href ?? ''
-  if (node.tag !== 'a' || !ctx.links?.paths.has(href) || ctx.props?.has(`${node.id}@href`)) return node
+  if (node.tag !== 'a' || !ctx.links || ctx.props?.has(`${node.id}@href`)) return node
+  // A link to a page with a changing part (/products/3): TanStack wants the pattern and the values apart.
+  const pattern = ctx.links.paths.has(href) ? undefined : ctx.links.dynamic?.find((each) => matchPath(each, href))
+  if (!ctx.links.paths.has(href) && !pattern) return node
   const attrs: Record<string, string> = { to: href, ...node.attrs }
   delete attrs.href
+  if (pattern && ctx.links.lib !== 'react-router') {
+    attrs.to = tanstackPath(pattern)
+    attrs[PARAMS_ATTR] = JSON.stringify(matchPath(pattern, href))
+  }
   // Menu links (data-fe-nav) highlight the open page: React Router's NavLink adds the "active" class itself.
   if (NAV_ATTR in node.attrs && ctx.links.lib === 'react-router') {
     ctx.links.navLink = true
@@ -40,6 +53,9 @@ export function asRouterLink(ctx: JsxContext, node: ElementNode): ElementNode {
   ctx.links.used = true
   return { ...node, tag: 'Link', attrs }
 }
+
+/** Marks a TanStack link whose route has changing parts (the values are written as params={{ … }}). */
+export const PARAMS_ATTR = 'data-fe-params'
 
 /** Motion state of one generated file: which helpers it used, and children to animate one by one. */
 export type MotionState = { animation: boolean; item: boolean; items: Map<string, string> }

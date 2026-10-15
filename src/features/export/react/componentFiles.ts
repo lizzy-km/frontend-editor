@@ -5,21 +5,12 @@ import { motionImports, motionState, newShow, showImport } from './jsxExtras'
 import { formComponents } from './forms/formTemplates'
 import { listComponents, type ListOptions } from './listTemplates'
 import { recordComponents } from './records/recordTemplates'
+import { linkImport, linksFor, navigateHook, type RouterLinks } from './routerLinks'
 import { findRepeats, type PropValue, type RepeatGroup } from './repeats'
 
 type ClassFor = (node: ElementNode) => string | undefined
 type TakeName = (wanted: string, alternative?: string) => string
-/** Sites: page addresses that become router links, where Link/useNavigate come from, and how to call navigate. */
-export type RouterLinks = { paths: Set<string>; lib: string; go: (target: string, typed: boolean) => string }
-
-const linksFor = (router?: RouterLinks) => (router ? { paths: router.paths, lib: router.lib, used: false, navigate: false, go: router.go } : undefined)
-/** `import { Link, useNavigate } from '…'` for what the file used. */
-function linkImport(ctx: JsxContext, router?: RouterLinks): string[] {
-  const names = [ctx.links?.used && 'Link', ctx.links?.navLink && 'NavLink', ctx.links?.navigate && 'useNavigate'].filter(Boolean)
-  return names.length && router ? [`import { ${names.join(', ')} } from '${router.lib}'`] : []
-}
-/** The hook line for components with "click goes to" boxes. */
-const navigateHook = (ctx: JsxContext) => (ctx.links?.navigate ? ['  const navigate = useNavigate()'] : [])
+export type { RouterLinks }
 
 /** One .tsx file in src/components. */
 /** One .tsx file; `ids` are the page elements it was made from (the "focused component" lookup). */
@@ -73,7 +64,7 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
 
   const ctx: JsxContext = { nodes, classFor, repeats, links: linksFor(router), motion: motionState(), show: newShow() }
   // "List from data" boxes become their own list + card components.
-  const dataLists = data ? listComponents({ nodes, classFor }, rootId, takeName, data) : { lists: new Map<string, string>(), files: [] }
+  const dataLists = data ? listComponents({ nodes, classFor }, rootId, takeName, { ...data, router }) : { lists: new Map<string, string>(), files: [] }
   ctx.lists = dataLists.lists
   items.push(...dataLists.files)
   // Forms set up in the editor become their own React Hook Form + Zod components.
@@ -81,7 +72,7 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
   ctx.forms = forms.forms
   items.push(...forms.files)
   // "One record" data boxes become components with a typed React Query hook.
-  const records = data ? recordComponents({ nodes, classFor }, rootId, takeName, data) : { records: new Map<string, string>(), files: [] }
+  const records = data ? recordComponents({ nodes, classFor }, rootId, takeName, data, router) : { records: new Map<string, string>(), files: [] }
   ctx.records = records.records
   items.push(...records.files)
   const body = writeElement(ctx, rootId, BODY_PAD)

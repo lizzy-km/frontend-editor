@@ -8,6 +8,7 @@ import { getProjectMeta } from '@/features/workspace/api/projectQueries'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { Button, EmptyState, Icon, PageSpinner } from '@/shared/ui'
 import styles from './Gallery.module.css'
+import type { Params } from '@/features/editor/model/routes'
 import { SafePageFrame } from '@/features/export/SafePageFrame'
 import { useMakeCopy } from './useMakeCopy'
 
@@ -29,6 +30,7 @@ export default function PublicPageView() {
   const uid = useAuthStore((state) => state.user?.uid)
   const [size, setSize] = useState<Breakpoint>('desktop')
   const [pageId, setPageId] = useState<string | null>(null) // sites: which page the visitor is on
+  const [params, setParams] = useState<Params>({}) // the changing parts of its address (/products/3)
   const { makeCopy, busy } = useMakeCopy(projectId, page.data?.doc)
   useEffect(startAuth, [])
 
@@ -59,7 +61,7 @@ export default function PublicPageView() {
       </header>
       <div className={styles.stage}>
         <SafePageFrame doc={doc} title={meta.name} className={styles.frame} width={size === 'desktop' ? '100%' : BREAKPOINTS[size].frameWidth}
-          pageId={pageId} onOpenPage={setPageId} />
+          pageId={pageId} onOpenPage={(id, next) => { setPageId(id); setParams(next) }} params={params} />
       </div>
     </div>
   )
