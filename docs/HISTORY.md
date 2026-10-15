@@ -3,6 +3,22 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/tsx-edit — 2026-10-15
+- **Editable React markup**: in Code → React (TSX), a component made of plain
+  markup (a header, hero, footer, a section with repeated cards…) can be edited.
+  Change words, tags, attributes or structure, press **Apply to page**: the page
+  follows, as one undo step. Elements that still match keep their id and styles
+  (the `fe-…` edit class is hidden from the match); repeated cards, forms and
+  lists inside stay as blocks you can move or delete but not rebuild. A mistake
+  is shown with its line and nothing is applied; **Undo my changes** resets the box.
+- Components with code in them (props, handlers, conditions, menus, pop-ups) stay
+  read-only, with the reason shown. A page file only lists other components.
+- `export/react/jsxEdit/`: `jsxParse.ts` (reads only the JSX the export writes),
+  `applyJsx.ts` (`extractMarkup`, `editBlocker`, `applyMarkup`: aligns old and new
+  children, keeps component blocks, strips edit classes, restores React-spelled
+  attributes), `attrNames.ts`. Applying unedited code changes nothing (tested for
+  every plain component).
+
 ## feature/tsx-view — 2026-10-15
 - **React (TSX) view** in the Code tab: switch between "Page code" and "React
   (TSX)". The React view shows the real code of the component around what you

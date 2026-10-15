@@ -58,3 +58,4 @@
 .reactView { display: flex; flex-direction: column; gap: 10px; }
 .reactSelect { font: inherit; font-weight: 400; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); }
 .reactActions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.reactProblem { font-size: 13px; font-weight: 600; color: #b91c1c; }
