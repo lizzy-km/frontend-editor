@@ -275,6 +275,26 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Data on boxes (`model/dataRecords.ts`, `inspector/sections/DataSection.tsx`)
+
+- `dataBoxOf(nodes, id)` = list (`data-fe-list`) or record (`data-fe-record` +
+  `data-fe-row`). Bindings are the same for both (`data-fe-bind[-attr]`); a
+  binding that starts with "/" is an address template (`/user/:id`) filled from
+  the row (`resolveBinding`, mirrored in `frame/runtime/lists.js` and
+  `serialize/recordPlayer.ts`). `expandRecords` / `expandDataLists` fill
+  Preview and downloads; `?id` boxes also get `recordPlayer`.
+- React: `records/recordTemplates.ts` (component + hook call), the hook is in
+  `dataTemplates.ts`; list cards can navigate or call a handler
+  (`CALL_ATTR`, `handlers.ts`). `routerLinks.ts` holds the router import/hook helpers.
+
+## Routes with changing parts (`model/routes.ts`)
+
+- `/user/:id` is an ordinary page path. `matchPage` (exact first, then
+  patterns) is used by Preview, the public view, static links
+  (`sitePages.linkToFiles`, applied again after data is filled) and the React
+  export (`tanstackPath`, `PARAMS_ATTR`). Address templates stay untouched until
+  the data is expanded.
+
 ## Editing React markup (`export/react/jsxEdit/`)
 
 - The reverse of the JSX writer, for the markup it writes: `parseJsx` ->

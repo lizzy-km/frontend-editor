@@ -3,6 +3,33 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/data-wiring + feature/dynamic-routes — 2026-10-15
+- **Data on any box** (Actions → Data): a box shows a data source as **Every
+  item** (the existing list: its first child is the card design) or **One item**
+  (`data-fe-record`). Which one: the first, one by number, or **the one in the
+  link** (`data-fe-row="?id"`). Each picture and piece of text inside gets a
+  field from a select; **Fill in the fields for me** connects them by what fits.
+  Preview and downloads show the real values. React: a component per one-item
+  box with a typed `use<Source>Record` hook (React Query), fields as typed props.
+- **Pages with a changing address** (`/user/:id`): write it in the page address
+  or add a **Detail page** (Add a page → Detail page): a ready page that shows
+  one item chosen by the link. React Router keeps `:id`, TanStack gets `$id`
+  with typed links (`params={{ id: "3" }}`); downloads get one file
+  (`user-_id.html`) and links like `user-_id.html?id=3`; Preview follows links
+  to `/user/3`. `model/routes.ts` has the matching helpers.
+- **Cards that do something when clicked** ("On click" in the list's Data
+  section): open a page (an address like `/store-product/:id` takes each
+  card's own values; works in the editor frame, Preview, downloads and React),
+  or **run my code**: the React download calls `yourFunction(item)` from a
+  generated `src/data/handlers.ts`.
+- **Show in the menu** (page settings): off by default; the layouts list only the
+  pages switched on (not Log in / Sign up pages, not changing pages). The Layout
+  panel says how many pages are in the menu and can list them all.
+- **Preview has "Viewing as"**: switch visitor / signed in / each role while
+  previewing, and the page, menus and guards follow.
+- Wording: everything above uses plain words (item, link, detail page), no
+  record / row / route / param on screen.
+
 ## feature/tsx-edit — 2026-10-15
 - **Editable React markup**: in Code → React (TSX), a component made of plain
   markup (a header, hero, footer, a section with repeated cards…) can be edited.

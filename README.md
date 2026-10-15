@@ -115,6 +115,15 @@ Actions (what it does) and More.
 **Colors:** the Colors tab lists every color of your project. Change one and it
 changes everywhere; colors defined as CSS variables (theme colors) come first.
 
+## Data on any box
+
+Under Actions → Data, make any box show your data: **every item** (a list of
+cards) or **one item**. "Fill in the fields for me" connects the pictures and
+text. For a page per item (`/product/3`), add a **Detail page** (Pages → Add a
+page) and set your cards to open it: Actions → Data → On click → Open page. Pages
+have a **Show in the menu** switch (off by default) for the top bar / side menu,
+and Preview has **Viewing as** to test visitors, members and admins.
+
 ## Who can see what
 
 "Who can see this" shows an element or page to everyone, signed-in people
