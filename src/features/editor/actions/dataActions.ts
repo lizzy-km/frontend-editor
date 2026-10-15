@@ -17,6 +17,12 @@ export function createSource(start: Omit<DataSource, 'id'>, preset: string): str
   return id
 }
 
+/** Connects a source to a real API: remembers the address, list place and key setting, and takes the fields and sample items the test found. One undo step. */
+export function connectApi(id: string, api: NonNullable<DataSource['api']>, parsed: ParsedJson) {
+  updateDoc((doc) => importData(updateSource(doc, id, { api }), id, parsed, 'replace'))
+  track('api_connect', { auth: Boolean(api.auth), rows: parsed.rows.length })
+}
+
 /** Fills a data source from pasted JSON: replaces its fields and rows, or adds to them. One undo step. */
 export function importJson(id: string, parsed: ParsedJson, mode: 'replace' | 'add') {
   updateDoc((doc) => importData(doc, id, parsed, mode))

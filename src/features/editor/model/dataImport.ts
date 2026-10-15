@@ -3,7 +3,8 @@ import type { DataField, DataSource, DataValue, FieldType, PageDoc } from './typ
 
 /** Turning pasted JSON (an API answer, an export) into the fields and sample rows of a data source. */
 
-export type ParsedJson = { fields: DataField[]; rows: Record<string, DataValue>[]; notes: string[] }
+/** `listPath`: where the list sits in the answer ("data.items"; empty = the answer is the list). */
+export type ParsedJson = { fields: DataField[]; rows: Record<string, DataValue>[]; notes: string[]; listPath: string }
 export type ParseResult = ({ ok: true } & ParsedJson) | { ok: false; error: string }
 
 const MAX_ROWS = 500
@@ -16,22 +17,28 @@ const isList = (value: unknown): value is Record<string, unknown>[] => Array.isA
 
 /** The list of objects inside an answer: the answer itself, or the biggest list found by looking inside objects. */
 export function findList(json: unknown, depth = 0): Record<string, unknown>[] | null {
-  if (isList(json)) return json
+  return findListAt(json, '', depth)?.list ?? null
+}
+
+/** The same, with where it was found: { list, path: "data.items" }. */
+export function findListAt(json: unknown, path = '', depth = 0): { list: Record<string, unknown>[]; path: string } | null {
+  if (isList(json)) return { list: json, path }
   if (!isObject(json) || depth > 3) return null
-  const found = Object.values(json).map((value) => findList(value, depth + 1)).filter((list): list is Record<string, unknown>[] => list !== null)
-  return found.sort((a, b) => b.length - a.length)[0] ?? null
+  const found = Object.entries(json).map(([key, value]) => findListAt(value, path ? `${path}.${key}` : key, depth + 1)).filter((hit) => hit !== null)
+  return found.sort((a, b) => b.list.length - a.list.length)[0] ?? null
 }
 
 /** One object as flat key -> value: nested objects become `parentChild`, lists of words become "a, b". */
-function flatten(object: Record<string, unknown>, notes: Set<string>, prefix = ''): Record<string, unknown> {
+function flatten(object: Record<string, unknown>, notes: Set<string>, paths: Map<string, string>, prefix = '', path = ''): Record<string, unknown> {
   const flat: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(object)) {
     const name = prefix ? `${prefix} ${key}` : key
-    if (isObject(value)) Object.assign(flat, flatten(value, notes, name))
+    const here = path ? `${path}.${key}` : key
+    if (isObject(value)) Object.assign(flat, flatten(value, notes, paths, name, here))
     else if (Array.isArray(value)) {
-      if (value.every((item) => item === null || typeof item !== 'object')) flat[name] = value.join(', ')
+      if (value.every((item) => item === null || typeof item !== 'object')) { flat[name] = value.join(', '); paths.set(name, here) }
       else notes.add(`“${name}” holds a list of objects: left out.`)
-    } else flat[name] = value
+    } else { flat[name] = value; paths.set(name, here) }
   }
   return flat
 }
@@ -59,10 +66,17 @@ function coerce(value: unknown, type: FieldType): DataValue {
 export function parseJsonData(text: string): ParseResult {
   let json: unknown
   try { json = JSON.parse(text) } catch { return { ok: false, error: 'This is not valid JSON. Check for a missing comma, quote or bracket.' } }
-  const list = findList(json) ?? (isObject(json) ? [json] : null)
-  if (!list) return { ok: false, error: 'No list of items found. Paste an array of objects like [{ "name": "Shirt", "price": 59 }].' }
+  return parseJsonValue(json)
+}
+
+/** The same for JSON that is already parsed (an API answer). */
+export function parseJsonValue(json: unknown): ParseResult {
+  const found = findListAt(json) ?? (isObject(json) ? { list: [json], path: '' } : null)
+  if (!found) return { ok: false, error: 'No list of items found. Paste an array of objects like [{ "name": "Shirt", "price": 59 }].' }
+  const { list } = found
   const notes = new Set<string>()
-  const flat = list.slice(0, MAX_ROWS).map((object) => flatten(object, notes))
+  const paths = new Map<string, string>()
+  const flat = list.slice(0, MAX_ROWS).map((object) => flatten(object, notes, paths))
   if (list.length > MAX_ROWS) notes.add(`Only the first ${MAX_ROWS} of ${list.length} items were kept.`)
   const keys = [...new Set(flat.flatMap((row) => Object.keys(row)))]
   const names = new Map<string, string>()
@@ -71,10 +85,11 @@ export function parseJsonData(text: string): ParseResult {
     for (let n = 2; [...names.values()].includes(name); n++) name = `${codeName(key, 'field')}${n}`
     names.set(key, name)
   }
-  const fields: DataField[] = keys.map((key) => ({ name: names.get(key)!, type: kindOf(key, flat.map((row) => row[key])) }))
+  // `from`: where the value sits in the API's answer (only when it isn't simply the same name).
+  const fields: DataField[] = keys.map((key) => ({ name: names.get(key)!, type: kindOf(key, flat.map((row) => row[key])), ...(paths.get(key) && paths.get(key) !== names.get(key) ? { from: paths.get(key) } : {}) }))
   const rows = flat.map((row) => Object.fromEntries(keys.map((key, index) => [fields[index]!.name, coerce(row[key], fields[index]!.type)])))
   if (fields.length === 0) return { ok: false, error: 'The items have no fields.' }
-  return { ok: true, fields, rows, notes: [...notes] }
+  return { ok: true, fields, rows, notes: [...notes], listPath: found.path }
 }
 
 /** Replaces the source's fields and rows, or adds the rows to what is there (new fields are added; missing values stay empty). */

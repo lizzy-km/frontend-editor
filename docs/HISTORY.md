@@ -3,6 +3,25 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/connect-api — 2026-10-15
+- **Connect your API** (Data tab → a data source → Connect your API): paste the
+  address, say if it needs a key, press **Test connection**. Errors are in plain
+  words (not a web address, 401/403 = check the key, 404, too slow, "can't reach
+  it from here": CORS). A good answer shows how many items and which fields were
+  found (even inside `{ "data": { "items": [...] } }`); **Use these N items**
+  remembers the address, where the list is and the key setting, and keeps the
+  items as sample data (one undo step). The key typed for the test is never saved.
+- Keys: header (default `Authorization`), what comes before the key (`Bearer `)
+  and the name of the `.env` setting (`VITE_API_KEY`). The download reads the key
+  from that setting, lists it in `.env.example` and warns that website visitors
+  can see keys used this way.
+- React: `src/api/<name>.ts` now maps the real answer to typed items (`toRow`,
+  `FIELDS` with each field's place like `rating.rate`), so nested APIs work, and
+  sends the key header. Verified in a real build against a pretend API (live mode
+  shows its items, sends `Bearer …`, maps nested fields).
+- `DataField.from`, `DataApi.auth`, `model/apiTest.ts` (`testApi`, plain-language
+  messages), `parseJsonValue` / `findListAt` in `model/dataImport.ts`.
+
 ## feature/data-wiring + feature/dynamic-routes — 2026-10-15
 - **Data on any box** (Actions → Data): a box shows a data source as **Every
   item** (the existing list: its first child is the card design) or **One item**

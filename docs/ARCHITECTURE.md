@@ -275,6 +275,15 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Real APIs (`model/apiTest.ts`, `sidebar/data/ApiConnectDialog.tsx`)
+
+- The test runs in the editor with `fetch` (so CORS applies there); its result
+  goes through `parseJsonValue`, the same path as pasted JSON, so a connected
+  source and an imported one have the same fields (`from` = place in the answer).
+  The exported hook (`dataTemplates.sourceFile`) maps with `toRow`/`FIELDS` and
+  sends `HEADERS` from `import.meta.env.<envVar>`; keep the editor test and the
+  export in step when the request shape changes (paging, headers).
+
 ## Data on boxes (`model/dataRecords.ts`, `inspector/sections/DataSection.tsx`)
 
 - `dataBoxOf(nodes, id)` = list (`data-fe-list`) or record (`data-fe-record` +
