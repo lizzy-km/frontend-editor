@@ -1,7 +1,6 @@
-import { strFromU8, unzipSync } from 'fflate'
+import { strFromU8, Unzip, UnzipInflate } from 'fflate'
 import type { ExportFiles } from '@/features/export/buildFiles'
 
-const MAX_ZIP_BYTES = 200 * 1024 * 1024
 const MAX_FILE_BYTES = 8 * 1024 * 1024
 /** Never needed to reopen a project, and often huge. */
 const SKIPPED = /(^|\/)(node_modules|\.git|dist|build)\//
@@ -18,11 +17,42 @@ function withoutTopFolder(files: ExportFiles, force: boolean): ExportFiles {
   return Object.fromEntries(paths.map((path) => [path.slice(top.length + 1), files[path]!]))
 }
 
-/** The text files of a .zip (a React download), by path. */
+/**
+ * The text files of a .zip (a React download), by path. It is read as a stream and files we don't
+ * need (node_modules, .git, dist, pictures…) are never opened, so a zip that still contains
+ * node_modules loads as fast as a clean one.
+ */
 export async function readZip(file: File): Promise<ExportFiles> {
-  if (file.size > MAX_ZIP_BYTES) throw new Error('That .zip is very big. Delete node_modules from the project and zip it again.')
-  const entries = unzipSync(new Uint8Array(await file.arrayBuffer()), { filter: (entry) => wanted(entry.name) && entry.originalSize <= MAX_FILE_BYTES })
-  return withoutTopFolder(Object.fromEntries(Object.entries(entries).map(([path, bytes]) => [path, strFromU8(bytes)])), false)
+  const found: Record<string, Uint8Array[]> = {}
+  let failure: Error | null = null
+  const unzip = new Unzip((entry) => {
+    if (entry.name.endsWith('/') || !wanted(entry.name)) return
+    const chunks: Uint8Array[] = []
+    let size = 0
+    entry.ondata = (error, chunk, last) => {
+      if (error) { failure = error; return }
+      size += chunk.length
+      if (size > MAX_FILE_BYTES) { failure = new Error(`“${entry.name}” is too big to be part of a Tweak project.`); entry.terminate(); return }
+      chunks.push(chunk)
+      if (last) found[entry.name] = chunks
+    }
+    entry.start()
+  })
+  unzip.register(UnzipInflate)
+  const reader = file.stream().getReader()
+  for (;;) {
+    const { done, value } = await reader.read()
+    unzip.push(value ?? new Uint8Array(0), done)
+    if (failure) throw failure
+    if (done) break
+  }
+  const text = (chunks: Uint8Array[]) => {
+    const joined = new Uint8Array(chunks.reduce((sum, chunk) => sum + chunk.length, 0))
+    let at = 0
+    for (const chunk of chunks) { joined.set(chunk, at); at += chunk.length }
+    return strFromU8(joined)
+  }
+  return withoutTopFolder(Object.fromEntries(Object.entries(found).map(([path, chunks]) => [path, text(chunks)])), false)
 }
 
 /** The text files of a chosen folder, by path (the folder's own name is removed). */
