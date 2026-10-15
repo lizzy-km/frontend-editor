@@ -3,6 +3,21 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/home-page — 2026-10-15
+- **New home page** for the full builder: hero with a CSS-built editor picture,
+  eight feature cards, three steps, a "take it anywhere" downloads band,
+  audience and final call to action (`features/home`, content in `homeContent.ts`).
+- **User guide** at `/guide` (Quick guide: five steps, one line per topic, the
+  shortcuts) and `/guide/full` (contents list that follows you, search, every
+  topic in detail, `#topic` links scroll to it). Both come from one data set
+  (`features/guide/content/*.ts`; each topic has a `brief` for the quick guide).
+- Pictures: hand-drawn SVG diagrams plus real editor screenshots in
+  `public/guide/`. Regenerate the screenshots with `node e2e/guide-shots.mjs`.
+- Links: "Guide" in the home top bar and footer, and a **?** button in the
+  editor toolbar (opens the guide in a new tab so work is not lost).
+- Tests: `guideContent.test.ts` (unique ids, a brief for each topic, search) and
+  `e2e/guide.mjs`.
+
 ## fix/project-size — 2026-10-15
 - **"Too big to save to your account"** (`ProjectTooBigError`, seen when pictures
   are pasted inside the code): the page is now saved squeezed (gzip, written as
