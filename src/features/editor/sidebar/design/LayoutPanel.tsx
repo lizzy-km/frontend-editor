@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Button, Switch } from '@/shared/ui'
-import { createLayout, dropLayout } from '../../actions/pageActions'
-import { layoutOf, ownHeader, type LayoutKind } from '../../model/layouts'
+import { createLayout, dropLayout, showAllInMenu } from '../../actions/pageActions'
+import { canBeInMenu, layoutOf, ownHeader, type LayoutKind } from '../../model/layouts'
+import { listPages } from '../../model/pages'
 import { useDocStore } from '../../store/doc.store'
 import styles from './Design.module.css'
 
@@ -14,6 +15,7 @@ const CHOICES: { kind: LayoutKind; label: string; hint: string }[] = [
 /** Ready-made layouts: the menu is made from the pages and follows who can see them; on phones it becomes a ☰ button. */
 export function LayoutPanel() {
   const current = useDocStore((state) => layoutOf(state.doc))
+  const menuPages = useDocStore((state) => listPages(state.doc).filter((page) => canBeInMenu(page) && page.inMenu).length)
   const hasOwnHeader = useDocStore((state) => ownHeader(state.doc).length > 0)
   const [kind, setKind] = useState<LayoutKind>(current ?? 'top')
   const [replace, setReplace] = useState(true)
@@ -35,7 +37,12 @@ export function LayoutPanel() {
         </Button>
         {current && <Button size="small" icon="trash" variant="ghost" onClick={dropLayout}>Remove</Button>}
       </div>
-      <p className={styles.note}>The menu lists your pages and follows who can see them. Add pages later, then press “Update layout and menu”.</p>
+      <p className={styles.note}>
+        {menuPages === 0
+          ? 'No page is in the menu yet. Turn on “Show in the top bar / side menu” in a page’s settings (Pages tab), or list them all:'
+          : `${menuPages} ${menuPages === 1 ? 'page is' : 'pages are'} in the menu. Choose which ones in each page’s settings (Pages tab), then press “Update layout and menu”.`}
+      </p>
+      {menuPages === 0 && <Button size="small" variant="ghost" onClick={showAllInMenu}>Show all pages in the menu</Button>}
     </div>
   )
 }

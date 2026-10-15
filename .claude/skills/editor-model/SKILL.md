@@ -116,6 +116,15 @@ that break things if you ignore them.
     boxes are direct children of `<body>` in exported CSS (React wraps them in
     `#root`).
 
+27. **Data wiring uses the same bindings for lists and one-item boxes**
+    (`model/dataRecords.ts`). A binding starting with "/" is an address template:
+    resolve it with `resolveBinding`, keep the three copies (static, frame runtime,
+    record player) and the React `fieldExpression` in sync. Page paths may hold
+    `:param` parts: always match with `matchPage`, never `===`.
+28. **Wording on screen is for non-developers**: item, link, detail page, menu.
+    Developer terms (function, route, param, handlers.ts) only in a short
+    "For developers" note, and only where the React download needs it.
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

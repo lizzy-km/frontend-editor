@@ -12,12 +12,19 @@
     return value === true ? 'Yes' : value === false ? 'No' : value == null ? '' : String(value)
   }
 
+  /** A field's value, or an address template ("/products/:id") with the row's values put in. */
+  function value(spec, row) {
+    if (spec.charAt(0) !== '/') return show(row[spec])
+    return spec.replace(/:([A-Za-z_]\w*)/g, function (_, name) { return encodeURIComponent(show(row[name])) })
+  }
+
   function fill(card, row) {
     var all = [card].concat(Array.prototype.slice.call(card.querySelectorAll('*')))
     all.forEach(function (element) {
       Array.prototype.slice.call(element.attributes).forEach(function (attr) {
-        if (attr.name === 'data-fe-bind') element.textContent = show(row[attr.value])
-        else if (attr.name.indexOf('data-fe-bind-') === 0) element.setAttribute(attr.name.slice(13), show(row[attr.value]))
+        if (attr.name === 'data-fe-bind') element.textContent = value(attr.value, row)
+        else if (attr.name === 'data-fe-go' && attr.value.charAt(0) === '/' && attr.value.indexOf(':') > -1) element.setAttribute('data-fe-go', value(attr.value, row))
+        else if (attr.name.indexOf('data-fe-bind-') === 0) element.setAttribute(attr.name.slice(13), value(attr.value, row))
       })
     })
   }

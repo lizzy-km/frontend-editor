@@ -1,3 +1,5 @@
+import { tanstackPath } from '@/features/editor/model/routes'
+
 /** The two routers people can pick for a site, and the files that differ between them. */
 export type RouterKind = 'react-router' | 'tanstack'
 
@@ -40,7 +42,7 @@ function tanstackSource(routes: RouteFile[], imports: string[]): string {
     ...pageImports(routes), ...imports, '',
     '/** The shared Layout (header, footer…) around every page. */',
     'const rootRoute = createRootRoute({ component: Layout, notFoundComponent: NotFoundPage })', '',
-    ...routes.map((route) => `const ${routeName(route)} = createRoute({ getParentRoute: () => rootRoute, path: '${route.path}', ${route.beforeLoad ? `beforeLoad: ${route.beforeLoad}, ` : ''}component: ${route.component} })`),
+    ...routes.map((route) => `const ${routeName(route)} = createRoute({ getParentRoute: () => rootRoute, path: '${tanstackPath(route.path)}', ${route.beforeLoad ? `beforeLoad: ${route.beforeLoad}, ` : ''}component: ${route.component} })`),
     '',
     `const routeTree = rootRoute.addChildren([${routes.map(routeName).join(', ')}])`, '',
     'export const router = createRouter({ routeTree, scrollRestoration: true })', '',

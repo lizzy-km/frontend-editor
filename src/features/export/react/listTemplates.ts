@@ -1,14 +1,21 @@
 import { rowTypeName } from '@/features/editor/model/data'
 import { bindingsOf, isListBox, listInfo, type ListInfo } from '@/features/editor/model/dataLists'
+import { GO_ATTR } from '@/features/editor/model/pages'
+import { routeParams } from '@/features/editor/model/routes'
 import { collectSubtreeIds } from '@/features/editor/model/tree/queries'
 import { isElement, type DataSource, type ElementNode, type NodeMap } from '@/features/editor/model/types'
+import { linkImport, linksFor, navigateHook, type RouterLinks } from './routerLinks'
 import { motionImports, motionState, newShow, showImport, staggerItem } from './jsxExtras'
 import { closeTag, openTag, writeElement, type JsxContext } from './jsxWriter'
 
 type ComponentFile = { name: string; code: string; ids?: string[] }
 type TakeName = (wanted: string, alternative?: string) => string
 /** Where generated files reach src/ from ('..' in src/components, '../..' in src/components/<page>). */
-export type ListOptions = { base: string; sources: DataSource[] }
+/**
+ * Where generated files reach src/ from, the data sources, and (collected while writing) the functions
+ * that cards call when clicked: name -> the source whose row they get (src/data/handlers.ts).
+ */
+export type ListOptions = { base: string; sources: DataSource[]; router?: RouterLinks; handlers?: Map<string, DataSource> }
 
 /** Ready-made: src/components/ui/InfiniteScroll.tsx, for any useXInfinite() hook. */
 export const INFINITE_SCROLL = `import { useEffect, useRef, type ReactNode } from 'react'
@@ -63,33 +70,45 @@ export default function InfiniteScroll<T>({ query, render, empty = <p>Nothing he
 const pascal = (name: string) => name.charAt(0).toUpperCase() + name.slice(1)
 
 /** The fields a card design shows (its props). */
-function usedFields(nodes: NodeMap, templateId: string, source: DataSource): string[] {
+export function usedFields(nodes: NodeMap, templateId: string, source: DataSource): string[] {
   const names = new Set(source.fields.map((field) => field.name))
   const used = new Set<string>()
   for (const id of collectSubtreeIds(nodes, templateId)) {
     const node = nodes[id]
-    if (isElement(node)) for (const field of Object.values(bindingsOf(node))) if (names.has(field)) used.add(field)
+    if (isElement(node)) {
+      for (const field of [...Object.values(bindingsOf(node)), ...(node.attrs[GO_ATTR] ? [node.attrs[GO_ATTR]] : [])]) {
+        if (names.has(field)) used.add(field)
+        // An address template ("/products/:id") uses the row's fields named in it.
+        else if (field.startsWith('/')) routeParams(field).filter((name) => names.has(name)).forEach((name) => used.add(name))
+      }
+    }
   }
   return [...used]
 }
 
-function cardFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: string, base: string): ComponentFile {
+function cardFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: string, options: ListOptions): ComponentFile {
+  const { base, router } = options
   const type = rowTypeName(source.name)
   const fields = usedFields(ctx.nodes, info.templateId!, source)
-  // Links in a card stay plain <a> (the card file has no router imports).
-  const card: JsxContext = { nodes: ctx.nodes, classFor: ctx.classFor, row: new Map(source.fields.map((field) => [field.name, field.type])), motion: motionState(), show: newShow() }
+  // Links in a card stay plain <a>; a click on the whole card can open a page (navigate) or call a function with the row.
+  const card: JsxContext = { nodes: ctx.nodes, classFor: ctx.classFor, links: linksFor(router), row: new Map(source.fields.map((field) => [field.name, field.type])), motion: motionState(), show: newShow() }
   // A "one by one" list box: every card is a Motion item.
   const item = staggerItem(ctx.nodes[info.id] as ElementNode)
   if (item) card.motion!.items.set(info.templateId!, item)
   const body = writeElement(card, info.templateId!, '    ')
+  const calls = [...(card.show?.ui ?? [])].filter((use) => use.startsWith('call:')).map((use) => use.slice(5))
+  for (const call of calls) options.handlers?.set(call, source)
   return {
     name,
     ids: [info.templateId!],
     code: [
-      ...motionImports(card.motion, base), ...showImport(card.show, base), `import type { ${type} } from '${base}/data/types'`, '',
+      ...linkImport(card, router), ...motionImports(card.motion, base), ...showImport(card.show, base), `import type { ${type} } from '${base}/data/types'`, '',
       `/** One ${type} card. Change the design here; the words and pictures come from "${source.name}". */`,
-      `export default function ${name}(${fields.length ? `{ ${fields.join(', ')} }` : '_card'}: ${type}) {`,
-      '  return (', body, '  )', '}', '',
+      // A card that calls a function gets the whole row (row), and picks the fields it shows from it.
+      ...(calls.length
+        ? [`export default function ${name}(row: ${type}) {`, ...(fields.length ? [`  const { ${fields.join(', ')} } = row`] : [])]
+        : [`export default function ${name}(${fields.length ? `{ ${fields.join(', ')} }` : '_card'}: ${type}) {`]),
+      ...navigateHook(card), '  return (', body, '  )', '}', '',
     ].join('\n'),
   }
 }
@@ -119,7 +138,8 @@ function listFile(parent: JsxContext, info: ListInfo, source: DataSource, name: 
 }
 
 /** Finds the "List from data" boxes in a part and writes a list + card component for each. */
-export function listComponents(ctx: JsxContext, rootId: string, takeName: TakeName, { base, sources }: ListOptions) {
+export function listComponents(ctx: JsxContext, rootId: string, takeName: TakeName, options: ListOptions) {
+  const { base, sources } = options
   const lists = new Map<string, string>()
   const files: ComponentFile[] = []
   for (const id of collectSubtreeIds(ctx.nodes, rootId)) {
@@ -129,7 +149,7 @@ export function listComponents(ctx: JsxContext, rootId: string, takeName: TakeNa
     if (!info?.templateId || !source) continue
     const card = takeName(`${rowTypeName(source.name)}Card`)
     const name = takeName(`${pascal(source.name)}List`)
-    files.push(listFile(ctx, info, source, name, card, base), cardFile(ctx, info, source, card, base))
+    files.push(listFile(ctx, info, source, name, card, base), cardFile(ctx, info, source, card, options))
     lists.set(id, name)
   }
   return { lists, files }

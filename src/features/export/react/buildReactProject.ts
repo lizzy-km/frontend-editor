@@ -1,6 +1,6 @@
 import type { Origin } from './componentViews'
 import { getElement } from '@/features/editor/model/tree/queries'
-import type { PageDoc } from '@/features/editor/model/types'
+import type { DataSource, PageDoc } from '@/features/editor/model/types'
 import type { ExportFiles } from '../buildFiles'
 import { createNameRegistry } from './names'
 import { projectShell, renderParts, type Parts } from './projectShell'
@@ -8,6 +8,7 @@ import { animationDeps, animationFiles } from './animationTemplates'
 import { AUTH_DEPS, authFiles, needsAuth } from './auth/authFiles'
 import { dataFiles, DATA_DEPS } from './dataTemplates'
 import { popupUse } from '@/features/editor/model/popups'
+import { handlerFiles } from './handlers'
 import { formProject } from './forms/formTemplates'
 import { popupFiles } from './popups/uiTemplates'
 import { listUiFiles } from './listTemplates'
@@ -38,7 +39,8 @@ export function buildReactProject(fullDoc: PageDoc, onlyId?: string, origins?: O
   const doc = onlyId && onlyId !== fullDoc.rootId ? onlyPart(fullDoc, onlyId) : fullDoc
   const body = getElement(doc.nodes, doc.rootId)
   const sources = doc.data ?? []
-  const parts = renderParts(doc.nodes, body?.children ?? [], createNameRegistry(), '      ', undefined, { base: '..', sources })
+  const handlers = new Map<string, DataSource>()
+  const parts = renderParts(doc.nodes, body?.children ?? [], createNameRegistry(), '      ', undefined, { base: '..', sources, handlers })
   const forms = formProject(doc.nodes)
   const shell = projectShell(doc, { ...forms.deps, ...(sources.length ? DATA_DEPS : {}), ...animationDeps(doc.nodes), ...(needsAuth(doc) ? AUTH_DEPS : {}) })
   const files: ExportFiles = {
@@ -48,6 +50,7 @@ export function buildReactProject(fullDoc: PageDoc, onlyId?: string, origins?: O
     ...listUiFiles(doc),
     ...animationFiles(doc.nodes),
     ...forms.files,
+    ...handlerFiles(handlers),
     ...popupFiles(doc.nodes),
     ...authFiles(doc),
     'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: needsAuth(doc), confirm: popupUse(doc.nodes).ask }),

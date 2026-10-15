@@ -1,3 +1,4 @@
+import { isParamSegment } from './routes'
 import { conditionOf, type Condition } from './conditions'
 import { getElement } from './tree/queries'
 import { isElement, type EditorNode, type ElementNode, type NodeMap, type PageDoc } from './types'
@@ -14,10 +15,12 @@ export const PATH_ATTR = 'data-fe-path'
 export const TITLE_ATTR = 'data-fe-title'
 /** On any element: clicking it opens this page of the site (e.g. a whole card). */
 export const GO_ATTR = 'data-fe-go'
+/** On a page: "show" = it is listed in the top bar / side menu (default: not listed). */
+export const MENU_ATTR = 'data-fe-menu'
 /** Only signed-in visitors may open the page (used by the React export's route guard). */
 export const PRIVATE_ATTR = 'data-fe-private'
 
-export type PageInfo = { id: string; key: string; path: string; title: string; private: boolean; access: Condition }
+export type PageInfo = { id: string; key: string; path: string; title: string; private: boolean; access: Condition; inMenu: boolean }
 
 /** Is this node a page container? */
 export const isPageNode = (node: EditorNode | undefined): boolean => isElement(node) && PAGE_ATTR in node.attrs
@@ -29,6 +32,7 @@ const toInfo = (node: ElementNode): PageInfo => ({
   title: node.attrs[TITLE_ATTR] ?? 'Page',
   private: conditionOf(node).audience === 'signed-in',
   access: conditionOf(node),
+  inMenu: node.attrs[MENU_ATTR] === 'show',
 })
 
 /** The pages of a site, in order (empty for a one-page document). */
@@ -58,12 +62,16 @@ export function slugify(text: string): string {
   return text.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_-]+/g, '-').replace(/^-|-$/g, '') || 'page'
 }
 
-/** A clean, unique address: "/about", "/about-2"… ("/" stays "/"). */
+/** A clean, unique address (a segment like :id stays a changing part): "/about", "/about-2"… ("/" stays "/"). */
 export function uniquePath(wanted: string, taken: string[]): string {
-  const clean = wanted.trim() === '/' ? '/' : `/${wanted.split('/').filter(Boolean).map(slugify).join('/')}`
+  const clean = wanted.trim() === '/' ? '/' : `/${wanted.split('/').filter(Boolean).map((segment) => (isParamSegment(segment) ? segment : slugify(segment))).join('/')}`
   const base = clean === '/' && taken.includes('/') ? '/page' : clean
+  const parts = base.split('/').filter(Boolean)
+  // The number goes on the last fixed word (/user-2/:id): a changing part's name can't take one.
+  const at = parts.map(isParamSegment).lastIndexOf(false)
+  const numbered = (n: number) => (at < 0 ? `${base}-${n}` : `/${parts.map((part, index) => (index === at ? `${part}-${n}` : part)).join('/')}`)
   let path = base
-  for (let n = 2; taken.includes(path); n++) path = `${base}-${n}`
+  for (let n = 2; taken.includes(path); n++) path = numbered(n)
   return path
 }
 

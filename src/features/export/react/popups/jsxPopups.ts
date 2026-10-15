@@ -1,5 +1,7 @@
 import { NAV_ATTR, SIGNOUT_ATTR, TOGGLE_ATTR } from '@/features/editor/model/layouts'
+import { CALL_ATTR } from '@/features/editor/model/dataLists'
 import { ASK_ATTR, CLOSE_ATTR, MODAL_ATTR, OPEN_ATTR } from '@/features/editor/model/popups'
+import { PARAMS_ATTR } from '../jsxExtras'
 import type { ElementNode } from '@/features/editor/model/types'
 import type { JsxContext } from '../jsxWriter'
 
@@ -27,10 +29,11 @@ function nativeStep(ctx: JsxContext, node: ElementNode, href: string | undefined
 
 /** Menu links: the open page is highlighted (NavLink does it itself; TanStack's Link needs activeProps). */
 function navProps(ctx: JsxContext, node: ElementNode): string {
-  if (!(NAV_ATTR in node.attrs)) return ''
+  const params = node.attrs[PARAMS_ATTR] ? ` params={${node.attrs[PARAMS_ATTR]}}` : ''
+  if (!(NAV_ATTR in node.attrs)) return params
   const home = node.attrs.to === '/'
   if (node.tag === 'NavLink') return home ? ' end' : ''
-  return node.tag === 'Link' && ctx.links ? ` activeProps={{ className: 'active' }}${home ? ' activeOptions={{ exact: true }}' : ''}` : ''
+  return node.tag === 'Link' && ctx.links ? ` activeProps={{ className: 'active' }}${home ? ' activeOptions={{ exact: true }}' : ''}${params}` : params
 }
 
 const KEYS = " role=\"link\" tabIndex={0} style={{ cursor: 'pointer' }} onKeyDown={(event) => { if (event.key === 'Enter') event.currentTarget.click() }}"
@@ -49,13 +52,16 @@ export function clickAttrs(ctx: JsxContext, node: ElementNode, go?: { value: str
   if (go && ctx.links) { ctx.links.navigate = true; steps.push(ctx.links.go(go.value, go.typed)) }
   if (open) { ui!.add('openModal'); steps.push(`openModal(${JSON.stringify(open)})`) }
   if (close) { ui!.add('closeModal'); steps.push('closeModal()') }
+  // A data card calls a function with its row: openUser(row).
+  const call = ctx.row && ui ? node.attrs[CALL_ATTR] : undefined
+  if (call && /^[A-Za-z_$][\w$]*$/.test(call)) { ui!.add(`call:${call}`); steps.push(`${call}(row)`) }
   // Layouts: the ☰ button opens the menu on phones, a menu link closes it, "Log out" signs out.
   if (TOGGLE_ATTR in node.attrs) steps.push("document.body.classList.toggle('menu-open')")
   if (NAV_ATTR in node.attrs) steps.push("document.body.classList.remove('menu-open')")
   if (ui && SIGNOUT_ATTR in node.attrs) { ui.add('signOut'); steps.push('void signOut()') }
   const nav = navProps(ctx, node)
   if (!steps.length && !ask) return nav
-  const keys = go && ctx.links ? KEYS : ''
+  const keys = (go && ctx.links) || call ? KEYS : ''
   if (!ask) return ` onClick={() => ${steps.length === 1 ? steps[0] : `{ ${steps.join('; ')} }`}}${keys}${nav}`
   ui!.add('askFirst')
   const href = ctx.props?.get(`${node.id}@href`) ?? (node.attrs.href ? JSON.stringify(node.attrs.href) : undefined)
@@ -73,4 +79,4 @@ const IMPORTS: Record<string, (base: string) => string> = {
 }
 
 /** The import lines for what a file used from the ui folder (the modal helpers share one line). */
-export const uiImports = (ui: UiUse, base: string) => [...new Set([...ui].map((name) => IMPORTS[name]?.(base)).filter((line): line is string => Boolean(line)))]
+export const uiImports = (ui: UiUse, base: string) => [...new Set([...ui].map((name) => (name.startsWith('call:') ? `import { ${name.slice(5)} } from '${base}/data/handlers'` : IMPORTS[name]?.(base))).filter((line): line is string => Boolean(line)))]

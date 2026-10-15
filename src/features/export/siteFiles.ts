@@ -1,6 +1,6 @@
 import { buildPageParts } from '@/features/editor/model/serialize/buildPage'
 import { forVisitors } from '@/features/editor/model/serialize/forVisitors'
-import { allPagesForFiles, pageDoc, pageFileName } from '@/features/editor/model/serialize/sitePages'
+import { allPagesForFiles, linkToFiles, pageDoc, pageFileName } from '@/features/editor/model/serialize/sitePages'
 import { VISITOR } from '@/features/editor/model/conditions'
 import { guardPage } from '@/features/editor/model/pageGuard'
 import { listPages, resolvePage } from '@/features/editor/model/pages'
@@ -15,7 +15,9 @@ const titled = (doc: PageDoc, page: { title: string; path: string }): PageDoc =>
 export function currentPageDoc(doc: PageDoc, pageId: string | null, fileLinks = false): PageDoc {
   // Lists from data are filled with their rows: nothing loads live in a downloaded page.
   const page = resolvePage(doc, pageId)
-  return forVisitors(page ? titled(pageDoc(doc, page.id, { fileLinks }), page) : doc)
+  const out = forVisitors(page ? titled(pageDoc(doc, page.id, { fileLinks }), page) : doc)
+  // Links made from data ("/products/" + each row's id) become file links too.
+  return fileLinks ? { ...out, nodes: linkToFiles(out.nodes, listPages(doc)) } : out
 }
 
 /**
@@ -39,7 +41,8 @@ export function siteToSplitFiles(doc: PageDoc): ExportFiles {
   const files: ExportFiles = { ...shared }
   delete files['index.html']
   for (const page of listPages(doc)) {
-    const html = partsToSplitFiles(buildPageParts(forVisitors(titled(pageDoc(doc, page.id, { fileLinks: true }), page))))['index.html']!
+    const filled = forVisitors(titled(pageDoc(doc, page.id, { fileLinks: true }), page))
+    const html = partsToSplitFiles(buildPageParts({ ...filled, nodes: linkToFiles(filled.nodes, listPages(doc)) }))['index.html']!
     files[pageFileName(page.path)] = withGuard(doc, page.id, html)
   }
   return files

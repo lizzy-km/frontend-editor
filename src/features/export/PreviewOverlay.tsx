@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import type { Params } from '@/features/editor/model/routes'
 import { BREAKPOINTS } from '@/features/editor/model/breakpoints'
 import { getDoc } from '@/features/editor/store/doc.store'
 import { useViewStore } from '@/features/editor/store/view.store'
 import { DeviceSwitch } from '@/features/editor/toolbar/DeviceSwitch'
+import { ViewerMenu } from '@/features/editor/toolbar/ViewerMenu'
 import { Button } from '@/shared/ui'
 import styles from './PreviewOverlay.module.css'
 import { SafePageFrame } from './SafePageFrame'
@@ -18,6 +20,7 @@ export function PreviewOverlay() {
   const pageId = useViewStore((state) => state.pageId)
   const setPageId = useViewStore((state) => state.setPageId)
   const viewer = useViewStore((state) => state.viewer)
+  const [params, setParams] = useState<Params>({})
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setPreview(false)
@@ -30,11 +33,13 @@ export function PreviewOverlay() {
       <header className={styles.bar}>
         <Button variant="primary" size="small" icon="arrowLeft" onClick={() => setPreview(false)}>Back to editing</Button>
         <DeviceSwitch />
+        {/* Test the roles: see the page as a visitor, a member or an admin would. */}
+        <ViewerMenu />
         <span className={styles.hint}>Buttons, menus and animations work here</span>
       </header>
       <div className={styles.stage}>
         <SafePageFrame
-          doc={doc} title="Preview of your page" className={styles.frame} pageId={pageId} onOpenPage={setPageId} viewer={viewer}
+          doc={doc} title="Preview of your page" className={styles.frame} pageId={pageId} onOpenPage={(id, next) => { setPageId(id); setParams(next) }} params={params} viewer={viewer}
           width={breakpoint === 'desktop' ? '100%' : BREAKPOINTS[breakpoint].frameWidth}
         />
       </div>
