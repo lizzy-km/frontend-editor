@@ -38,6 +38,15 @@ const PATHS = {
   link: 'M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1',
   hidden: 'M3 3l18 18M10.6 5.1A10 10 0 0112 5c6.5 0 10 7 10 7a17 17 0 01-3 3.9M6.6 6.6A17 17 0 002 12s3.5 7 10 7a10 10 0 004.4-1',
   help: 'M12 3a9 9 0 100 18 9 9 0 000-18zM9.5 9.5a2.5 2.5 0 114 2c-1 .6-1.5 1.2-1.5 2.5M12 17h.01',
+  table: 'M3 5h18v14H3zM3 10h18M3 15h18M9 5v14',
+  calendar: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',
+  search: 'M11 4a7 7 0 100 14 7 7 0 000-14zM20 20l-4-4',
+  filter: 'M3 5h18l-7 8v6l-4-2v-4L3 5z',
+  toggle: 'M7 8h10a4 4 0 010 8H7a4 4 0 010-8zM16 12h.01',
+  tabs: 'M3 20V8h5V4h8v4h5v12H3z',
+  menu: 'M4 6h16M4 12h16M4 18h16',
+  select: 'M3 6h18v12H3zM15 11l2 2 2-2',
+  input: 'M3 7h18v10H3zM7 10v4',
 } as const
 
 export type IconName = keyof typeof PATHS

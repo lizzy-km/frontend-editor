@@ -6,6 +6,7 @@ import { insertHtml } from '../actions/contentActions'
 import { looksLikeHtml, stripCodeFences } from '../model/parse/cleanPaste'
 import { BLOCKS } from './blocks'
 import { ReadyBlocks } from './ReadyBlocks'
+import { WidgetBlocks } from './WidgetBlocks'
 import styles from './Sidebar.module.css'
 
 /** Add a basic piece, or paste more code (e.g. "a pricing section" from an AI). */
@@ -37,6 +38,7 @@ export function AddPanel() {
         ))}
       </div>
       <ReadyBlocks />
+      <WidgetBlocks />
       <span className={styles.addLabel}>Paste more code</span>
       <LazyCodeEditor label="Paste more code" language="html" value={code} onChange={setCode} placeholder="e.g. a section your AI wrote…"
         foldTools={false} minHeight="110px" maxHeight="260px" />

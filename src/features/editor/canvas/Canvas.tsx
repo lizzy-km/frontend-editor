@@ -8,6 +8,7 @@ import { useViewStore } from '../store/view.store'
 import styles from './Canvas.module.css'
 import { Overlay } from './Overlay'
 import { useRevealDetails } from './useRevealDetails'
+import { useRevealWidgets } from './useRevealWidgets'
 
 const PADDING = 24
 
@@ -35,6 +36,7 @@ export function Canvas() {
   const layout = useLayout(size.width, size.height, panX)
   const setScale = useViewStore((state) => state.setScale)
   useRevealDetails()
+  useRevealWidgets()
 
   useEffect(() => setScale(layout.scale), [layout.scale, setScale])
 

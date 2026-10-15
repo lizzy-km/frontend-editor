@@ -80,4 +80,24 @@
     var node = fe.nodes[payload.id]
     if (!(node && node.attrs && payload.name in node.attrs)) element.removeAttribute(payload.name)
   }
+
+  /**
+   * Shows or hides things in the live DOM only (never in the model): a closed tab panel or select list
+   * while it is being edited. Without a value the attribute is removed.
+   */
+  fe.handlers.attr = function (payload) {
+    var element = fe.element(payload.id)
+    if (!element) return
+    if (payload.value == null) element.removeAttribute(payload.name)
+    else element.setAttribute(payload.name, payload.value)
+  }
+
+  /** Puts back what the model says for an attribute that attr changed. */
+  fe.handlers.unattr = function (payload) {
+    var element = fe.element(payload.id)
+    if (!element) return
+    var node = fe.nodes[payload.id]
+    if (node && node.attrs && payload.name in node.attrs) element.setAttribute(payload.name, node.attrs[payload.name])
+    else element.removeAttribute(payload.name)
+  }
 })(window.__fe)
