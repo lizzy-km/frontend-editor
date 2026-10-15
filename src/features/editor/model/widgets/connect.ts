@@ -1,6 +1,6 @@
 import { codeName } from '../data'
 import { LIST_ATTR } from '../dataLists'
-import { collectSubtreeIds } from '../tree/queries'
+import { collectSubtreeIds, getAncestorIds } from '../tree/queries'
 import { patchNode } from '../tree/treeOps'
 import { isElement, type ElementNode, type NodeMap } from '../types'
 import { FILTERABLE_ATTR, FOR_ATTR } from './attrs'
@@ -11,9 +11,11 @@ export type FilterTarget = { id: string; name: string; label: string; kind: 'lis
 const elementsOf = (nodes: NodeMap) => Object.values(nodes).filter((node): node is ElementNode => isElement(node))
 
 /** A table (with its rows from data or typed in) is one target; so is a "List from data" box that is not inside a table. */
-function isTarget(node: ElementNode): 'list' | 'table' | null {
+function isTarget(nodes: NodeMap, node: ElementNode): 'list' | 'table' | null {
   if (node.tag === 'table' && node.attrs['data-ui'] === 'table') return 'table'
-  if (LIST_ATTR in node.attrs && node.tag !== 'tbody') return 'list'
+  // A list inside a filter only supplies its choices.
+  const inFilter = () => getAncestorIds(nodes, node.id).some((id) => (nodes[id] as ElementNode | undefined)?.attrs?.['data-ui'] === 'filter')
+  if (LIST_ATTR in node.attrs && node.tag !== 'tbody' && !inFilter()) return 'list'
   return null
 }
 
@@ -22,7 +24,7 @@ export function filterTargets(nodes: NodeMap): FilterTarget[] {
   const taken = new Set(elementsOf(nodes).map((node) => node.attrs[FILTERABLE_ATTR]).filter(Boolean))
   const found: FilterTarget[] = []
   for (const node of elementsOf(nodes)) {
-    const kind = isTarget(node)
+    const kind = isTarget(nodes, node)
     if (!kind) continue
     let name = node.attrs[FILTERABLE_ATTR]
     if (!name) {

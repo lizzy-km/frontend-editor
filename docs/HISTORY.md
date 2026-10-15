@@ -9,6 +9,14 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/filter-choices — 2026-10-15
+- A filter's choices can come from **another data source** (for example a "categories" list): Actions →
+  *Filter by* (the item field to match) and *Choices from* (another list + which field to show). Buttons and
+  tick boxes become a live "List from data" of that source (so they follow the data, also from a real API);
+  a drop-down copies the values when chosen. New "Categories (for filters)" sample data.
+- A list that only supplies a filter's choices is not offered as something a search can work on.
+- Tests: `widgetEdit.test.ts`, `e2e/widgets-choices.mjs`; the React download was built and used in Chrome.
+
 ## feature/ui-widgets — 2026-10-15
 - **Ready-made interface parts** under Add: Inputs (text, email, password with Show/Hide, number
   with − +, text area, switch, setting row, select, select with search, date picker), Tabs

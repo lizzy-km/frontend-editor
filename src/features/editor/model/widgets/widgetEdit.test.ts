@@ -6,7 +6,7 @@ import { getTextContent } from '../tree/queries'
 import { isElement, type ElementNode, type PageDoc } from '../types'
 import { addTab, changeColumns, changeRows, optionLines, removeTab, setOptions, setTabsStyle, tabsOf, toggleClass } from './edit'
 import { filterTargets, nameTarget, pointAt } from './connect'
-import { fieldValues, filterByField } from './filterData'
+import { choicesOf, fieldValues, filterByField } from './filterData'
 import { WIDGET_BLOCKS } from './registry'
 
 const source = addSource(parseHtmlDocument('<body></body>'), DATA_PRESETS[0]!.source).doc
@@ -108,5 +108,40 @@ describe('filters from data', () => {
     const row = Object.values(next.nodes).find((node): node is ElementNode => isElement(node) && node.tag === 'tr' && 'data-fe-bind-data-inStock' in node.attrs)
     expect(row?.attrs['data-fe-bind-data-inStock']).toBe('inStock')
     expect((filterByField(next, filterId, '').nodes[filterId] as ElementNode).attrs).not.toHaveProperty('data-ui-by')
+  })
+
+  it('choices can come from another data source: buttons become a live list of it', () => {
+    const base = addSource(addSource(parseHtmlDocument('<body></body>'), DATA_PRESETS[1]!.source).doc, DATA_PRESETS[2]!.source).doc
+    expect(base.data!.map((item) => item.name)).toEqual(['storeProducts', 'categories'])
+    const html = (id: string) => WIDGET_BLOCKS.find((block) => block.id === id)!.html({ target: '', source: base.data![0] })
+    let doc: PageDoc = { ...parseHtmlDocument(`<body>${html('table-data')}${html('filter-chips')}</body>`), data: base.data }
+    const target = filterTargets(doc.nodes)[0]!
+    const filter = root(doc, 'filter')
+    doc = { ...doc, nodes: pointAt(nameTarget(doc.nodes, target), filter.id, target.name) }
+    const next = filterByField(doc, filter.id, 'category', { source: 'categories', field: 'name' })
+    const widget = next.nodes[filter.id] as ElementNode
+    expect(choicesOf(widget)).toEqual({ source: 'categories', field: 'name' })
+    expect(widget.attrs['data-ui-by']).toBe('category')
+    const live = Object.values(next.nodes).find((node): node is ElementNode => isElement(node) && node.attrs['data-fe-list'] === 'categories')!
+    expect(live).toBeTruthy()
+    const chip = next.nodes[live.children[0]!] as ElementNode
+    expect(chip.attrs['data-fe-bind']).toBe('name')
+    expect(chip.attrs['data-fe-bind-data-ui-filter']).toBe('name')
+    // that list only supplies the choices: it is not something a search can work on
+    expect(filterTargets(next.nodes).map((item) => item.kind)).toEqual(['table'])
+    // back to the items' own values
+    const own = filterByField(next, filter.id, 'category', null)
+    expect((own.nodes[filter.id] as ElementNode).attrs).not.toHaveProperty('data-ui-choices')
+    expect(Object.values(own.nodes).some((node) => isElement(node) && node.attrs['data-fe-list'] === 'categories')).toBe(false)
+  })
+
+  it('a drop-down copies the other source’s values', () => {
+    const base = addSource(addSource(parseHtmlDocument('<body></body>'), DATA_PRESETS[1]!.source).doc, DATA_PRESETS[2]!.source).doc
+    const html = (id: string) => WIDGET_BLOCKS.find((block) => block.id === id)!.html({ target: '', source: base.data![0] })
+    const doc: PageDoc = { ...parseHtmlDocument(`<body>${html('table-data')}${html('filter-select')}</body>`), data: base.data }
+    const filter = root(doc, 'filter')
+    const next = filterByField(doc, filter.id, '', { source: 'categories', field: 'name' })
+    const options = Object.values(next.nodes).filter((node): node is ElementNode => isElement(node) && node.tag === 'option').map((node) => getTextContent(next.nodes, node.id))
+    expect(options).toEqual(['Everything', 'electronics', 'jewelery', "men's clothing", "women's clothing"])
   })
 })
