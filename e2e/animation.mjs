@@ -1,5 +1,5 @@
 // Animation box: the block, the Animation settings on any element, Play in the editor, and the player in Preview.
-import { check, OUT, openExample, inspectorTab } from './browser.mjs'
+import { check, OUT, openExample, inspectorTab, openAddFolds } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
@@ -7,6 +7,7 @@ const panel = page.locator('aside').last()
 
 await page.mouse.click(12, 845)
 await sidebar.getByRole('tab', { name: 'Add' }).click()
+await openAddFolds(page)
 await sidebar.getByRole('button', { name: 'Animation box' }).click()
 await page.waitForTimeout(500)
 check('animation box added, still visible while editing', (await frame.$eval('[data-fe-animate]', (el) => getComputedStyle(el).opacity)) === '1')

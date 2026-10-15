@@ -153,6 +153,11 @@ the sample rows until you switch to the real API.
 - **Animation box** (and an Animation section on everything): fade, slide,
   zoom, flip or unblur on scroll, load, hover or in a loop, one by one if you
   like. The React download uses Motion.
+- **Inputs, tabs, calendar, tables, search and filters** (Add panel): text, email, password,
+  number, text area, switch, select (with search), date picker, calendar, four kinds of tabs, a
+  dropdown menu, tables (typed, or **from data**), a **search bar** and **filters** that narrow a
+  "List from data" or a table (a filter can offer a data field's real values). They work in Preview
+  and downloads; the React download gets one small script, `src/widgets.ts`.
 
 ## Seeing the React code
 

@@ -73,10 +73,11 @@ export const LOOKS: Group = {
       brief: "Left rail → Add: click a block to place it.",
       blocks: [
         { kind: 'figure', src: '/guide/ui-add.png', alt: 'The Add panel with ready-made blocks', caption: 'Click a block to place it on the page.' },
-        { kind: 'p', text: 'Open **Add** on the left rail. Click a block to put it on the page. If something is selected it goes next to it; if nothing is, it goes at the end of the page.' },
+        { kind: 'p', text: 'Open **Add** on the left rail. Each category is a fold: click its name to open or close it. Click a block to put it on the page. If something is selected it goes next to it; if nothing is, it goes at the end of the page.' },
         { kind: 'list', items: [
           '**Basics**: Heading, Text, Button, Picture, Link, List, Box, Two columns, Divider line, Empty space.',
           '**Ready-made**: List from data, Animation box, Pop-up, Ask first, Contact form, Sign-up form.',
+          '**Inputs**, **Tabs and menus**, **Tables, search and filters**: parts that already work (see “Inputs, tabs and tables”).',
           '**Paste more code** adds a section written by your AI.',
         ] },
       ],

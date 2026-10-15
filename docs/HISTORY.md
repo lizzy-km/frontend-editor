@@ -9,6 +9,27 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/ui-widgets — 2026-10-15
+- **Ready-made interface parts** under Add: Inputs (text, email, password with Show/Hide, number
+  with − +, text area, switch, setting row, select, select with search, date picker), Tabs
+  (underlined, round, boxed, side) and a dropdown menu, a calendar, Tables (plain, striped, with
+  status, **from data**), a **search bar** and **filters** (buttons, drop-down, tick boxes).
+- They are plain HTML with a `data-ui-*` hook and a marked block of page CSS per kind
+  (`model/widgets/`). One script (`runtime/*.js`, composed in `widgetScript.ts`) uses click and key
+  listeners on the whole page: added by `forVisitors` for Preview and downloads, and as
+  `src/widgets.ts` in the React download. `data-ui-*` (not `data-fe-*`) so it survives the export.
+- **Search and filter work on "List from data" and "Table from data"** (and typed tables): they
+  connect to the first one by themselves; Actions → *Works on* picks another; a filter's *Filter by*
+  makes its buttons the real values of a data field (`model/widgets/filterData.ts`).
+- Settings per widget in Actions (`inspector/widgets/`): tabs add/remove/look, select choices, date
+  settings, table rows/columns/sorting/looks, input name and required, switch default.
+- Editing: closed tab panels and select/date pop-overs show while selected (`useRevealWidgets`,
+  frame handlers `attr`/`unattr`), never in the saved page.
+- The Add panel's categories (Basics, Ready-made, Inputs, Tabs and menus, Tables…) are folds: Basics
+  starts open, the rest closed, and the choice is remembered while editing (`sidebar/Fold.tsx`).
+- Guide: five new topics with pictures. Tests: `widgets.test.ts`, `widgetEdit.test.ts`,
+  `e2e/widgets.mjs`, `e2e/widgets-data.mjs`; the React download was built (strict tsc, vite) and used in Chrome.
+
 ## feature/react-reimport — 2026-10-15
 - **Open a React project again.** Every React download now carries a hidden
   `.tweak/project.json` (the page + a fingerprint of each file). On the start screen,

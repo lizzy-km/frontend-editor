@@ -13,6 +13,7 @@ import { formProject } from './forms/formTemplates'
 import { popupFiles } from './popups/uiTemplates'
 import { listUiFiles } from './listTemplates'
 import { mainFile } from './mainTemplate'
+import { usesWidgets, widgetFiles } from './widgetFiles'
 import { DATA_README, readme } from './projectTemplates'
 
 function appSource(parts: Parts): string {
@@ -53,7 +54,8 @@ export function buildReactProject(fullDoc: PageDoc, onlyId?: string, origins?: O
     ...handlerFiles(handlers),
     ...popupFiles(doc.nodes),
     ...authFiles(doc),
-    'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: needsAuth(doc), confirm: popupUse(doc.nodes).ask }),
+    'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: needsAuth(doc), confirm: popupUse(doc.nodes).ask, widgets: usesWidgets(doc.nodes) }),
+    ...widgetFiles(doc.nodes),
     'src/App.tsx': appSource(parts),
   }
   for (const file of parts.files) {

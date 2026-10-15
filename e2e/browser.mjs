@@ -96,3 +96,9 @@ export async function openSection(page, title) {
   await page.evaluate(() => document.activeElement?.blur())
   await page.waitForTimeout(150)
 }
+
+/** Opens every folded category of the Add panel (they start closed, except Basics). */
+export async function openAddFolds(page) {
+  const heads = page.locator('aside').first().locator('button[aria-expanded="false"]')
+  while (await heads.count()) await heads.first().click()
+}

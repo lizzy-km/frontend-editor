@@ -13,8 +13,8 @@ await sidebar.getByRole('tab', { name: 'Layers' }).click()
 
 // Select the second card (the first click on its heading selects the card box)
 const heading = await box('.card:nth-child(2) h3')
-await page.mouse.move(heading.x + 12, heading.y + 12)
-await page.mouse.click(heading.x + 12, heading.y + 12)
+await page.mouse.move(heading.x + heading.width / 2, heading.y + heading.height / 2)
+await page.mouse.click(heading.x + heading.width / 2, heading.y + heading.height / 2)
 await page.waitForTimeout(300)
 await page.keyboard.press('Escape') // the heading's parent is the card
 await page.waitForTimeout(400)

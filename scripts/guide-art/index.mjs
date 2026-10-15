@@ -5,11 +5,12 @@ import { tour, looks } from './tour.mjs'
 import { website, access } from './website.mjs'
 import { forms, dataArt } from './data.mjs'
 import { interactive, code, help } from './more.mjs'
+import { widgets } from './widgets.mjs'
 
 const OUT = new URL('../../public/guide/', import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1')
 mkdirSync(OUT, { recursive: true })
 let count = 0
-for (const set of [start, recipes, tour, looks, website, access, forms, dataArt, interactive, code, help]) {
+for (const set of [start, recipes, tour, looks, website, access, forms, dataArt, interactive, widgets, code, help]) {
   for (const [id, picture] of Object.entries(set)) {
     if (!picture) continue
     writeFileSync(`${OUT}art-${id}.svg`, picture)

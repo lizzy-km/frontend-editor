@@ -19,6 +19,7 @@ import { formProject } from './forms/formTemplates'
 import { popupFiles } from './popups/uiTemplates'
 import { listUiFiles } from './listTemplates'
 import { mainFile } from './mainTemplate'
+import { usesWidgets, widgetFiles } from './widgetFiles'
 import { notFoundSource, routerSource, ROUTERS, type RouteFile, type RouterKind } from './routerTemplates'
 import { siteReadme } from './siteReadme'
 
@@ -112,7 +113,8 @@ export function buildSiteProject(doc: PageDoc, { router, origins }: Options): Ex
     ...popupFiles(doc.nodes),
     ...auth,
     'README.md': `${readme(doc.title, [...before.names, ...after.names], shell.hasScripts)}\n${siteReadme(router, routes)}${sources.length ? DATA_README : ''}`,
-    'src/main.tsx': mainFile({ root: router, query: sources.length > 0, auth: withAuth, confirm: popupUse(doc.nodes).ask }),
+    'src/main.tsx': mainFile({ root: router, query: sources.length > 0, auth: withAuth, confirm: popupUse(doc.nodes).ask, widgets: usesWidgets(doc.nodes) }),
+    ...widgetFiles(doc.nodes),
     'src/router.tsx': routerSource(router, routes, guarded ? [guardImport] : []),
     'src/layout/Layout.tsx': layoutSource(router, before, after),
     'src/pages/NotFoundPage.tsx': notFoundSource(router),
