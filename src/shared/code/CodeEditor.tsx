@@ -7,7 +7,7 @@ import { EditorView, placeholder as placeholderText } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
 import { useEffect, useRef } from 'react'
 import { Button } from '@/shared/ui'
-import { appCodeTheme } from './codeTheme'
+import { appCodeTheme, darkModern } from './codeTheme'
 import { foldSections } from './foldSections'
 import styles from './CodeEditor.module.css'
 
@@ -57,6 +57,7 @@ export default function CodeEditor(props: CodeEditorProps) {
         LANGUAGES[language](),
         EditorView.lineWrapping,
         appCodeTheme,
+        darkModern,
         EditorView.theme({ '.cm-scroller': { minHeight: minHeight ?? 'auto', maxHeight: maxHeight ?? 'none' } }),
         EditorView.contentAttributes.of({ 'aria-label': label }),
         ...(placeholder ? [placeholderText(placeholder)] : []),
