@@ -22,11 +22,11 @@ check('the data starts on sample items', await sidebar.getByText('Using sample i
 await sidebar.getByRole('button', { name: 'Connect your API' }).click()
 const dialog = page.getByRole('dialog')
 
-await dialog.getByLabel('Address').fill('api.example.test/items')
+await dialog.getByLabel('Address for the list').fill('api.example.test/items')
 await dialog.getByRole('button', { name: 'Test connection' }).click()
 check('an address without https is explained', (await dialog.getByRole('alert').innerText()).includes('https://'))
 
-await dialog.getByLabel('Address').fill('https://api.example.test/private/items')
+await dialog.getByLabel('Address for the list').fill('https://api.example.test/private/items')
 await dialog.getByRole('button', { name: 'Test connection' }).click()
 await page.waitForTimeout(700)
 check('401 says to check the key', (await dialog.getByRole('alert').innerText()).includes('not allowed'))
