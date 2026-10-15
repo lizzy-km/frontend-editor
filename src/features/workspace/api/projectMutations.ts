@@ -32,7 +32,7 @@ export async function createProject(user: AppUser, pageDoc: PageDoc, remixOf: st
     name: pageDoc.title || 'Untitled page',
     isPublic: false, thumbnailUrl: null, remixOf, createdAt: now, updatedAt: now,
   })
-  batch.set(contentRef(id), { ownerId: user.uid, isPublic: false, doc: serializeDoc(pageDoc), updatedAt: now })
+  batch.set(contentRef(id), { ownerId: user.uid, isPublic: false, doc: await serializeDoc(pageDoc), updatedAt: now })
   batch.update(userRef(user.uid), { projectCount: increment(1), lastProjectOp: id })
   await batch.commit()
   track('page_create', { remix: Boolean(remixOf) })

@@ -3,6 +3,21 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/project-size — 2026-10-15
+- **"Too big to save to your account"** (`ProjectTooBigError`, seen when pictures
+  are pasted inside the code): the page is now saved squeezed (gzip, written as
+  base64 with a `gz1:` mark; old plain saves still open), so about three times
+  more fits in one saved page (`workspace/api/packDoc.ts`).
+- The error now says WHAT is big (pictures inside the code, data items, styles,
+  scripts) and what to do (`model/embedded.ts` `sizeReport` / `tooBigAdvice`),
+  instead of the toolbar always saying "check your connection". It shows in the
+  toolbar (details on hover) and once as a message.
+- **Move pictures out of the code** (toolbar, when saving fails for that reason):
+  uploads every picture pasted inside the code (`data:image/…`) and puts its link in
+  its place, as one undo step; pictures over 5 MB are left and counted
+  (`assets/movePictures.ts`, `replaceEmbedded`). Without an upload service it
+  explains instead of failing.
+
 ## feature/api-item-address — 2026-10-15
 - **Address for one item** in Connect your API: write `:id` where the item's id goes
   (`https://api.example.com/products/:id`). **Test connection** also tries it (with

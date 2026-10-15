@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { AUTOSAVE_DELAY_MS } from '@/config/app.config'
+import { toast } from '@/shared/ui'
 import type { PageDoc } from '../model/types'
 import { useDocStore } from '../store/doc.store'
 import { useSaveStore } from './save.store'
@@ -29,7 +30,10 @@ export function useAutosave(save: SaveFn, where: string, delay = AUTOSAVE_DELAY_
         setStatus(pending ? 'unsaved' : 'saved')
       } catch (error) {
         console.error(error)
-        setStatus('error')
+        // Some problems come with words for the person (a page that is too big); others are just "check your connection".
+        const friendly = (error as { friendly?: boolean }).friendly ? (error as Error).message : null
+        if (friendly && useSaveStore.getState().status !== 'error') toast(friendly, 'error') // once, not on every edit
+        setStatus('error', friendly)
       }
     }
 
