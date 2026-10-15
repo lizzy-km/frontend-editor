@@ -21,7 +21,9 @@ export class ProjectLimitError extends Error {
 
 /** Thrown when a page is too big for one Firestore document. */
 export class ProjectTooBigError extends Error {
-  constructor() {
-    super('This page is too big to save to your account (usually because of pictures pasted inside the code). You can still download it.')
+  /** The message is written for the person: the editor shows it as it is. */
+  readonly friendly = true
+  constructor(advice = 'usually because of pictures pasted inside the code') {
+    super(`This page is too big to save to your account (${advice}). You can still download it.`)
   }
 }

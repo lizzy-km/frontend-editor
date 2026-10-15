@@ -6,7 +6,9 @@ type SaveState = {
   status: SaveStatus
   /** Plain-words place, e.g. "in this browser" or "to your account". */
   where: string
-  setStatus: (status: SaveStatus) => void
+  /** Why saving failed, when it is something the person can fix (written for them). */
+  problem: string | null
+  setStatus: (status: SaveStatus, problem?: string | null) => void
   setWhere: (where: string) => void
 }
 
@@ -14,6 +16,7 @@ type SaveState = {
 export const useSaveStore = create<SaveState>((set) => ({
   status: 'idle',
   where: '',
-  setStatus: (status) => set({ status }),
+  problem: null,
+  setStatus: (status, problem = null) => set({ status, problem }),
   setWhere: (where) => set({ where }),
 }))

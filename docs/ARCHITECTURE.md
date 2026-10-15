@@ -275,6 +275,14 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Saving to the account (`workspace/api/`)
+
+- `serializeDoc` (async) = `packDoc` (JSON, gzip + base64 above ~20 KB when the
+  browser can) and a size check; `loadProjectContent` = `unpackDoc` (reads both
+  formats). Errors that carry words for the person set `friendly = true`;
+  `useAutosave` puts them in `useSaveStore.problem` and the toolbar shows them.
+  Never show "check your connection" for an error you can explain.
+
 ## Real APIs (`model/apiTest.ts`, `sidebar/data/ApiConnectDialog.tsx`)
 
 - The test runs in the editor with `fetch` (so CORS applies there); its result

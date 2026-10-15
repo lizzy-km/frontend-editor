@@ -50,7 +50,9 @@ await page.screenshot({ path: OUT + 'paste-editor.png' })
 
 await page.reload()
 await page.waitForTimeout(800)
-check('draft offered after reload', await page.getByRole('button', { name: 'Continue my last page' }).isVisible())
+const draftButton = page.getByRole('button', { name: 'Continue my last page' })
+await draftButton.waitFor({ timeout: 8000 }).catch(() => {}) // the app loads more code on a reload now
+check('draft offered after reload', await draftButton.isVisible())
 
 check('no console errors', errors.length === 0, errors.join(' | '))
 await browser.close()
