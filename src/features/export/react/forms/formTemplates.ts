@@ -10,7 +10,7 @@ import { FORM_DEPS, formKitFiles } from './formKit'
 import { authForm, isAuthKind } from './authForm'
 import { schemaSource } from './zodSchema'
 
-type ComponentFile = { name: string; code: string }
+type ComponentFile = { name: string; code: string; ids?: string[] }
 type TakeName = (wanted: string, alternative?: string) => string
 
 const pascal = (name: string) => name.charAt(0).toUpperCase() + name.slice(1)
@@ -48,6 +48,7 @@ function formFile(parent: JsxContext, form: ElementNode, name: string, base: str
   const thanks = `${openTag(ctx, form)}<p role="status">{THANKS}</p>${closeTag(ctx, form)}`
   return {
     name,
+    ids: [form.id],
     code: [
       "import { zodResolver } from '@hookform/resolvers/zod'",
       `import { ${['useEffect', 'useRef', 'useState'].filter((hook) => hook === 'useState' ? auth?.thanks !== false : auth?.effects.length).join(', ')} } from 'react'`,

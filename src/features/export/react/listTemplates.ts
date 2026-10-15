@@ -5,7 +5,7 @@ import { isElement, type DataSource, type ElementNode, type NodeMap } from '@/fe
 import { motionImports, motionState, newShow, showImport, staggerItem } from './jsxExtras'
 import { closeTag, openTag, writeElement, type JsxContext } from './jsxWriter'
 
-type ComponentFile = { name: string; code: string }
+type ComponentFile = { name: string; code: string; ids?: string[] }
 type TakeName = (wanted: string, alternative?: string) => string
 /** Where generated files reach src/ from ('..' in src/components, '../..' in src/components/<page>). */
 export type ListOptions = { base: string; sources: DataSource[] }
@@ -84,6 +84,7 @@ function cardFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: str
   const body = writeElement(card, info.templateId!, '    ')
   return {
     name,
+    ids: [info.templateId!],
     code: [
       ...motionImports(card.motion, base), ...showImport(card.show, base), `import type { ${type} } from '${base}/data/types'`, '',
       `/** One ${type} card. Change the design here; the words and pictures come from "${source.name}". */`,
@@ -103,6 +104,7 @@ function listFile(parent: JsxContext, info: ListInfo, source: DataSource, name: 
   const opening = openTag(ctx, box) // first: it decides the motion imports
   return {
     name,
+    ids: [info.id],
     code: [
       ...motionImports(ctx.motion, base),
       `import { ${hook} } from '${base}/api/${source.name}'`,

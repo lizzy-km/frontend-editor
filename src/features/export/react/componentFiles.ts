@@ -21,7 +21,8 @@ function linkImport(ctx: JsxContext, router?: RouterLinks): string[] {
 const navigateHook = (ctx: JsxContext) => (ctx.links?.navigate ? ['  const navigate = useNavigate()'] : [])
 
 /** One .tsx file in src/components. */
-export type ComponentFile = { name: string; code: string }
+/** One .tsx file; `ids` are the page elements it was made from (the "focused component" lookup). */
+export type ComponentFile = { name: string; code: string; ids?: string[] }
 
 const BODY_PAD = '    '
 
@@ -36,6 +37,7 @@ function itemComponent(nodes: NodeMap, classFor: ClassFor, group: RepeatGroup, n
   const params = group.props.map((prop) => prop.name).join(', ')
   return {
     name,
+    ids: group.ids,
     code: [
       ...linkImport(ctx, router), ...motionImports(ctx.motion, base), ...showImport(ctx.show, base), ...(ctx.links?.used || ctx.links?.navLink || ctx.motion?.animation || ctx.motion?.item || showImport(ctx.show, base).length ? [''] : []),
       `export type ${name}Props = {`, ...fields, '}', '',
@@ -86,5 +88,5 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
     `export default function ${name}() {`,
     ...navigateHook(ctx), '  return (', body, '  )', '}', '',
   ].join('\n')
-  return [{ name, code }, ...items]
+  return [{ name, code, ids: [rootId] }, ...items]
 }

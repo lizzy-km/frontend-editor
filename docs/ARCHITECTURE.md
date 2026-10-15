@@ -275,6 +275,15 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## React view (`export/react/componentViews.ts`, `sidebar/code/ReactView.tsx`)
+
+- Every generated component file records the element ids it was made from
+  (`ComponentFile.ids`: a part's root, a repeated item's group, a list box, its
+  card template, a form, a page). The builders push `{ path, name, ids }` into an
+  optional `origins` array, so the editor can answer "which file is this
+  element?" without re-deriving the export's naming. When several files share an
+  element (a form that is a whole part) the later, more specific one wins.
+
 ## Panels (`sidebar/`, `inspector/`)
 
 - `Sidebar.tsx` is a vertical rail + one panel (`SidePanel`: layers, add, pages,
