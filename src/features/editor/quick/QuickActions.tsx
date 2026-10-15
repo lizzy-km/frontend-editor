@@ -62,7 +62,7 @@ function ActionBar({ id, placement }: { id: string; placement: FramePlacement })
             className={action.primary ? styles.primary : styles.action} onClick={action.run}
           >
             <Icon name={action.icon} size={16} />
-            {action.primary && <span>{action.label}</span>}
+            {action.primary && <span className={styles.label} >{action.label}</span>}
           </button>
         ))}
       </div>

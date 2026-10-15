@@ -3,6 +3,10 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/inspector-width — 2026-10-15
+- The settings panel on the right is wider (344px, 304px on mid-size screens) so its
+  controls fit; it never scrolls sideways.
+
 ## feature/home-page — 2026-10-15
 - **New home page** for the full builder: hero with a CSS-built editor picture,
   eight feature cards, three steps, a "take it anywhere" downloads band,
