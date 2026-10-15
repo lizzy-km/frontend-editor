@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { track } from '@/features/analytics/track'
 import { Button, Icon, toast } from '@/shared/ui'
-import { buildPrompt, presetBrief, PROMPT_GROUPS, PROMPT_PRESETS } from './prompts'
+import { briefFor, PAGES_LINE, buildPrompt, PROMPT_GROUPS, PROMPT_PRESETS, type PromptKind } from './prompts'
 import { PROMPT_RULES } from './promptRules'
+import { SITE_RULES } from './siteRules'
 import styles from './AiPromptHelper.module.css'
 
 /** Where people usually paste the prompt. Plain links, opened in a new tab. */
@@ -16,20 +17,29 @@ const AI_TOOLS = [
  * "No code yet?" — pick a ready-made page idea, change the description in
  * your own words, copy the prompt into an AI, then paste its answer here.
  */
-export function AiPromptHelper() {
+export function AiPromptHelper({ kind = 'page' }: { kind?: PromptKind }) {
   const [presetId, setPresetId] = useState(PROMPT_PRESETS[1]!.id)
-  const [brief, setBrief] = useState(() => presetBrief(PROMPT_PRESETS[1]!.id))
+  const [brief, setBrief] = useState(() => briefFor(PROMPT_PRESETS[1]!.id, kind))
   const [copied, setCopied] = useState(false)
 
   const choose = (id: string) => {
     setPresetId(id)
-    setBrief(presetBrief(id))
+    setBrief(briefFor(id, kind))
+  }
+
+  // Switching between "one page" and "website" adds or removes the pages line, keeping what was typed.
+  const [seenKind, setSeenKind] = useState(kind)
+  if (seenKind !== kind) {
+    setSeenKind(kind)
+    setBrief((current) => (kind === 'site' ? (current.includes(PAGES_LINE) ? current : `${current}
+${PAGES_LINE}`) : current.replace(`
+${PAGES_LINE}`, '')))
   }
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(buildPrompt(brief, presetId))
-      track('prompt_copy', { preset: presetId, edited: brief !== presetBrief(presetId) })
+      await navigator.clipboard.writeText(buildPrompt(brief, presetId, kind))
+      track('prompt_copy', { preset: presetId, edited: brief !== briefFor(presetId, kind) })
       setCopied(true)
       toast('Prompt copied — paste it into your AI tool', 'success')
       setTimeout(() => setCopied(false), 2000)
@@ -63,7 +73,9 @@ export function AiPromptHelper() {
           onChange={(event) => setBrief(event.target.value)} />
         <details className={styles.rules}>
           <summary>Rules for the AI (keep these — they make the page easy to edit here)</summary>
-          <pre>{PROMPT_RULES}</pre>
+          <pre>{kind === 'site' ? `${PROMPT_RULES}
+
+${SITE_RULES}` : PROMPT_RULES}</pre>
         </details>
 
         <p className={styles.step}><b>2.</b> Copy the prompt and paste it into an AI chat:</p>

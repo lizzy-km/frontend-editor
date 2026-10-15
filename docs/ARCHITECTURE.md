@@ -203,7 +203,8 @@ run, inside a locked frame.
 - `promptGroups.ts`: `PROMPT_GROUPS` (business, brands, events, portfolios),
   each with its own intro and blank brief; briefs live in `presets/*`.
 - `prompts.ts`: `PROMPT_PRESETS`, `buildPrompt(brief, presetId)` = the
-  preset's group intro + brief + `PROMPT_RULES`.
+  preset's group intro + brief + `PROMPT_RULES` (plus `SITE_RULES`, the several-pages
+  part, when the paste screen's "website" option is chosen).
 - `promptRules.ts` must stay in step with the parser and the editor frame:
   if the editor learns or drops something (a breakpoint, a supported
   pattern), update the rules too.
