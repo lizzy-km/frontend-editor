@@ -3,6 +3,9 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/sidebar-width — 2026-10-15
+- The left panel (Layers, Add, Pages, Design, Data) is wider: 384px, 332px on mid-size screens.
+
 ## fix/inspector-width — 2026-10-15
 - The settings panel on the right is wider (344px, 304px on mid-size screens) so its
   controls fit; it never scrolls sideways.
