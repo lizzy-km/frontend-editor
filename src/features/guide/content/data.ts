@@ -8,6 +8,7 @@ export const DATA: Group = {
       id: 'add-data', title: 'Add data', summary: 'Start with samples, edit fields and rows.',
       brief: "Data tab → pick a starting set (Products, Blog posts…) → Add data. Edit fields and rows any time.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-add-data.svg', alt: 'A data set is a table of items with fields', caption: 'A data set is a table of items with fields' },
         { kind: 'p', text: 'Data is a table of things you want to show: products, blog posts, team members, events. Each thing is an **item** (a row) with **fields** (columns) like title, price and picture.' },
         { kind: 'steps', items: [
           'Open **Data** on the left rail.',
@@ -21,6 +22,7 @@ export const DATA: Group = {
       id: 'import-json', title: 'Import from JSON', summary: 'Paste or drop a file instead of typing rows.',
       brief: "Data → Edit fields and rows → Import from JSON. Paste or drop a .json file, check the preview, import.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-import-json.svg', alt: 'Paste or drop a JSON file to fill a data set', caption: 'Paste or drop a JSON file to fill a data set' },
         { kind: 'p', text: 'JSON is the common way programs share data. If your data comes from a service or an export, press **Import from JSON**, then paste it or choose/drop a **.json** file. Tweak finds the list of items (even inside an answer like { "data": { "items": [...] } }), guesses each field’s kind (number, picture, date…), and shows a preview.' },
         { kind: 'p', text: 'Then choose **Add to the rows I have** or **Replace everything**. Nested values such as rating → rate become fields like **ratingRate**.' },
       ],
@@ -29,6 +31,7 @@ export const DATA: Group = {
       id: 'connect-api', title: 'Connect your own API', summary: 'Show live data from your service, with a key if needed.',
       brief: "Data → pick a set → Connect your API → paste the address → Test connection → Use these items.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-connect-api.svg', alt: 'Connect your own API and its items appear in your page', caption: 'Connect your own API and its items appear in your page' },
         { kind: 'p', text: 'An **API** is an address that answers with your data. If you have one, connect it so your finished site shows live data.' },
         { kind: 'steps', items: [
           'Select your data set in the **Data** tab and press **Connect your API**.',
@@ -51,6 +54,7 @@ export const DATA: Group = {
       id: 'item-address', title: 'An address for one item (:id)', summary: 'Let detail pages ask for just one item.',
       brief: "In Connect your API, fill Address for one item with :id, like https://api.example.com/products/:id.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-item-address.svg', alt: 'An address with :id gives one item', caption: 'An address with :id gives one item' },
         { kind: 'p', text: 'Loading the whole list just to show one product is wasteful. In **Connect your API**, fill in **Address for one item** and write **:id** where the item’s id goes: https://api.example.com/products/:id. Detail pages then ask for exactly that item.' },
         { kind: 'list', items: [
           'Press **Test connection**: Tweak tries the one-item address too (with the first item’s id, or one you type) and tells you if it works and which fields a detail page would lack.',
@@ -63,6 +67,7 @@ export const DATA: Group = {
       id: 'show-data', title: 'Show data on your page', summary: 'Every item (a list) or one item.',
       brief: "Select a box → Actions → Data → pick the data → Every item or One item → Fill in the fields for me.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-show-data.svg', alt: 'Boxes show the fields of an item or every item of a list', caption: 'Boxes show the fields of an item or every item of a list' },
         { kind: 'steps', items: [
           'Select a box (a section, a card, a picture strip…).',
           'Open **Actions → Data** and choose the data under **Shows**.',
@@ -77,6 +82,7 @@ export const DATA: Group = {
       id: 'card-click', title: 'When a card is clicked', summary: 'Open a page for that item, or run your own code.',
       brief: "Select the list → Actions → Data → On click → Open page (pick your detail page).",
       blocks: [
+        { kind: 'figure', src: '/guide/art-card-click.svg', alt: 'Click a card to open that item’s page', caption: 'Click a card to open that item’s page' },
         { kind: 'p', text: 'Select a list (the box that repeats cards) and look at **On click**:' },
         { kind: 'list', items: [
           '**Nothing**: cards are just pictures and words.',

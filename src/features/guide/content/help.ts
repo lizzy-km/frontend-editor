@@ -8,6 +8,7 @@ export const HELP: Group = {
       id: 'fix-problems', title: 'Fixing common problems', summary: 'Saving, menus, forms, data and sign-in.',
       brief: "Look up your problem: can’t save, empty menu, form doesn’t send, API test fails, setting not found.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-fix-problems.svg', alt: 'Look up the message you see, then follow the fix', caption: 'Look up the message you see, then follow the fix' },
         { kind: 'table', head: ['Problem', 'Try this'], rows: [
           ['“Couldn’t save — check your connection”', 'Check your internet. Your work stays in the editor; it saves again when the connection is back.'],
           ['“Too big to save to your account”', 'The message says what is big. For pictures pasted inside code press **Move pictures out of the code**. For data, remove rows you don’t need. You can still download the page.'],
@@ -25,6 +26,7 @@ export const HELP: Group = {
       id: 'shortcuts', title: 'Keyboard shortcuts', summary: 'Faster editing.',
       brief: "Ctrl+Z undo · Ctrl+Y redo · Ctrl+D copy · Delete remove · Esc parent · Enter edit text · Ctrl+S save.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-shortcuts.svg', alt: 'Common keyboard shortcuts', caption: 'Common keyboard shortcuts' },
         { kind: 'table', head: ['Keys', 'What happens'], rows: [
           ['Ctrl + Z / Ctrl + Y', 'Undo / redo'],
           ['Ctrl + D', 'Make a copy of the selected thing'],
@@ -41,6 +43,7 @@ export const HELP: Group = {
       id: 'glossary', title: 'Words used in Tweak', summary: 'Plain meanings.',
       brief: "Item, field, detail page, role, flag, layout, API, key, JSON: what they mean here.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-glossary.svg', alt: 'An item is one thing in your data; fields are its details', caption: 'An item is one thing in your data; fields are its details' },
         { kind: 'table', head: ['Word', 'Meaning'], rows: [
           ['**Item / field**', 'A thing in your data (a product) and one of its details (price, picture).'],
           ['**Detail page**', 'One page that shows a different item for each link, like /product/3.'],

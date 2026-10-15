@@ -8,6 +8,7 @@ export const RECIPES: Group = {
       id: 'recipe-landing', title: 'A landing page from AI', summary: 'From an AI answer to a shared link.',
       brief: "Paste the AI’s answer → fix words and colors → check Phone → Preview → Share or Download.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-recipe-landing.svg', alt: 'Landing page recipe', caption: 'Landing page recipe' },
         { kind: 'steps', items: [
           'Ask your AI for a page. The paste screen’s **No code yet?** helper writes a good request for you.',
           'Paste the answer and press **Open in editor**.',
@@ -21,6 +22,7 @@ export const RECIPES: Group = {
       id: 'recipe-shop', title: 'A shop with a page for each product', summary: 'List page + detail page + live data.',
       brief: "Data → Add data (Products) → Add → List from data → Add a page → Detail page → list On click → Open page.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-recipe-shop.svg', alt: 'Shop recipe', caption: 'Shop recipe' },
         { kind: 'steps', items: [
           'Make a **website** and open the **Data** tab. Add a data set (try **Store products**), or **Connect your API** with your own products.',
           'On your home page open **Add → List from data**: cards appear from your data.',
@@ -35,6 +37,7 @@ export const RECIPES: Group = {
       id: 'recipe-members', title: 'A members-only area', summary: 'Log in, a private page and an admin page.',
       brief: "Pages → Add sign-in pages → make a page Signed in → Design → Layout → test with Viewing as.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-recipe-members.svg', alt: 'Members area recipe', caption: 'Members area recipe' },
         { kind: 'steps', items: [
           'In a website, open **Pages → Add sign-in pages**.',
           'Add a page (for example **Account**) and set **Who can open this page** to **Signed in**. For an admin page also choose the **admin** role.',
@@ -48,6 +51,7 @@ export const RECIPES: Group = {
       id: 'recipe-contact', title: 'A contact form that checks itself', summary: 'Rules, a thank-you and somewhere to send answers.',
       brief: "Add → Contact form → Actions → Form: turn on checking, set Send to and a thank-you text.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-recipe-contact.svg', alt: 'Contact form recipe', caption: 'Contact form recipe' },
         { kind: 'steps', items: [
           'Open **Add → Contact form**.',
           'Select the form and turn on **Check the answers and send them**.',
