@@ -37,6 +37,20 @@ export const DATA_PRESETS: Preset[] = [
     },
   },
   {
+    // The categories of the store above: a filter can offer these as its choices, and "Store products" items match them by their category.
+    label: 'Categories (for filters)',
+    source: {
+      name: 'categories',
+      fields: [{ name: 'name', type: 'text' }, { name: 'description', type: 'longText' }],
+      rows: [
+        { name: 'electronics', description: 'Drives, screens and gadgets.' },
+        { name: 'jewelery', description: 'Rings, bracelets and chains.' },
+        { name: "men's clothing", description: 'Shirts, jackets and everyday wear.' },
+        { name: "women's clothing", description: 'Tops, coats and more.' },
+      ],
+    },
+  },
+  {
     label: 'Blog posts',
     source: {
       name: 'posts',

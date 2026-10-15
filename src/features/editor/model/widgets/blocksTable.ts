@@ -46,6 +46,15 @@ export const chipsInner = (choices: string[]) => `<button type="button" class="u
 export const selectInner = (choices: string[]) => `<option value="">Everything</option>${choices.map((name) => `<option>${escapeHtml(name)}</option>`).join('')}`
 export const checksInner = (choices: string[]) => `<strong>Type</strong>${choices.map((name) => `<label class="ui-check"><input type="checkbox" value="${escapeHtml(name)}"> ${escapeHtml(name)}</label>`).join('')}<button type="button" class="ui-chip" data-ui-reset="">Clear filters</button>`
 
+/** Choices that come from another data source live: one button (or tick box) per item of that source, filled in by the list. */
+export const chipsLiveInner = (source: string, field: string) =>
+  `<button type="button" class="ui-chip" data-ui-filter="" aria-pressed="true">All</button><span ${LIST_ATTR}="${source}" ${PAGE_SIZE_ATTR}="100" ${LOAD_ATTR}="all" style="display: contents">`
+  + `<button type="button" class="ui-chip" data-ui-filter="" aria-pressed="false" ${BIND_ATTR}="${field}" ${BIND_PREFIX}data-ui-filter="${field}">${escapeHtml(field)}</button></span>`
+export const checksLiveInner = (source: string, field: string) =>
+  `<strong>Type</strong><div ${LIST_ATTR}="${source}" ${PAGE_SIZE_ATTR}="100" ${LOAD_ATTR}="all" style="display: grid; gap: 10px">`
+  + `<label class="ui-check"><input type="checkbox" value="" ${BIND_PREFIX}value="${field}"> <span ${BIND_ATTR}="${field}">${escapeHtml(field)}</span></label></div>`
+  + '<button type="button" class="ui-chip" data-ui-reset="">Clear filters</button>'
+
 /** Filter buttons: "All" and one per choice; picking one shows only the matching items. */
 export const filterChipsHtml = (target = '', choices = CHOICES, field = '') =>
   `<div data-ui="filter" data-ui-kind="chips" data-ui-for="${target}"${by(field)} class="ui-filter" role="group" aria-label="Filter">${chipsInner(choices)}</div>`

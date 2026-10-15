@@ -457,6 +457,9 @@ file per topic group, helpers in `kit.mjs`); every topic starts with a figure.
 - Search and filters: lists / tables carry `data-ui-filterable="name"`, searches and filters `data-ui-for="name"`
   (`connect.ts`). Items are the rows of a table or the children of a list; matching is by text, or by an attribute
   when a filter has `data-ui-by="field"` (then the row design gets `data-fe-bind-data-<field>`, `filterData.ts`).
+- A filter's choices can come from another source (`data-ui-choices="source.field"`): chips and tick boxes are then a
+  live `data-fe-list` of that source inside the filter (`chipsLiveInner`), so lists, Preview and React all fill them;
+  `filterTargets` ignores lists inside a filter.
 - Editor: `useRevealWidgets` (selection → frame `attr`/`unattr`) shows hidden panels and pop-overs.
 - Keep the three places in step when a widget changes: the HTML builder, the runtime JS, and (if it adds
   something new to store) the inspector panel and `edit.ts`.
