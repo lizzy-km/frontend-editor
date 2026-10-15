@@ -3,6 +3,12 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/code-colors — 2026-10-15
+- Code boxes use VS Code's **Dark Modern** colors (dark editor, blue keywords, purple
+  control words, teal types and components, light-blue names, orange strings, green
+  comments; CSS selectors gold, keyword values orange) in light and dark mode alike
+  (`shared/code/codeTheme.ts`). `@lezer/highlight` is now a direct dependency.
+
 ## feature/site-prompt — 2026-10-15
 - "No code yet?" prompt for **A website with several pages**: a new Part 3
   (`prompts/siteRules.ts`) tells the AI to write ONE file with a shared header and
