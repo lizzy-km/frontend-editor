@@ -3,6 +3,15 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/site-prompt — 2026-10-15
+- "No code yet?" prompt for **A website with several pages**: a new Part 3
+  (`prompts/siteRules.ts`) tells the AI to write ONE file with a shared header and
+  footer, one `<div data-fe-page data-fe-path data-fe-title>` per page, plain
+  `href="/about"` links that match each page address, one h1 per page, and scripts
+  that never switch pages. The intro says "website with several pages", and the
+  description box gets a "Pages, in menu order" line. One-page prompts are unchanged.
+- Test: an answer written to these rules opens as a site (pages, header, footer).
+
 ## feature/guide-pictures — 2026-10-15
 - Every guide topic now opens with a picture (41 hand-drawn SVG diagrams plus the
   real editor screenshots) before its text; the quick guide shows them on its cards,

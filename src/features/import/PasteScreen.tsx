@@ -82,7 +82,7 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
           </div>
         )}
 
-        <AiPromptHelper />
+        <AiPromptHelper kind={kind} />
 
         <button type="button" className={styles.link} onClick={() => setSplit(!split)}>
           {split ? 'I have everything in one piece' : 'My code comes in separate parts (HTML, CSS, JavaScript)'}
