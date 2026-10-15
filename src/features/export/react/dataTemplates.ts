@@ -1,4 +1,5 @@
 import { rowTypeName } from '@/features/editor/model/data'
+import { itemParts } from './itemAddress'
 import type { DataSource, DataValue, FieldType } from '@/features/editor/model/types'
 
 /** Libraries the data files need. */
@@ -60,6 +61,7 @@ function sourceFile(source: DataSource): string {
   const type = rowTypeName(source.name)
   const name = pascal(source.name)
   const api = source.api
+  const item = itemParts(api?.itemUrl)
   const paged = Boolean(api?.pageParam)
   const params = [api?.pageParam && `${JSON.stringify(api.pageParam)}: page`, api?.pageSizeParam && `${JSON.stringify(api.pageSizeParam)}: pageSize`].filter(Boolean).join(', ')
   return `import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
@@ -73,7 +75,11 @@ export type ${type}Page = { items: ${type}[]; nextPage: number | null }
 /** Where the real ${source.name} come from (set in the Data panel). */
 const ADDRESS = ${JSON.stringify(api?.url ?? '')}
 const LIST_PATH = ${JSON.stringify(api?.listPath ?? '')}
-${api?.auth ? `
+${item ? `/** Where ONE ${source.name} lives: the item's id goes between these two parts. */
+const ITEM_BEFORE = ${JSON.stringify(item.before)}
+const ITEM_AFTER = ${JSON.stringify(item.after)}
+const ITEM_PATH = ${JSON.stringify(api?.itemPath ?? '')}
+` : ''}${api?.auth ? `
 /** The key sent with every request: set ${api.auth.envVar} in your .env file (it is built into the site, so use a key meant for websites). */
 const KEY = import.meta.env.${api.auth.envVar} as string | undefined
 const HEADERS = KEY ? { ${JSON.stringify(api.auth.header)}: ${JSON.stringify(api.auth.prefix)} + KEY } : undefined
@@ -98,7 +104,13 @@ const slice = (all: ${type}[], page: number, pageSize: number): ${type}Page => {
   return { items: all.slice(start, start + pageSize), nextPage: start + pageSize < all.length ? page + 1 : null }
 }
 
-/** Fetches one page of ${source.name}: sample data, or the API once VITE_USE_MOCK=false. */
+${item ? `/** Fetches ONE ${source.name} by id from its own address (detail pages use this instead of loading everything). */
+export async function fetch${name}Item(id: string): Promise<${type}> {
+  const { data } = await api.get<unknown>(ITEM_BEFORE + encodeURIComponent(id) + ITEM_AFTER${api?.auth ? ', { headers: HEADERS }' : ''})
+  return toRow(ITEM_PATH ? read(data, ITEM_PATH) : data${hasId(source) ? '' : ', 0'})
+}
+
+` : ''}/** Fetches one page of ${source.name}: sample data, or the API once VITE_USE_MOCK=false. */
 export async function fetch${name}(page = 1, pageSize = 12): Promise<${type}Page> {
   if (USE_MOCK || !ADDRESS) return slice(mockData.${source.name}, page, pageSize)
 ${paged
@@ -111,15 +123,18 @@ ${paged
 }
 
 /** All ${source.name} (up to 100), for lists that show everything. */
-export const use${name} = () =>
-  useQuery({ queryKey: ['${source.name}'], queryFn: async () => (await fetch${name}(1, 100)).items })
+export const use${name} = (enabled = true) =>
+  useQuery({ queryKey: ['${source.name}'], queryFn: async () => (await fetch${name}(1, 100)).items, enabled })
 
 /** One row of ${source.name}: the first, the Nth (1 = first), or the one whose id is in the page address (/products/3 or ?id=3). */
 export function use${name}Record(which: 'first' | number | { param: string; value?: string } = 'first') {
-  const query = use${name}()
   // The page address wins (/products/3 gives value "3"); else ?id=3.
   const wanted = typeof which === 'object' ? which.value ?? new URLSearchParams(window.location.search).get(which.param) : null
-  const rows = query.data ?? []
+${item ? `  // With live data and an id, ask for just that item.
+  const single = !USE_MOCK && Boolean(wanted)
+  const one = useQuery({ queryKey: ['${source.name}', 'one', wanted], queryFn: () => fetch${name}Item(wanted ?? ''), enabled: single })
+` : ''}  const query = use${name}(${item ? '!single' : ''})
+${item ? '  if (single) return { ...one }\n' : ''}  const rows = query.data ?? []
   const data: ${type} | undefined = typeof which === 'number'
     ? rows[which - 1] ?? rows[0]
     : wanted !== null ? rows.find((row) => String((row as { id?: unknown }).id ?? '') === wanted) ?? rows[0] : rows[0]

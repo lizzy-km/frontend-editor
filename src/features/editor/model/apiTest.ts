@@ -49,3 +49,23 @@ export async function testApi(url: string, auth: DataApi['auth'], key: string, r
     clearTimeout(timer)
   }
 }
+
+/** Does the address have a changing part like :id? (A port like :3000 is not one.) */
+export const hasToken = (url: string) => /\/:[A-Za-z_]\w*/.test(url.replace(/^[a-z]+:\/\/[^/]*/i, ''))
+
+/** The address with its first :name filled in: "https://x.com/users/:id" + 3 -> "https://x.com/users/3". */
+export const fillAddress = (url: string, value: string | number) => url.replace(/(\/):[A-Za-z_]\w*/, (_, slash: string) => `${slash}${encodeURIComponent(String(value))}`)
+
+const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value)
+
+/** Where the item is inside a one-item answer: "" (the answer itself) or a wrapper like "data". */
+export function itemPathOf(json: unknown): string {
+  if (!isObject(json)) return ''
+  const keys = Object.keys(json)
+  const wrapper = keys.find((key) => ['data', 'item', 'result', 'record'].includes(key) && isObject(json[key]))
+  return wrapper && keys.length <= 3 ? wrapper : ''
+}
+
+/** The value at a path like "rating.rate" (undefined when it isn't there). */
+export const readPath = (item: unknown, path: string): unknown =>
+  path.split('.').reduce<unknown>((value, key) => (isObject(value) ? value[key] : undefined), item)

@@ -48,4 +48,22 @@ describe('a connected API in the React download', () => {
     expect(files['src/api/items.ts']).not.toContain('HEADERS')
     expect(files['.env.example']).not.toContain('Keys for the APIs')
   })
+
+  it('asks for one item at a time when there is a one-item address', () => {
+    const withItem = connected({ url: 'https://api.example.com/shop', listPath: 'data.items', itemUrl: 'https://api.example.com/shop/items/:id', itemPath: 'data' })
+    const files = buildReactProject({ ...parseHtmlDocument(`<body>${listBoxHtml({ id: 'x', name: 'items', fields: [], rows: [] })}</body>`), data: withItem.data })
+    const code = files['src/api/items.ts']!
+    expect(code).toContain('const ITEM_BEFORE = "https://api.example.com/shop/items/"')
+    expect(code).toContain('const ITEM_AFTER = ""')
+    expect(code).toContain('const ITEM_PATH = "data"')
+    expect(code).toContain('export async function fetchItemsItem(id: string): Promise<Item>')
+    expect(code).toContain('ITEM_BEFORE + encodeURIComponent(id) + ITEM_AFTER')
+    expect(code).toContain("const single = !USE_MOCK && Boolean(wanted)")
+    expect(code).toContain('const query = useItems(!single)')
+    expect(code).toContain('if (single) return { ...one }')
+    // without it, the record hook only uses the list
+    const plain = buildReactProject({ ...parseHtmlDocument(`<body>${listBoxHtml({ id: 'x', name: 'items', fields: [], rows: [] })}</body>`), data: connected({ url: 'https://api.example.com/shop' }).data })
+    expect(plain['src/api/items.ts']).not.toContain('ITEM_BEFORE')
+    expect(plain['src/api/items.ts']).toContain('const query = useItems()')
+  })
 })
