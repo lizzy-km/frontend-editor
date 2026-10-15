@@ -5,6 +5,7 @@ import type { Params } from '../routes'
 import { removeNode } from '../tree/treeOps'
 import { isElement, type PageDoc } from '../types'
 import { expandDataLists, expandRecords } from './expandLists'
+import { withClickedRows } from './clickedPlayer'
 import { withForms } from './formPlayer'
 import { withLayouts } from './layoutPlayer'
 import { withPopups } from './popupPlayer'
@@ -91,4 +92,4 @@ function forViewer(doc: PageDoc, viewer: Viewer): PageDoc {
  * viewer may see (downloads: a signed-out visitor), lists filled with their
  * data rows, and the animation, form, pop-up and layout players added.
  */
-export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR, params: Params = {}): PageDoc => withWidgets(withLayouts(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(doc, viewer)), params)))))))
+export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR, params: Params = {}): PageDoc => withWidgets(withLayouts(withClickedRows(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(doc, viewer)), params))))))))

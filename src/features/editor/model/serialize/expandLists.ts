@@ -1,14 +1,15 @@
 import { createId } from '@/lib/ids'
-import { bindingsOf, isListBox, listInfo, resolveBinding, rowsFor } from '../dataLists'
+import { BIND_PREFIX, FROM_ATTR, ITEM_ATTR, bindingsOf, isListBox, listInfo, resolveBinding, rowsFor } from '../dataLists'
 import { GO_ATTR } from '../pages'
+import { OPEN_ATTR } from '../popups'
 import { isRecordBox, pickRow, recordInfo } from '../dataRecords'
 import { cloneSubtree } from '../tree/cloneSubtree'
 import { collectSubtreeIds } from '../tree/queries'
 import type { Params } from '../routes'
 import { isElement, type DataValue, type ElementNode, type NodeMap, type PageDoc } from '../types'
 
-/** One filled-in card: bound text replaced, bound attributes set. */
-export function fillCard(nodes: NodeMap, topId: string, row: Record<string, DataValue>): NodeMap {
+/** One filled-in card: bound text replaced, bound attributes set. `keepTemplates` keeps a "click goes to" address template next to its filled value (a pop-up is filled again when a card opens it). */
+export function fillCard(nodes: NodeMap, topId: string, row: Record<string, DataValue>, keepTemplates = false): NodeMap {
   const next: NodeMap = { ...nodes }
   for (const id of collectSubtreeIds(nodes, topId)) {
     const node = nodes[id]
@@ -18,7 +19,10 @@ export function fillCard(nodes: NodeMap, topId: string, row: Record<string, Data
     const go = node.attrs[GO_ATTR]?.startsWith('/') && node.attrs[GO_ATTR].includes(':') ? resolveBinding(node.attrs[GO_ATTR], row) : undefined
     if (!Object.keys(bindings).length && go === undefined) continue
     const attrs = { ...node.attrs }
-    if (go !== undefined) attrs[GO_ATTR] = go
+    if (go !== undefined) {
+      attrs[GO_ATTR] = go
+      if (keepTemplates) attrs[`${BIND_PREFIX}${GO_ATTR}`] = node.attrs[GO_ATTR]!
+    }
     for (const [attr, field] of Object.entries(bindings)) if (attr !== 'text') attrs[attr] = resolveBinding(field, row)
     let children = node.children
     if (bindings.text) {
@@ -45,11 +49,17 @@ export function expandDataLists(doc: PageDoc): PageDoc {
     const rows = info ? rowsFor(info, doc.data) : []
     if (!info?.templateId || rows.length === 0) continue
     const cards: string[] = []
-    for (const row of rows) {
-      const copy = cloneSubtree(nodes, info.templateId)
+    // Cards that open a pop-up say which item they are, so the pop-up can show it (see clickedPlayer).
+    const opensPopup = collectSubtreeIds(nodes, info.templateId).some((id) => isElement(nodes[id]) && OPEN_ATTR in (nodes[id] as ElementNode).attrs)
+    rows.forEach((row, index) => {
+      const copy = cloneSubtree(nodes, info.templateId!)
       nodes = fillCard({ ...nodes, ...copy.nodes, [copy.topId]: { ...copy.nodes[copy.topId]!, parentId: box.id } }, copy.topId, row)
+      if (opensPopup) {
+        const top = nodes[copy.topId] as ElementNode
+        nodes[copy.topId] = { ...top, attrs: { ...top.attrs, [ITEM_ATTR]: String(index), [FROM_ATTR]: info.source } }
+      }
       cards.push(copy.topId)
-    }
+    })
     for (const gone of collectSubtreeIds(nodes, info.templateId)) delete nodes[gone]
     const current = nodes[box.id] as ElementNode
     nodes[box.id] = { ...current, children: current.children.flatMap((id) => (id === info.templateId ? cards : nodes[id] ? [id] : [])) }
@@ -66,7 +76,7 @@ export function expandRecords(doc: PageDoc, params: Params = {}): PageDoc {
     const info = recordInfo(nodes, box.id)
     const source = (doc.data ?? []).find((item) => item.name === info?.source)
     const row = source ? pickRow(source.rows, info!.row, info!.row.kind === 'param' ? params[info!.row.name] ?? null : null) : undefined
-    if (row) nodes = fillCard(nodes, box.id, row)
+    if (row) nodes = fillCard(nodes, box.id, row, info!.row.kind === 'clicked')
   }
   return { ...doc, nodes }
 }

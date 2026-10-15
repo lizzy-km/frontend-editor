@@ -45,7 +45,7 @@ await page.mouse.click(list.x + 4, list.y + 4) // the list box itself
 await page.waitForTimeout(400)
 await inspectorTab(page, 'Actions')
 await openSection(page, 'Data')
-await panel.getByRole('group', { name: 'What clicking a card does' }).getByRole('button', { name: 'Open page' }).click()
+await panel.getByLabel('What clicking a card does').selectOption('page')
 await page.waitForTimeout(400)
 const chosen = await panel.getByLabel('Page a card opens').inputValue()
 check('the card opens the changing page', chosen === '/store-product/:id', chosen)

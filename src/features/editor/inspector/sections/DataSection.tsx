@@ -5,6 +5,7 @@ import { setAttribute, setAttributes } from '../../actions/nodeActions'
 import { LOAD_ATTR, PAGE_SIZE_ATTR, listInfo } from '../../model/dataLists'
 import { ROW_ATTR, bindableParts, dataBoxOf, recordInfo, rowChoiceAttr, type RowChoice } from '../../model/dataRecords'
 import { listPages } from '../../model/pages'
+import { MODAL_ATTR, popupsOf } from '../../model/popups'
 import type { DataSource, ElementNode } from '../../model/types'
 import { useDocStore } from '../../store/doc.store'
 import { SegmentedControl, SelectControl } from '../controls/ChoiceControls'
@@ -19,15 +20,16 @@ const EMPTY: DataSource[] = []
 const ROWS = [{ value: 'first', label: 'The first one' }, { value: 'number', label: 'One by number' }, { value: 'param', label: 'The one in the link' }]
 
 /** Which record a box shows. */
-function RecordRow({ id, row }: { id: string; row: RowChoice }) {
+function RecordRow({ id, row, popup }: { id: string; row: RowChoice; popup: boolean }) {
   const set = (choice: RowChoice) => setAttribute(id, ROW_ATTR, rowChoiceAttr(choice))
   return (
     <>
       <div className={styles.row} title="Which item of your data this box shows">
         <span className={styles.label}>Which one</span>
-        <SelectControl label="Which item" value={row.kind} options={ROWS}
-          onChange={(kind) => set(kind === 'number' ? { kind: 'number', n: 1 } : kind === 'param' ? { kind: 'param', name: 'id' } : { kind: 'first' })} />
+        <SelectControl label="Which item" value={row.kind} options={popup ? [...ROWS, { value: 'clicked', label: 'The card that opened it' }] : ROWS}
+          onChange={(kind) => set(kind === 'number' ? { kind: 'number', n: 1 } : kind === 'param' ? { kind: 'param', name: 'id' } : kind === 'clicked' ? { kind: 'clicked' } : { kind: 'first' })} />
       </div>
+      {row.kind === 'clicked' && <p className={styles.label}>When a card opens this pop-up it shows that card’s item. Opened any other way, it shows the first item.</p>}
       {row.kind === 'number' && (
         <div className={styles.row}>
           <span className={styles.label}>Item number</span>
@@ -89,11 +91,11 @@ export function DataSection({ node }: { node: ElementNode }) {
             <SegmentedControl label="How more cards arrive" value={list.load} options={[{ value: 'scroll', label: 'On scroll' }, { value: 'all', label: 'Show all' }]}
               onChange={(load) => setAttributes(node.id, { [LOAD_ATTR]: load })} />
           </div>
-          {list.templateId && source && nodes[list.templateId]?.kind === 'element' && <CardClick design={nodes[list.templateId] as ElementNode} source={source} pages={pages} />}
+          {list.templateId && source && nodes[list.templateId]?.kind === 'element' && <CardClick design={nodes[list.templateId] as ElementNode} source={source} pages={pages} popups={popupsOf(nodes)} />}
           <p className={styles.label}>The first thing inside is the card design: change it to change every card.</p>
         </>
       )}
-      {record && <RecordRow id={node.id} row={record.row} />}
+      {record && <RecordRow id={node.id} row={record.row} popup={MODAL_ATTR in node.attrs} />}
       {box && source && (
         <>
           <p className={styles.label}>Show these from “{source.name}”:</p>

@@ -7,12 +7,14 @@ import { isElement, type DataSource, type DataValue, type ElementNode, type Fiel
  *   every row:  <div data-fe-list="products">…one card design…</div>        (see dataLists.ts)
  *   one record: <section data-fe-record="products" data-fe-row="first">…</section>
  * Inside, elements show fields with data-fe-bind="field" (text) and data-fe-bind-<attr>="field".
- * data-fe-row picks the record: "first", a row number ("3"), or "?id": the row whose id is in the page address (?id=3).
+ * data-fe-row picks the record: "first", a row number ("3"), "?id": the row whose id is in the page address (?id=3),
+ * or "clicked" (a pop-up): the item of the card that opened it.
  */
 export const RECORD_ATTR = 'data-fe-record'
 export const ROW_ATTR = 'data-fe-row'
 
-export type RowChoice = { kind: 'first' } | { kind: 'number'; n: number } | { kind: 'param'; name: string }
+/** `clicked`: a pop-up shows the card that opened it (the first item when opened any other way). */
+export type RowChoice = { kind: 'first' } | { kind: 'number'; n: number } | { kind: 'param'; name: string } | { kind: 'clicked' }
 export type RecordInfo = { id: string; source: string; row: RowChoice }
 /** How a box shows its data (null = it doesn't). */
 export type DataBox = { id: string; mode: 'list' | 'record'; source: string }
@@ -20,12 +22,13 @@ export type DataBox = { id: string; mode: 'list' | 'record'; source: string }
 export const isRecordBox = (node: unknown): node is ElementNode => isElement(node as ElementNode) && RECORD_ATTR in (node as ElementNode).attrs
 
 export function rowChoiceOf(value: string | undefined): RowChoice {
+  if (value === 'clicked') return { kind: 'clicked' }
   if (value?.startsWith('?') && value.length > 1) return { kind: 'param', name: value.slice(1) }
   const n = Number(value)
   return Number.isInteger(n) && n > 0 ? { kind: 'number', n } : { kind: 'first' }
 }
 
-export const rowChoiceAttr = (choice: RowChoice) => (choice.kind === 'param' ? `?${choice.name}` : choice.kind === 'number' ? String(choice.n) : 'first')
+export const rowChoiceAttr = (choice: RowChoice) => (choice.kind === 'param' ? `?${choice.name}` : choice.kind === 'number' ? String(choice.n) : choice.kind === 'clicked' ? 'clicked' : 'first')
 
 export function recordInfo(nodes: NodeMap, id: string): RecordInfo | null {
   const node = getElement(nodes, id)
