@@ -170,7 +170,7 @@ A React download can be **opened again**: on the start screen choose "Open a .zi
 "Choose a folder". A hidden `.tweak/project.json` inside the download brings the page
 back exactly; files edited outside Tweak are listed first (Tweak rebuilds the project
 from the page, so those edits would not carry over). Folders from other sources can't be
-opened.
+opened. `node_modules`, `.git` and `dist` are ignored, so there is no need to delete them first.
 
 ## No code yet?
 

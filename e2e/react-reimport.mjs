@@ -49,7 +49,18 @@ check('a changed file is named in the warning', (await page.getByText('changed o
 await page.getByRole('button', { name: 'Open anyway' }).click()
 check('"Open anyway" opens it', (await headline()).includes('Fresh bread'))
 
-// 4) a zip that Tweak did not make
+// 4) a zip that still contains node_modules (20 MB) and .git: they are left out, the project opens
+const withModules = { ...files }
+const root = Object.keys(files)[0].split('/')[0]
+withModules[`${root}/node_modules/big/index.js`] = strToU8('x'.repeat(20 * 1024 * 1024))
+withModules[`${root}/.git/HEAD`] = strToU8('ref: refs/heads/main')
+writeFileSync(OUT + 'reimport-modules.zip', zipSync(withModules))
+await startScreen()
+const started = Date.now()
+await page.getByLabel('React project .zip').setInputFiles(OUT + 'reimport-modules.zip')
+check('a zip with node_modules still opens the page', (await headline()).includes('Fresh bread'), `${Date.now() - started} ms`)
+
+// 5) a zip that Tweak did not make
 const other = { ...files }
 for (const name of Object.keys(other)) if (name.includes('.tweak/')) delete other[name]
 writeFileSync(OUT + 'reimport-other.zip', zipSync(other))

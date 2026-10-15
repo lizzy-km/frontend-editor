@@ -3,6 +3,12 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/skip-node-modules — 2026-10-15
+- Opening a React project skips `node_modules`, `.git`, `dist` and pictures. A .zip is now
+  read as a stream, so those files are never opened and a zip that still contains
+  `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
+  A folder skips them when reading (the browser still lists its files).
+
 ## feature/react-reimport — 2026-10-15
 - **Open a React project again.** Every React download now carries a hidden
   `.tweak/project.json` (the page + a fingerprint of each file). On the start screen,
