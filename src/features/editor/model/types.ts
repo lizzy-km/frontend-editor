@@ -75,7 +75,11 @@ export type DataField = { name: string; type: FieldType; from?: string }
 export type DataValue = string | number | boolean
 /** Where to get the real data: a GET address returning a list (or an object holding one), with optional paging. */
 /** `auth`: a key sent with every request, read from a setting in the project's .env (never stored in the page). */
-export type DataApi = { url: string; listPath?: string; pageParam?: string; pageSizeParam?: string; auth?: { header: string; prefix: string; envVar: string } }
+/**
+ * `itemUrl`: where ONE item lives, with the changing part written as :id (https://api.example.com/products/:id);
+ * `itemPath`: where the item sits inside that answer (empty = the answer is the item).
+ */
+export type DataApi = { url: string; itemUrl?: string; itemPath?: string; listPath?: string; pageParam?: string; pageSizeParam?: string; auth?: { header: string; prefix: string; envVar: string } }
 export type DataSource = { id: string; name: string; fields: DataField[]; rows: Record<string, DataValue>[]; api?: DataApi }
 
 export type HeadTag = { tag: 'meta' | 'link'; attrs: Record<string, string> }

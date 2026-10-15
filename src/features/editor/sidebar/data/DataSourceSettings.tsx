@@ -26,7 +26,7 @@ export function DataSourceSettings({ source, onEditTable }: { source: DataSource
 
       <p className={styles.settingsTitle}>Real data (optional)</p>
       {api.url
-        ? <p className={styles.hint}>Connected to <strong>{new URL(api.url, 'https://x.test').host}</strong>{api.auth ? <>, with a key from <code>{api.auth.envVar}</code></> : ''}.</p>
+        ? <p className={styles.hint}>Connected to <strong>{new URL(api.url, 'https://x.test').host}</strong>{api.auth ? <>, with a key from <code>{api.auth.envVar}</code></> : ''}{api.itemUrl ? <>. Detail pages ask for one item at a time.</> : '.'}</p>
         : <p className={styles.hint}>Using sample items. Connect your own API to show live data in the React download.</p>}
       <Button size="small" icon="globe" variant={api.url ? 'secondary' : 'primary'} onClick={() => setConnecting(true)}>{api.url ? 'Change or test the connection' : 'Connect your API'}</Button>
       {connecting && <ApiConnectDialog source={source} onClose={() => setConnecting(false)} />}

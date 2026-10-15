@@ -3,6 +3,19 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/api-item-address — 2026-10-15
+- **Address for one item** in Connect your API: write `:id` where the item's id goes
+  (`https://api.example.com/products/:id`). **Test connection** also tries it (with
+  the first item's id, or one you type) and says if it works, where the item sits
+  in the answer (e.g. inside "data"), and which fields a detail page will lack.
+  Typing `:id` into the list address is recognised: one click moves it to the
+  one-item address. Stored as `DataApi.itemUrl` / `itemPath`.
+- React: with live data, a detail page (the one in the link) asks for just that item
+  (`fetch<Source>Item`, `use<Source>Record`), so an id missing from the list still
+  works, and the list is not loaded for it. Without a one-item address nothing changes.
+  Verified in a real build: list page = one list call; clicking a card = one
+  `/items/8` call; opening `/item/42` directly works.
+
 ## feature/line-clamp — 2026-10-15
 - **Max lines** in the Text settings (Design tab): No limit, 1 to 10 lines. Longer
   text is cut after that many lines and ends with “…”. It sets the helper styles a
