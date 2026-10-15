@@ -40,7 +40,7 @@ await sidebar.getByRole('tab', { name: 'Code' }).click()
 
 // Code boxes collapse / expand from their headers
 const cssHeader = sidebar.getByRole('button', { name: /^Styles \(CSS\)/ })
-const htmlHeader = sidebar.getByRole('button', { name: /^Page code/ })
+const htmlHeader = sidebar.getByRole('button', { name: /^Page code (/ })
 check('Page code starts open', (await htmlHeader.getAttribute('aria-expanded')) === 'true')
 check('Styles start closed', (await cssHeader.getAttribute('aria-expanded')) === 'false')
 check('closed box shows its size', /\d+ lines/.test(await cssHeader.textContent()), await cssHeader.textContent())
