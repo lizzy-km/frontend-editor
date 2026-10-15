@@ -27,6 +27,10 @@ export const TEXT_AND_BOX_SECTIONS: SectionConfig[] = [
           ],
         },
       },
+      {
+        prop: '-webkit-line-clamp', label: 'Max lines', hint: 'Cut longer text after this many lines and end it with …',
+        control: { type: 'select', options: [{ value: 'none', label: 'No limit' }, ...[1, 2, 3, 4, 5, 6, 8, 10].map((n) => ({ value: String(n), label: n === 1 ? '1 line' : `${n} lines` }))] },
+      },
     ],
     more: [
       { prop: 'line-height', label: 'Line spacing', control: { type: 'slider', min: 0.8, max: 3, step: 0.05, unit: '' } },

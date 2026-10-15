@@ -3,6 +3,13 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/line-clamp — 2026-10-15
+- **Max lines** in the Text settings (Design tab): No limit, 1 to 10 lines. Longer
+  text is cut after that many lines and ends with “…”. It sets the helper styles a
+  line limit needs together (`companionStyles`), clears them again at "No limit"
+  or Reset (only the ones it set), and works in the editor, Preview, downloads and
+  React (`-webkit-line-clamp` in the page CSS).
+
 ## feature/connect-api — 2026-10-15
 - **Connect your API** (Data tab → a data source → Connect your API): paste the
   address, say if it needs a key, press **Test connection**. Errors are in plain

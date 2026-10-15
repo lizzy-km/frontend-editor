@@ -1,7 +1,7 @@
 import { Icon } from '@/shared/ui'
 import { setStyle, setStyles } from '../actions/styleActions'
 import type { StyleMap } from '../model/types'
-import { companionStyles } from './companionStyles'
+import { companionStyles, releasedStyles } from './companionStyles'
 import { SegmentedControl, SelectControl } from './controls/ChoiceControls'
 import { ColorControl } from './controls/ColorControl'
 import styles from './controls/Controls.module.css'
@@ -25,7 +25,7 @@ const sidesOf = (base: string, overrides: StyleMap, computed: ComputedStyles) =>
 function Control({ id, field, computed, overrides }: Props) {
   const value = overrides[field.prop] ?? field.read?.(computed) ?? computed[field.prop] ?? ''
   const change = (next: string) => {
-    const extra = companionStyles(field.prop, next, computed)
+    const extra = { ...companionStyles(field.prop, next, computed), ...releasedStyles(field.prop, next, overrides) }
     if (Object.keys(extra).length) setStyles(id, { [field.prop]: next, ...extra })
     else setStyle(id, field.prop, next)
   }
@@ -51,7 +51,7 @@ export function FieldRow(props: Props) {
     ? ['top', 'right', 'bottom', 'left'].map((side) => `${field.prop}-${side}`)
     : [field.prop]
   const changed = changedProps.some((prop) => overrides[prop] !== undefined)
-  const reset = () => setStyles(id, Object.fromEntries(changedProps.map((prop) => [prop, ''])))
+  const reset = () => setStyles(id, { ...Object.fromEntries(changedProps.map((prop) => [prop, ''])), ...releasedStyles(field.prop, 'none', overrides) })
 
   return (
     <div className={`${styles.row} ${field.control.type === 'sides' ? styles.stacked : ''}`} title={field.hint}>
