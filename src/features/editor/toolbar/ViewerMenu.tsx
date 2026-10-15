@@ -50,7 +50,7 @@ export function ViewerMenu() {
               </label>
             ))}
           </div>
-          {flags.length > 0 && <p className={styles.viewerTitle}>Flags on</p>}
+          {flags.length > 0 && <p className={styles.viewerTitle}>Features switched on</p>}
           {flags.map((flag) => (
             <label key={flag} className={styles.viewerOption}>
               <input type="checkbox" checked={viewer.flags.includes(flag)} onChange={(event) => toggleFlag(flag, event.target.checked)} /> {flag}

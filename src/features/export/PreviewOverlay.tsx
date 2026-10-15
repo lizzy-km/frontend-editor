@@ -4,6 +4,7 @@ import { BREAKPOINTS } from '@/features/editor/model/breakpoints'
 import { getDoc } from '@/features/editor/store/doc.store'
 import { useViewStore } from '@/features/editor/store/view.store'
 import { DeviceSwitch } from '@/features/editor/toolbar/DeviceSwitch'
+import { ViewerMenu } from '@/features/editor/toolbar/ViewerMenu'
 import { Button } from '@/shared/ui'
 import styles from './PreviewOverlay.module.css'
 import { SafePageFrame } from './SafePageFrame'
@@ -32,6 +33,8 @@ export function PreviewOverlay() {
       <header className={styles.bar}>
         <Button variant="primary" size="small" icon="arrowLeft" onClick={() => setPreview(false)}>Back to editing</Button>
         <DeviceSwitch />
+        {/* Test the roles: see the page as a visitor, a member or an admin would. */}
+        <ViewerMenu />
         <span className={styles.hint}>Buttons, menus and animations work here</span>
       </header>
       <div className={styles.stage}>

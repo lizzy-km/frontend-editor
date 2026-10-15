@@ -45,5 +45,16 @@ await page.getByRole('button', { name: 'Back to editing' }).click()
 await viewAs('Visitor (signed out)')
 await page.getByRole('button', { name: 'Preview' }).click()
 check('Preview as visitor leaves it out', !(await preview.locator('nav').innerText()).includes('Visit us'))
+
+// The roles can be switched inside Preview itself
+const previewMenu = page.getByRole('dialog', { name: 'Preview' })
+check('Preview has a "Viewing as" control', await previewMenu.getByRole('button', { name: /Viewing as/ }).isVisible())
+await previewMenu.getByRole('button', { name: /Viewing as/ }).click()
+await page.getByRole('radio', { name: 'Signed in as admin' }).check()
+await page.waitForTimeout(600)
+check('switching to admin inside Preview shows it', (await preview.locator('nav').innerText()).includes('Visit us'))
+await page.getByRole('radio', { name: 'Visitor (signed out)' }).check() // the menu stays open
+await page.waitForTimeout(600)
+check('and back to a visitor hides it again', !(await preview.locator('nav').innerText()).includes('Visit us'))
 check('no console errors', errors.length === 0, errors.join(' | '))
 await browser.close()
