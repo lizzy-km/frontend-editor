@@ -4,6 +4,7 @@ import { DATA } from './content/data'
 import { FORMS } from './content/forms'
 import { HELP } from './content/help'
 import { INTERACTIVE } from './content/interactive'
+import { WIDGETS } from './content/widgets'
 import { LOOKS } from './content/looks'
 import { RECIPES } from './content/recipes'
 import { START } from './content/start'
@@ -12,7 +13,7 @@ import { WEBSITE } from './content/website'
 import type { Block, Group, Topic } from './guideTypes'
 
 /** The whole guide, in reading order. */
-export const GROUPS: Group[] = [START, RECIPES, TOUR, LOOKS, WEBSITE, ACCESS, FORMS, DATA, INTERACTIVE, CODE, HELP]
+export const GROUPS: Group[] = [START, RECIPES, TOUR, LOOKS, WEBSITE, ACCESS, FORMS, DATA, INTERACTIVE, WIDGETS, CODE, HELP]
 
 /** The five steps shown first in the Quick guide, each pointing at its topic. */
 export const QUICK_STEPS: { title: string; text: string; topic: string }[] = [

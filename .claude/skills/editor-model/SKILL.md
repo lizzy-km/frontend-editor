@@ -125,6 +125,12 @@ that break things if you ignore them.
     Developer terms (function, route, param, handlers.ts) only in a short
     "For developers" note, and only where the React download needs it.
 
+29. **Ready-made widgets** (tabs, select, calendar, table, search, filter…) are plain HTML with `data-ui-*`
+    hooks (not `data-fe-*`: those are dropped from the React export) and a marked page-CSS block per kind.
+    Their initial state must be complete in the markup; the runtime (`model/widgets/runtime/*.js`) only reacts
+    to clicks and keys. Closed parts are revealed in the editor with `useRevealWidgets`, never in the model.
+    Change the HTML builder, the runtime JS and the inspector panel together.
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

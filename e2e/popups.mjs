@@ -1,5 +1,5 @@
 // Pop-ups: ready-made Pop-up block, its name, "Opens" on a button, "Ask first", Preview-style behavior is unit tested.
-import { check, openExample, inspectorTab } from './browser.mjs'
+import { check, openExample, inspectorTab, openAddFolds } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
@@ -7,6 +7,7 @@ const panel = page.locator('aside').last()
 
 await page.mouse.click(12, 845)
 await sidebar.getByRole('tab', { name: 'Add' }).click()
+await openAddFolds(page)
 await sidebar.getByRole('button', { name: 'Pop-up', exact: true }).click()
 await page.waitForTimeout(600)
 check('pop-up and its button added, pop-up shown as a normal box', (await frame.$$eval('[data-fe-modal]', (all) => all.length)) === 1 && (await frame.$eval('[data-fe-modal]', (el) => el.getClientRects().length)) > 0)

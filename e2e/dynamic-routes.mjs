@@ -1,5 +1,5 @@
 // Dynamic routes: Detail page (/store-product/:id), a card that opens it, Preview shows the clicked row.
-import { check, inspectorTab, openExample, openSection } from './browser.mjs'
+import { check, inspectorTab, openExample, openSection, openAddFolds } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
@@ -17,6 +17,7 @@ await panel.getByRole('button', { name: /Make this a website/ }).click()
 await page.waitForTimeout(400)
 await page.mouse.click(12, 845)
 await sidebar.getByRole('tab', { name: 'Add' }).click()
+await openAddFolds(page)
 await sidebar.getByRole('button', { name: 'List from data' }).click()
 await page.waitForTimeout(700)
 

@@ -444,6 +444,23 @@ Pictures are in `public/guide/` (SVG diagrams, real screenshots from
 `e2e/guide-shots.mjs`). The SVG diagrams are drawn by `scripts/guide-art/` (one
 file per topic group, helpers in `kit.mjs`); every topic starts with a figure.
 
+## Ready-made widgets (`model/widgets/`, `inspector/widgets/`)
+
+- `registry.ts` lists the Add blocks; `blocks*.ts` build their HTML; `css.ts` adds one marked page-CSS
+  block per kind (`/* tweak-ui tabs */`, plus the shared `base`) with the first widget (`actions/widgetActions.ts`
+  does CSS + boxes + connecting in one undo step).
+- Behaviour hooks are `data-ui` (kind), `data-ui-tab/panel/option/day/...`. The initial state is complete in
+  the markup (first panel open, others `hidden`; the calendar's 42 day buttons for the month it was added in),
+  so the editor shows it without a script; `runtime/*.js` only reacts to clicks and keys (delegated on the
+  document) and a `MutationObserver` sets up parts that appear later. Added through `serialize/widgetPlayer.ts`
+  (`forVisitors`) and `export/react/widgetFiles.ts` (`src/widgets.ts`, `// @ts-nocheck`).
+- Search and filters: lists / tables carry `data-ui-filterable="name"`, searches and filters `data-ui-for="name"`
+  (`connect.ts`). Items are the rows of a table or the children of a list; matching is by text, or by an attribute
+  when a filter has `data-ui-by="field"` (then the row design gets `data-fe-bind-data-<field>`, `filterData.ts`).
+- Editor: `useRevealWidgets` (selection → frame `attr`/`unattr`) shows hidden panels and pop-overs.
+- Keep the three places in step when a widget changes: the HTML builder, the runtime JS, and (if it adds
+  something new to store) the inspector panel and `edit.ts`.
+
 ## Accounts (`features/auth`)
 
 - `useAuthStore` holds `{ user, status }`, where status is

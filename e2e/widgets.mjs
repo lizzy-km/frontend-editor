@@ -1,10 +1,11 @@
 // Ready-made widgets: add each, then use them like a visitor in Preview (tabs, select, date picker, calendar, table sort, search, filter, switch, password).
-import { check, openExample } from './browser.mjs'
+import { check, openExample, openAddFolds } from './browser.mjs'
 
 const { browser, page, frame, errors } = await openExample()
 await page.waitForTimeout(800)
 const side = page.locator('aside').first()
 await page.locator('[aria-label="Project"]').getByRole('tab', { name: 'Add' }).click()
+await openAddFolds(page)
 
 const add = async (name) => {
   await page.evaluate(() => document.activeElement?.blur())

@@ -38,20 +38,22 @@ export const searchHtml = (target = '') =>
   `<div data-ui="search" data-ui-for="${target}" class="ui-search-bar" role="search"><span data-ui-wrap class="ui-input-wrap ui-input-icon">${SEARCH_ICON}`
   + '<input type="search" class="ui-input" placeholder="Search…" aria-label="Search"><button type="button" class="ui-ghost" data-ui-clear>Clear</button></span></div>'
 
-const CHOICES = ['Clothing', 'Bags', 'Home']
+export const CHOICES = ['Clothing', 'Bags', 'Home']
+const by = (field: string) => (field ? ` data-ui-by="${escapeHtml(field)}"` : '')
+
+/** The insides of each filter, so choices can be rebuilt from data without touching the box around them. */
+export const chipsInner = (choices: string[]) => `<button type="button" class="ui-chip" data-ui-filter="" aria-pressed="true">All</button>${choices.map((name) => `<button type="button" class="ui-chip" data-ui-filter="${escapeHtml(name)}" aria-pressed="false">${escapeHtml(name)}</button>`).join('')}`
+export const selectInner = (choices: string[]) => `<option value="">Everything</option>${choices.map((name) => `<option>${escapeHtml(name)}</option>`).join('')}`
+export const checksInner = (choices: string[]) => `<strong>Type</strong>${choices.map((name) => `<label class="ui-check"><input type="checkbox" value="${escapeHtml(name)}"> ${escapeHtml(name)}</label>`).join('')}<button type="button" class="ui-chip" data-ui-reset="">Clear filters</button>`
 
 /** Filter buttons: "All" and one per choice; picking one shows only the matching items. */
-export const filterChipsHtml = (target = '') =>
-  `<div data-ui="filter" data-ui-kind="chips" data-ui-for="${target}" class="ui-filter" role="group" aria-label="Filter">`
-  + `<button type="button" class="ui-chip" data-ui-filter="" aria-pressed="true">All</button>${CHOICES.map((name) => `<button type="button" class="ui-chip" data-ui-filter="${name}" aria-pressed="false">${name}</button>`).join('')}</div>`
+export const filterChipsHtml = (target = '', choices = CHOICES, field = '') =>
+  `<div data-ui="filter" data-ui-kind="chips" data-ui-for="${target}"${by(field)} class="ui-filter" role="group" aria-label="Filter">${chipsInner(choices)}</div>`
 
 /** A drop-down filter. */
-export const filterSelectHtml = (target = '') =>
-  `<div data-ui="filter" data-ui-kind="select" data-ui-for="${target}" class="ui-filter"><span class="ui-label">Show</span>`
-  + `<select class="ui-input" aria-label="Filter"><option value="">Everything</option>${CHOICES.map((name) => `<option>${name}</option>`).join('')}</select></div>`
+export const filterSelectHtml = (target = '', choices = CHOICES, field = '') =>
+  `<div data-ui="filter" data-ui-kind="select" data-ui-for="${target}"${by(field)} class="ui-filter"><span class="ui-label">Show</span><select class="ui-input" aria-label="Filter">${selectInner(choices)}</select></div>`
 
 /** A box of tick boxes: items matching any ticked choice stay (nothing ticked = everything). */
-export const filterChecksHtml = (target = '') =>
-  `<div data-ui="filter" data-ui-kind="checks" data-ui-for="${target}" class="ui-filter-box" role="group" aria-label="Filter"><strong>Type</strong>`
-  + `${CHOICES.map((name) => `<label class="ui-check"><input type="checkbox" value="${name}"> ${name}</label>`).join('')}`
-  + '<button type="button" class="ui-chip" data-ui-reset="">Clear filters</button></div>'
+export const filterChecksHtml = (target = '', choices = CHOICES, field = '') =>
+  `<div data-ui="filter" data-ui-kind="checks" data-ui-for="${target}"${by(field)} class="ui-filter-box" role="group" aria-label="Filter">${checksInner(choices)}</div>`

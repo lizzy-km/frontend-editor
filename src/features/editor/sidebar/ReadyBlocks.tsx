@@ -8,6 +8,7 @@ import { listBoxHtml } from '../model/dataLists'
 import { askButtonHtml, popupBlockHtml, uniquePopupName } from '../model/popups'
 import { CONTACT_FORM_HTML, SIGN_UP_FORM_HTML } from '../model/formBlocks'
 import { getDoc } from '../store/doc.store'
+import { Fold } from './Fold'
 import styles from './Sidebar.module.css'
 
 /** A list of cards from the first data source (sample products are added when there is no data yet). */
@@ -45,16 +46,13 @@ const READY = [
 /** Ready-made components that do more than show content. */
 export function ReadyBlocks() {
   return (
-    <>
-      <p className={styles.addLabel}>Ready-made</p>
-      <div className={styles.blocks}>
-        {READY.map((block) => (
-          <button key={block.id} type="button" className={styles.block} title={block.hint} onClick={block.add}>
-            <Icon name={block.icon} size={20} />
-            <span>{block.label}</span>
-          </button>
-        ))}
-      </div>
-    </>
+    <Fold id="ready" title="Ready-made" count={READY.length}>
+      {READY.map((block) => (
+        <button key={block.id} type="button" className={styles.block} title={block.hint} onClick={block.add}>
+          <Icon name={block.icon} size={20} />
+          <span>{block.label}</span>
+        </button>
+      ))}
+    </Fold>
   )
 }

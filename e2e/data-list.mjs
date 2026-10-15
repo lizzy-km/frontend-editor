@@ -1,5 +1,5 @@
 // "List from data": one card design, live copies from the data, field bindings, page size, Preview.
-import { check, OUT, openExample, inspectorTab } from './browser.mjs'
+import { check, OUT, openExample, inspectorTab, openAddFolds } from './browser.mjs'
 
 const { browser, page, frame, box, errors } = await openExample()
 const sidebar = page.locator('aside').first()
@@ -9,6 +9,7 @@ const copies = () => frame.$$eval('[data-fe-list] > [data-fe-clone] h3', (all) =
 
 await page.mouse.click(12, 845) // nothing selected: the block goes at the end of the page
 await sidebar.getByRole('tab', { name: 'Add' }).click()
+await openAddFolds(page)
 await sidebar.getByRole('button', { name: 'List from data' }).click()
 await page.waitForTimeout(600)
 check('design card + 6 copies from sample products', (await cards()) === 7, String(await cards()))

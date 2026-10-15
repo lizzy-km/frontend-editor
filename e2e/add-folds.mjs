@@ -1,0 +1,20 @@
+// The Add panel: each category is a fold. Basics starts open, the rest closed; the choice is remembered while editing.
+import { check, openExample } from './browser.mjs'
+
+const { browser, page, errors } = await openExample()
+await page.waitForTimeout(600)
+const side = page.locator('aside').first()
+const rail = (name) => page.locator('[aria-label="Project"]').getByRole('tab', { name }).click().then(() => page.waitForTimeout(250))
+const head = (name) => side.getByRole('button', { name: new RegExp(`^${name}`) })
+await rail('Add')
+check('Basics starts open', (await head('Basics').getAttribute('aria-expanded')) === 'true' && (await side.getByRole('button', { name: 'Heading', exact: true }).isVisible()))
+check('the other categories start closed', (await head('Ready-made').getAttribute('aria-expanded')) === 'false' && (await side.getByRole('button', { name: 'Pop-up', exact: true }).count()) === 0)
+check('each fold shows how many it holds', /\d/.test(await head('Inputs').innerText()))
+await head('Inputs').click()
+check('opening a fold shows its parts', await side.getByRole('button', { name: 'Switch', exact: true }).isVisible())
+await rail('Layers'); await rail('Add')
+check('the choice is remembered after switching tabs', (await head('Inputs').getAttribute('aria-expanded')) === 'true')
+await head('Inputs').click()
+check('closing hides them again', (await side.getByRole('button', { name: 'Switch', exact: true }).count()) === 0)
+check('no console errors', errors.length === 0, errors.join(' | '))
+await browser.close()
