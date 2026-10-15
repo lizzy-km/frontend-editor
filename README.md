@@ -143,6 +143,11 @@ the sample rows until you switch to the real API.
   zoom, flip or unblur on scroll, load, hover or in a loop, one by one if you
   like. The React download uses Motion.
 
+## Seeing the React code
+
+In the Code tab, **React (TSX)** shows the real React component for whatever you
+selected (and every other component in a picker), ready to copy.
+
 ## Downloads
 
 Web page (.html), files for a developer (.zip), a **React project** (.zip:

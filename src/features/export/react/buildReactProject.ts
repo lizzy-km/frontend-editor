@@ -1,3 +1,4 @@
+import type { Origin } from './componentViews'
 import { getElement } from '@/features/editor/model/tree/queries'
 import type { PageDoc } from '@/features/editor/model/types'
 import type { ExportFiles } from '../buildFiles'
@@ -33,7 +34,7 @@ function onlyPart(doc: PageDoc, id: string): PageDoc {
 }
 
 /** A one-page document (or one part of a page) as a Vite + React + TypeScript project: path -> file text. */
-export function buildReactProject(fullDoc: PageDoc, onlyId?: string): ExportFiles {
+export function buildReactProject(fullDoc: PageDoc, onlyId?: string, origins?: Origin[]): ExportFiles {
   const doc = onlyId && onlyId !== fullDoc.rootId ? onlyPart(fullDoc, onlyId) : fullDoc
   const body = getElement(doc.nodes, doc.rootId)
   const sources = doc.data ?? []
@@ -52,6 +53,9 @@ export function buildReactProject(fullDoc: PageDoc, onlyId?: string): ExportFile
     'src/main.tsx': mainFile({ root: 'app', query: sources.length > 0, auth: needsAuth(doc), confirm: popupUse(doc.nodes).ask }),
     'src/App.tsx': appSource(parts),
   }
-  for (const file of parts.files) files[`src/components/${file.name}.tsx`] = file.code
+  for (const file of parts.files) {
+    files[`src/components/${file.name}.tsx`] = file.code
+    origins?.push({ path: `src/components/${file.name}.tsx`, name: file.name, ids: file.ids ?? [] })
+  }
   return files
 }

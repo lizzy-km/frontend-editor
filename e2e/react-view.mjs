@@ -1,0 +1,32 @@
+// Code tab > React (TSX): the component code of what is selected, with Copy.
+import { check, openExample } from './browser.mjs'
+
+const { browser, page, box, errors } = await openExample()
+const sidebar = page.locator('aside').first()
+const h = await box('h1')
+await page.mouse.click(h.x + 10, h.y + 10)
+await page.waitForTimeout(400)
+await sidebar.getByRole('tab', { name: 'Code' }).click()
+await sidebar.getByRole('button', { name: 'React (TSX)' }).click()
+const code = sidebar.locator('.cm-editor', { has: page.getByLabel('React component code') }).locator('.cm-content')
+await code.waitFor({ timeout: 10000 })
+await page.waitForTimeout(400)
+const text = await code.innerText()
+check('shows the component around the heading', text.includes('export default function') && text.includes('Fresh bread'), text.slice(0, 80))
+check('the component picker names it', (await sidebar.getByLabel('Component', { exact: true }).inputValue()).startsWith('src/components/'))
+
+const card = await box('.card h3')
+await page.mouse.click(card.x + 8, card.y + 8)
+await page.waitForTimeout(600)
+const cardText = await code.innerText()
+check('selecting a card shows the card component (typed props)', /export type \w+Props/.test(cardText), cardText.slice(0, 60))
+
+await sidebar.getByLabel('Component', { exact: true }).selectOption({ index: 0 })
+await page.waitForTimeout(300)
+check('another component can be picked by hand', (await code.innerText()) !== cardText)
+await page.context().grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {})
+await sidebar.getByRole('button', { name: 'Copy code' }).click()
+await page.waitForTimeout(300)
+check('Copy shows it worked', await sidebar.getByRole('button', { name: 'Copied!' }).isVisible())
+check('no console errors', errors.length === 0, errors.join(' | '))
+await browser.close()

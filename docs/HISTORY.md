@@ -3,6 +3,19 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/tsx-view — 2026-10-15
+- **React (TSX) view** in the Code tab: switch between "Page code" and "React
+  (TSX)". The React view shows the real code of the component around what you
+  selected (a section, a repeated card with its typed props, a form with its
+  Zod schema, a list, a page), a picker for every other component with its file
+  path, and **Copy code**. Read-only for now (shown with TSX colors); editing
+  the markup is the next step.
+- `export/react/componentViews.ts`: `componentViews(doc)` builds the project
+  and lists each file with the page elements it came from (`ComponentFile.ids`,
+  collected through the builders' optional `origins`); `focusedView` picks the
+  deepest (most specific) component for a selection.
+- `CodeEditor` gained `language="tsx"` and `readOnly`.
+
 ## feature/data-json-import — 2026-10-15
 - **Import from JSON** in Data → Edit fields and rows: paste JSON (an API
   answer or an export, like fakestoreapi.com/products) or choose / drop a

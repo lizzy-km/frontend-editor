@@ -1,10 +1,11 @@
-import { lazy, Suspense, useMemo } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { debounce } from '@/lib/debounce'
 import { updateDoc } from '../actions/commit'
 import { countCodeEdit } from '../actions/editStats'
 import { useDocStore } from '../store/doc.store'
 import { CodeSection, lineCount } from './code/CodeSection'
 import { HtmlCodeBox } from './code/HtmlCodeBox'
+import { ReactView } from './code/ReactView'
 import styles from './Sidebar.module.css'
 
 // CodeMirror downloads only when someone opens the Code tab.
@@ -41,9 +42,15 @@ export function CodePanel() {
   const rootId = useDocStore((state) => state.doc.rootId)
   const css = useDocStore((state) => state.doc.css)
   const scripts = useDocStore((state) => state.doc.scripts)
+  const [view, setView] = useState<'page' | 'react'>('page')
 
   return (
     <div className={styles.code}>
+      <div className={styles.codeSwitch} role="group" aria-label="Kind of code">
+        <button type="button" aria-pressed={view === 'page'} onClick={() => setView('page')}>Page code</button>
+        <button type="button" aria-pressed={view === 'react'} onClick={() => setView('react')}>React (TSX)</button>
+      </div>
+      {view === 'react' ? <ReactView /> : <>
       <p className={styles.addHint}>Change the page's code directly. “Page code” is the whole page — HTML, CSS and JavaScript — and updates everything when you press Apply. The boxes below edit just the styles or a script, live.</p>
       <CodeSection id="html" title="Page code (HTML + CSS + JS)" info="press Apply to update" defaultOpen>
         <HtmlCodeBox targetId={rootId} label="Page code" hideLabel />
@@ -57,6 +64,7 @@ export function CodePanel() {
           <CodeArea target={index} value={script.code ?? ''} label={`Script ${index + 1}`} />
         </CodeSection>
       ))}
+      </>}
     </div>
   )
 }

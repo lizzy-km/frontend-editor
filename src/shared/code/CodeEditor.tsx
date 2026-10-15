@@ -2,6 +2,7 @@ import { css } from '@codemirror/lang-css'
 import { html } from '@codemirror/lang-html'
 import { javascript } from '@codemirror/lang-javascript'
 import { unfoldAll } from '@codemirror/language'
+import { EditorState } from '@codemirror/state'
 import { EditorView, placeholder as placeholderText } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
 import { useEffect, useRef } from 'react'
@@ -10,7 +11,7 @@ import { appCodeTheme } from './codeTheme'
 import { foldSections } from './foldSections'
 import styles from './CodeEditor.module.css'
 
-export type CodeLanguage = 'css' | 'js' | 'html'
+export type CodeLanguage = 'css' | 'js' | 'html' | 'tsx'
 
 export type CodeEditorProps = {
   value: string
@@ -21,6 +22,8 @@ export type CodeEditorProps = {
   onChange: (value: string) => void
   placeholder?: string
   autoFocus?: boolean
+  /** Shown and selectable, but not editable (generated code). */
+  readOnly?: boolean
   /** Fold all / Unfold all buttons above the box (page code). Default: on. */
   foldTools?: boolean
   /** Height limits, e.g. "260px" / "520px". The box grows with its text in between. */
@@ -30,7 +33,7 @@ export type CodeEditorProps = {
   onDropFile?: (file: File) => boolean
 }
 
-const LANGUAGES = { css: () => css(), js: () => javascript(), html: () => html() }
+const LANGUAGES = { css: () => css(), js: () => javascript(), html: () => html(), tsx: () => javascript({ jsx: true, typescript: true }) }
 
 /**
  * A real code editor (CodeMirror 6): colours, line numbers, brackets,
@@ -38,7 +41,7 @@ const LANGUAGES = { css: () => css(), js: () => javascript(), html: () => html()
  * the app; loaded lazily (it is big).
  */
 export default function CodeEditor(props: CodeEditorProps) {
-  const { value, language, label, placeholder, autoFocus, foldTools = true, minHeight, maxHeight } = props
+  const { value, language, label, placeholder, autoFocus, foldTools = true, minHeight, maxHeight, readOnly = false } = props
   const host = useRef<HTMLDivElement>(null)
   const view = useRef<EditorView | null>(null)
   const latest = useRef(props)
@@ -57,6 +60,7 @@ export default function CodeEditor(props: CodeEditorProps) {
         EditorView.theme({ '.cm-scroller': { minHeight: minHeight ?? 'auto', maxHeight: maxHeight ?? 'none' } }),
         EditorView.contentAttributes.of({ 'aria-label': label }),
         ...(placeholder ? [placeholderText(placeholder)] : []),
+        ...(readOnly ? [EditorState.readOnly.of(true)] : []),
         EditorView.domEventHandlers({
           drop: (event) => {
             const file = event.dataTransfer?.files[0]
@@ -78,7 +82,7 @@ export default function CodeEditor(props: CodeEditorProps) {
     }
     // Created once per language/label; later value changes are synced by the effect below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language, label])
+  }, [language, label, readOnly])
 
   // The text changed elsewhere (undo, a dropped file, another panel): show it.
   useEffect(() => {

@@ -1,3 +1,4 @@
+import type { Origin } from './componentViews'
 import { listPages, PATH_ATTR } from '@/features/editor/model/pages'
 import { allPagesDoc } from '@/features/editor/model/serialize/sitePages'
 import { getElement } from '@/features/editor/model/tree/queries'
@@ -19,7 +20,8 @@ import { mainFile } from './mainTemplate'
 import { notFoundSource, routerSource, ROUTERS, type RouteFile, type RouterKind } from './routerTemplates'
 import { siteReadme } from './siteReadme'
 
-type Options = { router: RouterKind }
+/** `origins` (optional) collects where each file came from: used by the editor's React view. */
+type Options = { router: RouterKind; origins?: Origin[] }
 
 const componentImports = (parts: Parts, folder: string, from: string) =>
   parts.names.map((name) => `import ${name} from '${from}/components/${folder}/${name}'`)
@@ -51,7 +53,7 @@ function pageSource(name: string, title: string, parts: Parts, folder: string): 
 }
 
 /** A multi-page site as a Vite + React + TypeScript app with a router, a shared Layout and one file per page. */
-export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles {
+export function buildSiteProject(doc: PageDoc, { router, origins }: Options): ExportFiles {
   const pages = listPages(doc)
   const body = getElement(doc.nodes, doc.rootId)!
   const first = body.children.indexOf(pages[0]!.id)
@@ -60,7 +62,13 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
   const takeName = createNameRegistry()
   const data = { base: '../..', sources: doc.data ?? [] }
   const files: ExportFiles = {}
-  const write = (parts: Parts, folder: string) => { for (const file of parts.files) files[`src/components/${folder}/${file.name}.tsx`] = file.code }
+  const write = (parts: Parts, folder: string) => {
+    for (const file of parts.files) {
+      const path = `src/components/${folder}/${file.name}.tsx`
+      files[path] = file.code
+      origins?.push({ path, name: file.name, ids: file.ids ?? [] })
+    }
+  }
 
   const before = renderParts(doc.nodes, body.children.slice(0, first).filter((id) => !isPage(id)), takeName, '      ', links, data)
   const after = renderParts(doc.nodes, body.children.slice(first).filter((id) => !isPage(id)), takeName, '      ', links, data)
@@ -73,6 +81,7 @@ export function buildSiteProject(doc: PageDoc, { router }: Options): ExportFiles
     const parts = renderParts(doc.nodes, (doc.nodes[page.id] as ElementNode).children, takeName, '      ', links, data)
     write(parts, folder)
     files[`src/pages/${component}.tsx`] = pageSource(component, page.title, parts, folder)
+    origins?.push({ path: `src/pages/${component}.tsx`, name: component, ids: [page.id] })
     const access = { roles: page.access.roles, flags: page.access.flags, signedIn: page.access.audience === 'signed-in', signedOut: page.access.audience === 'signed-out' }
     return { path: (doc.nodes[page.id] as ElementNode).attrs[PATH_ATTR] ?? '/', component, file: component, ...routeGuard(router, access, `<${component} />`) }
   })
