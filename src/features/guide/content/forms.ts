@@ -8,6 +8,7 @@ export const FORMS: Group = {
       id: 'add-form', title: 'Add a form', summary: 'Ready-made contact and sign-up forms.',
       brief: "Add → Contact form or Sign-up form. Select the form, then Actions → Form → Check the answers and send them.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-add-form.svg', alt: 'A contact form with a name, an email, a message and a Send button', caption: 'A contact form with a name, an email, a message and a Send button' },
         { kind: 'steps', items: [
           'Open **Add** and click **Contact form** (name, email, topic, message) or **Sign-up form** (name, email, password twice, terms).',
           'Select the form and open **Actions → Form**.',
@@ -22,6 +23,7 @@ export const FORMS: Group = {
       id: 'form-rules', title: 'Rules for each box', summary: 'Must be filled in, length, numbers, same as, messages.',
       brief: "Click an input box → Actions → Input box: set what is allowed and the message people see.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-form-rules.svg', alt: 'A box can require an answer and show your own error message', caption: 'A box can require an answer and show your own error message' },
         { kind: 'p', text: 'Click a box inside a form and open **Actions → Input box**:' },
         { kind: 'table', head: ['Setting', 'What it does'], rows: [
           ['**Hint text**', 'Grey example text shown before someone types.'],
@@ -38,6 +40,7 @@ export const FORMS: Group = {
       id: 'form-kinds', title: 'Forms that log people in', summary: 'Log in, create account and reset passwords.',
       brief: "Form → It will: choose Log people in, Create an account, Email a reset link… (the React download makes it real).",
       blocks: [
+        { kind: 'figure', src: '/guide/art-form-kinds.svg', alt: 'Log in, sign up and reset-password forms', caption: 'Log in, sign up and reset-password forms' },
         { kind: 'p', text: 'In **Actions → Form**, the **It will** choice decides what sending does: **Send the answers**, **Log people in**, **Create an account**, **Email a reset link**, **Set a new password**, or **Confirm email / resend link**. The ready-made sign-in pages already use these.' },
         { kind: 'p', text: 'These need boxes with the usual names (email, password, name). The settings tell you which ones. In **Preview** the form only shows its thank-you text; the React download really signs people in.' },
       ],

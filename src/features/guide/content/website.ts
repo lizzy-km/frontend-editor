@@ -8,6 +8,7 @@ export const WEBSITE: Group = {
       id: 'pages', title: 'Pages', summary: 'Add, open, reorder and delete pages.',
       brief: "Pages tab → Add a page. The header and footer are shared by every page.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-pages.svg', alt: 'The pages of a website, with one shared header and footer', caption: 'The pages of a website, with one shared header and footer' },
         { kind: 'p', text: 'Open **Pages** on the left rail (it appears once your project is a website). Click a page to work on it. The header and footer are shared: change them on any page and every page follows.' },
         { kind: 'steps', items: [
           'Press **Add a page**.',
@@ -21,6 +22,7 @@ export const WEBSITE: Group = {
       id: 'links', title: 'Links between pages', summary: 'Link text, buttons and whole boxes to pages.',
       brief: "Actions → Link to link a page, or Click goes to for whole boxes.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-links.svg', alt: 'A button or link can open another page', caption: 'A button or link can open another page' },
         { kind: 'list', items: [
           'Select a link or button, open **Actions → Link**, and choose a page under **Link to a page**.',
           'For a whole box or card, open **Actions → Click goes to** and choose a page: visitors can click anywhere on it.',
@@ -32,6 +34,7 @@ export const WEBSITE: Group = {
       id: 'layouts', title: 'Menus: top bar, side menu or both', summary: 'A ready-made menu that follows your pages.',
       brief: "Design → Layout, then switch on Show in the menu for each page you want listed.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-layouts.svg', alt: 'Layouts: top bar, side menu or both', caption: 'Layouts: top bar, side menu or both' },
         { kind: 'steps', items: [
           'Open **Design → Layout**.',
           'Choose **Top bar**, **Side menu** or **Both** (a top bar for Log in, a side menu for pages).',
@@ -65,6 +68,7 @@ export const WEBSITE: Group = {
       id: 'signin-pages', title: 'Sign-in pages', summary: 'Log in, create account, forgot password in one click.',
       brief: "Pages → Add sign-in pages gives you Log in, Create account and more.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-signin-pages.svg', alt: 'Log in, sign up and account pages are added for you', caption: 'Log in, sign up and account pages are added for you' },
         { kind: 'p', text: 'In **Pages**, press **Add sign-in pages**. You get five ordinary, editable pages: **Log in**, **Create account**, **Forgot password**, **Set a new password** and **Confirm email**. The first three are for signed-out visitors only (signed-in people are sent home).' },
         { kind: 'p', text: 'In your downloaded React project they really work. Until you connect your own service they use demo accounts and a pretend email. See **Who can see what**.' },
       ],

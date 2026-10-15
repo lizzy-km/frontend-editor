@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { findTopic, GROUPS, searchGuide } from './guideContent'
 
@@ -14,5 +15,12 @@ describe('guide content', () => {
     expect(searchGuide('zzzqqq')).toEqual([])
     expect(searchGuide('pop-up').flatMap((group) => group.topics).map((topic) => topic.id)).toContain('popups')
     expect(findTopic('fix-problems')?.topic.title).toBeTruthy()
+  })
+  it('opens every topic with a picture that exists', () => {
+    for (const topic of topics) {
+      const first = topic.blocks[0]!
+      expect(first?.kind, topic.id).toBe('figure')
+      if (first.kind === 'figure') expect(existsSync(`public${first.src}`), first.src).toBe(true)
+    }
   })
 })

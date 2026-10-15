@@ -8,6 +8,7 @@ export const START: Group = {
       id: 'what-is-tweak', title: 'What Tweak does', summary: 'Build a website by clicking, with no code.',
       brief: "Paste AI code or start blank, change it by clicking, then share or download it.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-what-is-tweak.svg', alt: 'AI code becomes a page you change by clicking, then you share it', caption: 'AI code becomes a page you change by clicking, then you share it' },
         { kind: 'p', text: 'Tweak is a website builder for people who don’t code. You start from a page an AI wrote for you (ChatGPT, Claude, Gemini…) or from a blank page, and you change it by **clicking**: words, pictures, colors, sizes, menus, forms, pages and live data.' },
         { kind: 'p', text: 'When you are done you can **share a link**, or **download** your site as a web page, a .zip of pages, or a full React project that a developer can continue with.' },
         { kind: 'tip', text: 'You never have to read code. If you are curious, the code is always one tab away (**Code**).' },
@@ -17,6 +18,7 @@ export const START: Group = {
       id: 'first-page', title: 'Make your first page', summary: 'Paste a page or start blank, in under a minute.',
       brief: "Try it → choose One page or A website → paste your AI’s answer → Open in editor.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-first-page.svg', alt: 'Four steps to your first page', caption: 'Four steps to your first page' },
         { kind: 'steps', items: [
           'Open **Try it** from the home page. You do not need an account.',
           'Choose **One page** (a landing page, an invitation, a menu…) or **A website with several pages**.',
@@ -31,6 +33,7 @@ export const START: Group = {
       id: 'account-and-saving', title: 'Accounts, saving and sharing', summary: 'Where your work is kept and how to share it.',
       brief: "Try it saves in this browser. An account saves to the cloud and lets you Share a link.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-account-and-saving.svg', alt: 'Your work is kept in the browser until you save it to an account', caption: 'Your work is kept in the browser until you save it to an account' },
         { kind: 'table', head: ['', 'Try it (no account)', 'With an account'], rows: [
           ['Saved', 'In this browser only', 'To your account, automatically'],
           ['Find it again', '“Continue my last page”', 'Under **My pages**, from any device'],
@@ -45,6 +48,7 @@ export const START: Group = {
       id: 'project-kinds', title: 'One page or a whole website?', summary: 'What changes when you choose a website.',
       brief: "A website has many pages, menus and sign-in. Turn a page into one with Make this a website.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-project-kinds.svg', alt: 'One page versus a website with several pages', caption: 'One page versus a website with several pages' },
         { kind: 'p', text: 'A **one page** project is a single scrolling page. A **website** has several pages (Home, About, Contact…) that share one header and footer, plus menus, links between pages, and optionally sign-in.' },
         { kind: 'list', items: [
           'You can turn a page into a website later: click the empty space of the page and press **Make this a website**.',

@@ -431,7 +431,8 @@ Data-driven: `content/*.ts` hold groups of topics made of simple blocks (p, step
 list, tip, note, table, figure). `QuickGuide` shows each topic's `brief`;
 `FullGuide` renders every block with anchors. Routes `/guide`, `/guide/full`.
 Pictures are in `public/guide/` (SVG diagrams, real screenshots from
-`e2e/guide-shots.mjs`).
+`e2e/guide-shots.mjs`). The SVG diagrams are drawn by `scripts/guide-art/` (one
+file per topic group, helpers in `kit.mjs`); every topic starts with a figure.
 
 ## Accounts (`features/auth`)
 

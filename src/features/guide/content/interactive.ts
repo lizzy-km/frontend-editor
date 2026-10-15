@@ -8,6 +8,7 @@ export const INTERACTIVE: Group = {
       id: 'popups', title: 'Pop-ups', summary: 'A box that opens over the page.',
       brief: "Add → Pop-up gives a button and its box. Select any button → Actions → When clicked → Opens.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-popups.svg', alt: 'A button opens a pop-up box over the page', caption: 'A button opens a pop-up box over the page' },
         { kind: 'steps', items: [
           'Open **Add** and click **Pop-up**. You get a button and the pop-up box (a normal box while you edit).',
           'Change the words and design like anything else. The pop-up has a **Name** under **Actions → Pop-up**.',
@@ -21,6 +22,7 @@ export const INTERACTIVE: Group = {
       id: 'ask-first', title: 'Ask first (“Are you sure?”)', summary: 'Make a button or link confirm before it acts.',
       brief: "Select a button or link → Actions → When clicked → Ask first, and type your question.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-ask-first.svg', alt: 'Ask first: visitors must say Yes before the click goes through', caption: 'Ask first: visitors must say Yes before the click goes through' },
         { kind: 'p', text: 'Type a question in **Ask first** and visitors must say **Yes** before the click goes through: a link opens only after Yes, a form button sends only after Yes. **Add → Ask first** gives you a ready-made red Delete button to start from.' },
       ],
     },
@@ -28,6 +30,7 @@ export const INTERACTIVE: Group = {
       id: 'animation', title: 'Animation', summary: 'Fade, slide, zoom when scrolled into view.',
       brief: "Select anything → Actions → Animation → choose an effect and when it plays. Press Play to see it.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-animation.svg', alt: 'An element fades up when it scrolls into view', caption: 'An element fades up when it scrolls into view' },
         { kind: 'list', items: [
           '**Effect**: fade, fade up/down, slide in, zoom in/out, flip, unblur.',
           '**Plays**: when it scrolls into view, when the page opens, when the mouse is over it, or over and over.',
@@ -42,6 +45,7 @@ export const INTERACTIVE: Group = {
       id: 'show-hide', title: 'Show or hide things', summary: 'Hide for a layer, a screen size or a kind of visitor.',
       brief: "Layers: click the eye. More → Show on phones/tablets/computers. Actions → Who can see this for people.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-show-hide.svg', alt: 'Hide a box for a layer, a screen size or a kind of visitor', caption: 'Hide a box for a layer, a screen size or a kind of visitor' },
         { kind: 'table', head: ['You want to…', 'Do this'], rows: [
           ['Hide something while you work', '**Layers** → click the eye next to it'],
           ['Hide it on some screens', '**More** → switch off **Show on phones** (or tablets, computers)'],

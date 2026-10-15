@@ -52,6 +52,7 @@ export const TOUR: Group = {
       id: 'screen-sizes', title: 'Computer, tablet and phone', summary: 'Make it look right everywhere.',
       brief: "Switch Computer / Tablet / Phone. Changes on Computer apply everywhere unless you change them on a smaller size.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-screen-sizes.svg', alt: 'Computer, tablet and phone', caption: 'Computer, tablet and phone' },
         { kind: 'p', text: 'Switch **Computer / Tablet / Phone** in the toolbar to see your page at each size. What you change on **Computer** applies to every size, **unless** you change it again on Tablet or Phone. A notice in the settings tells you which size your changes affect.' },
         { kind: 'steps', items: [
           'Choose **Phone** in the toolbar.',
@@ -64,6 +65,7 @@ export const TOUR: Group = {
       id: 'preview', title: 'Preview', summary: 'Try your page like a visitor.',
       brief: "Preview works like the real site. Use Viewing as to test visitors and roles.",
       blocks: [
+        { kind: 'figure', src: '/guide/art-preview.svg', alt: 'Preview shows your page like a visitor, with a Viewing as menu', caption: 'Preview shows your page like a visitor, with a Viewing as menu' },
         { kind: 'p', text: '**Preview** shows your page the way visitors will see it: buttons, menus, pop-ups, forms and animations all work. Use **Back to editing** (or Esc) to return.' },
         { kind: 'list', items: [
           'Switch the size with **Computer / Tablet / Phone**.',
