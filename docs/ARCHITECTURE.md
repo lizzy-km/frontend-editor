@@ -275,6 +275,17 @@ run, inside a locked frame.
   navigate itself, or the two race); TanStack uses `beforeLoad` + `redirect`
   (a `<Navigate>` in a TanStack route component loops).
 
+## Editing React markup (`export/react/jsxEdit/`)
+
+- The reverse of the JSX writer, for the markup it writes: `parseJsx` ->
+  `applyMarkup(doc, rootId, markup, others)`. Children are aligned by kind
+  (longest common run) so an inserted element does not recreate its siblings.
+  Matched elements keep id, styles, `hidden` and `data-fe-*` attributes; the
+  `fe-<id>` class is dropped on the way in (the export regenerates it).
+  `others` are the other components' element ids: their elements are opaque
+  blocks. If the JSX writer learns new constructs, teach `jsxParse` the same ones
+  (or keep them as blockers) and keep the "unedited code changes nothing" test.
+
 ## React view (`export/react/componentViews.ts`, `sidebar/code/ReactView.tsx`)
 
 - Every generated component file records the element ids it was made from

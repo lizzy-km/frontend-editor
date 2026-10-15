@@ -146,7 +146,8 @@ the sample rows until you switch to the real API.
 ## Seeing the React code
 
 In the Code tab, **React (TSX)** shows the real React component for whatever you
-selected (and every other component in a picker), ready to copy.
+selected (and every other component in a picker), ready to copy. Plain markup
+can be edited and applied to the page; components with code stay read-only.
 
 ## Downloads
 

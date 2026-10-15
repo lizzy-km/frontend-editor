@@ -1,0 +1,51 @@
+// Code tab > React (TSX): edit a plain component's markup and apply it; the canvas follows, styles stay, undo works.
+import { check, openExample } from './browser.mjs'
+
+const { browser, page, frame, box, errors } = await openExample()
+const sidebar = page.locator('aside').first()
+const h = await box('h1')
+await page.mouse.click(h.x + 10, h.y + 10)
+await page.waitForTimeout(400)
+const colorBefore = await frame.$eval('h1', (el) => getComputedStyle(el).color)
+await sidebar.getByRole('tab', { name: 'Code' }).click()
+await sidebar.getByRole('button', { name: 'React (TSX)' }).click()
+const code = sidebar.locator('.cm-editor', { has: page.getByLabel('React component code') }).locator('.cm-content')
+await code.waitFor({ timeout: 10000 })
+await page.waitForTimeout(500)
+check('a plain component is editable', (await code.getAttribute('aria-readonly')) !== 'true')
+check('Apply is off until something changes', await sidebar.getByRole('button', { name: 'Apply to page' }).isDisabled())
+
+const original = await code.innerText()
+const edited = original.replace('Fresh bread', 'Warm bread').replace('every single', 'every day')
+await code.click()
+await page.keyboard.press('Control+A')
+await page.keyboard.insertText(edited)
+await page.waitForTimeout(400)
+await sidebar.getByRole('button', { name: 'Apply to page' }).click()
+await page.waitForTimeout(600)
+check('the page shows the new words', (await frame.$eval('h1', (el) => el.textContent)).includes('Warm bread'), await frame.$eval('h1', (el) => el.textContent))
+check('the heading keeps its style (same element)', (await frame.$eval('h1', (el) => getComputedStyle(el).color)) === colorBefore)
+check('the code shows the new words after applying', (await code.innerText()).includes('Warm bread'))
+
+// A mistake is explained, and nothing is applied
+await code.click()
+await page.keyboard.press('Control+A')
+await page.keyboard.insertText((await code.innerText()).replace('<h1', '<h1 onClick={() => go()}'))
+await page.waitForTimeout(400)
+check('code that is not markup is explained with its line', (await sidebar.getByRole('alert').first().innerText()).includes('onClick'))
+check('Apply is off while there is a problem', await sidebar.getByRole('button', { name: 'Apply to page' }).isDisabled())
+await sidebar.getByRole('button', { name: 'Undo my changes' }).click()
+
+// Components with code are read-only
+const options = await sidebar.getByLabel('Component', { exact: true }).locator('option').allTextContents()
+const cardOption = options.findIndex((text) => text.startsWith('Card'))
+await sidebar.getByLabel('Component', { exact: true }).selectOption({ index: cardOption })
+await page.waitForTimeout(500)
+check('a component with props is read-only', (await code.getAttribute('aria-readonly')) === 'true')
+
+await page.mouse.click(12, 845)
+await page.keyboard.press('Control+z')
+await page.waitForTimeout(500)
+check('undo takes the edit back', (await frame.$eval('h1', (el) => el.textContent)).includes('Fresh bread'))
+check('no console errors', errors.length === 0, errors.join(' | '))
+await browser.close()

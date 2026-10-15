@@ -1,5 +1,5 @@
 /** HTML attribute names React spells differently. */
-const RENAMED: Record<string, string> = {
+export const RENAMED: Record<string, string> = {
   class: 'className', for: 'htmlFor', tabindex: 'tabIndex', readonly: 'readOnly', maxlength: 'maxLength',
   minlength: 'minLength', colspan: 'colSpan', rowspan: 'rowSpan', srcset: 'srcSet', crossorigin: 'crossOrigin',
   autoplay: 'autoPlay', playsinline: 'playsInline', autocomplete: 'autoComplete', autofocus: 'autoFocus',

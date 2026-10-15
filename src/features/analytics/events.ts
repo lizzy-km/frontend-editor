@@ -58,6 +58,8 @@ export type AnalyticsEvents = {
   layout_apply: { kind: 'top' | 'side' | 'both'; replaced: boolean }
   /** A project-wide color was changed (a page color or a theme variable). */
   palette_change: { kind: 'color' | 'theme' }
+  /** Edited React markup of a component was applied to the page (lines of markup). */
+  component_edit: { lines: number }
   /** A form was set to check and send its answers. */
   form_set: { fields: number }
   /** A page added to a site (blank, from pasted code, or a copy) and how many pages it now has. */
