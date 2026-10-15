@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 220" font-family="system-ui,Segoe UI,sans-serif" role="img" aria-label="Who can open which page">
+<rect width="800" height="220" rx="18" fill="#faf7f2"/>
+<g font-size="14" font-weight="800" text-anchor="middle">
+<g><rect x="30" y="30" width="230" height="130" rx="14" fill="#fff" stroke="#e4ddd2"/><circle cx="145" cy="68" r="16" fill="#d8d0c4"/><text x="145" y="112" fill="#2b2620">Anyone</text><text x="145" y="134" font-weight="500" font-size="13" fill="#6b6359">Home, Shop, About</text></g>
+<g><rect x="285" y="30" width="230" height="130" rx="14" fill="#fff" stroke="#e4ddd2"/><circle cx="400" cy="68" r="16" fill="#9cc7a8"/><text x="400" y="112" fill="#2b2620">Signed in</text><text x="400" y="134" font-weight="500" font-size="13" fill="#6b6359">Account, Orders</text></g>
+<g><rect x="540" y="30" width="230" height="130" rx="14" fill="#fff" stroke="#e8573a" stroke-width="2"/><circle cx="655" cy="68" r="16" fill="#e8573a"/><text x="655" y="112" fill="#2b2620">Admin only</text><text x="655" y="134" font-weight="500" font-size="13" fill="#6b6359">Manage products</text></g></g>
+<path d="M262 95 h20 M517 95 h20" stroke="#6b6359" stroke-width="2.5" fill="none"/>
+<text x="400" y="196" text-anchor="middle" font-size="14" fill="#6b6359">Each step opens up fewer pages. Try them all with “Viewing as” in Preview.</text>
+</svg>

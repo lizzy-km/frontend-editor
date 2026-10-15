@@ -23,7 +23,10 @@ export function EditorToolbar({ start, end }: Props) {
         <ZoomControl />
         <ViewerMenu />
       </div>
-      <div className={`${styles.side} ${styles.end}`}>{end}</div>
+      <div className={`${styles.side} ${styles.end}`}>
+        <a href="/guide" target="_blank" rel="noreferrer" className={styles.help} title="Open the guide in a new tab" aria-label="Help guide">?</a>
+        {end}
+      </div>
     </header>
   )
 }

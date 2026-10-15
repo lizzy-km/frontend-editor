@@ -4,7 +4,7 @@ import { readdirSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 
 const dir = new URL('.', import.meta.url)
-const specs = readdirSync(dir).filter((name) => name.endsWith('.mjs') && !['run.mjs', 'browser.mjs'].includes(name))
+const specs = readdirSync(dir).filter((name) => name.endsWith('.mjs') && !['run.mjs', 'browser.mjs', 'guide-shots.mjs'].includes(name))
 let failed = false
 for (const spec of specs) {
   console.log(`\n▶ ${spec}`)

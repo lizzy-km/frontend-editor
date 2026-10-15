@@ -1,0 +1,21 @@
+// Guide: quick page, switch to the full guide, search, and a #topic link scrolls to its topic.
+import { check, openPage } from './browser.mjs'
+
+const { browser, page, errors } = await openPage('/guide')
+await page.getByRole('heading', { name: 'The quick guide' }).waitFor()
+check('quick guide lists topic cards', (await page.locator('article, [class*=card]').count()) > 10)
+await page.getByRole('link', { name: 'Details →' }).first().click()
+await page.getByRole('heading', { name: 'The full guide' }).waitFor()
+check('Details opens the full guide', page.url().includes('/guide/full#'))
+await page.getByLabel('Search the guide').fill('pop-up')
+await page.waitForTimeout(300)
+check('search narrows the topics', (await page.locator('[data-topic]').count()) >= 1 && (await page.locator('[data-topic]').count()) < 10)
+await page.getByLabel('Search the guide').fill('zzzqqq')
+check('empty search says so', await page.getByText('Nothing found').isVisible())
+await page.goto('about:blank')
+await page.goto('http://localhost:5317/guide/full#fix-problems')
+await page.waitForTimeout(600)
+const top = await page.locator('#fix-problems').evaluate((el) => el.getBoundingClientRect().top)
+check('a #topic link scrolls to that topic', top >= 0 && top < 200, String(top))
+check('no console errors', errors.length === 0, errors.join(' | '))
+await browser.close()

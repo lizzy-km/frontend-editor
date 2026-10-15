@@ -426,6 +426,13 @@ run, inside a locked frame.
   allow-popups allow-modals"`. **Never add allow-same-origin to Preview or
   to public page viewers.**
 
+## User guide (`features/guide`)
+Data-driven: `content/*.ts` hold groups of topics made of simple blocks (p, steps,
+list, tip, note, table, figure). `QuickGuide` shows each topic's `brief`;
+`FullGuide` renders every block with anchors. Routes `/guide`, `/guide/full`.
+Pictures are in `public/guide/` (SVG diagrams, real screenshots from
+`e2e/guide-shots.mjs`).
+
 ## Accounts (`features/auth`)
 
 - `useAuthStore` holds `{ user, status }`, where status is

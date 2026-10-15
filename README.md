@@ -81,6 +81,8 @@ Put the Worker's URL in `.env` as `VITE_ASSETS_URL`.
 - `docs/ARCHITECTURE.md`: how the pieces fit together (page model, iframe
   renderer, Konva overlay, saving, data).
 - `docs/HISTORY.md`: what each feature branch added, and why.
+- The in-app user guide lives at `/guide` (quick) and `/guide/full`; its text is
+  in `src/features/guide/content/`. Update it when a feature changes.
 - `CLAUDE.md` and `.claude/skills/*`: the rules for adding features (one
   branch per feature, small files, plain-language UI, how to verify).
 
