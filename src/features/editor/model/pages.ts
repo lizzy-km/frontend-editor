@@ -15,10 +15,12 @@ export const PATH_ATTR = 'data-fe-path'
 export const TITLE_ATTR = 'data-fe-title'
 /** On any element: clicking it opens this page of the site (e.g. a whole card). */
 export const GO_ATTR = 'data-fe-go'
+/** On a page: "show" = it is listed in the top bar / side menu (default: not listed). */
+export const MENU_ATTR = 'data-fe-menu'
 /** Only signed-in visitors may open the page (used by the React export's route guard). */
 export const PRIVATE_ATTR = 'data-fe-private'
 
-export type PageInfo = { id: string; key: string; path: string; title: string; private: boolean; access: Condition }
+export type PageInfo = { id: string; key: string; path: string; title: string; private: boolean; access: Condition; inMenu: boolean }
 
 /** Is this node a page container? */
 export const isPageNode = (node: EditorNode | undefined): boolean => isElement(node) && PAGE_ATTR in node.attrs
@@ -30,6 +32,7 @@ const toInfo = (node: ElementNode): PageInfo => ({
   title: node.attrs[TITLE_ATTR] ?? 'Page',
   private: conditionOf(node).audience === 'signed-in',
   access: conditionOf(node),
+  inMenu: node.attrs[MENU_ATTR] === 'show',
 })
 
 /** The pages of a site, in order (empty for a one-page document). */

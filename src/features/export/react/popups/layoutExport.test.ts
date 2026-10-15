@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { addAuthPages } from '@/features/editor/model/authPages'
 import { applyLayout, type LayoutKind } from '@/features/editor/model/layouts'
 import { addPage, updatePage } from '@/features/editor/model/pageOps'
+import { listPages } from '@/features/editor/model/pages'
 import { parseHtmlDocument } from '@/features/editor/model/parse/parseDocument'
 import { buildSiteProject } from '../buildSiteProject'
 
@@ -9,7 +10,8 @@ const site = (kind: LayoutKind) => {
   let doc = parseHtmlDocument('<body><section>Hi</section></body>')
   const account = addPage(doc, { title: 'Account', path: '/account', from: 'blank' })
   doc = addAuthPages(updatePage(account.doc, account.pageId, { private: true }))
-  return applyLayout(doc, kind, false)
+  const shown = listPages(doc).reduce((next, page) => updatePage(next, page.id, { inMenu: true }), doc)
+  return applyLayout(shown, kind, false)
 }
 const all = (files: Record<string, string>) => Object.entries(files).filter(([path]) => path.startsWith('src/components/')).map(([, code]) => code).join('\n')
 

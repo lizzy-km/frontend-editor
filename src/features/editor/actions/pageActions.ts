@@ -1,6 +1,6 @@
 import { track } from '@/features/analytics/track'
 import { addAuthPages } from '../model/authPages'
-import { applyLayout, removeLayout, type LayoutKind } from '../model/layouts'
+import { applyLayout, canBeInMenu, removeLayout, type LayoutKind } from '../model/layouts'
 import { addPage, deletePage, movePage, toSite, updatePage, type NewPage } from '../model/pageOps'
 import { listPages } from '../model/pages'
 import { getDoc } from '../store/doc.store'
@@ -36,7 +36,7 @@ export function createPage(page: NewPage) {
 }
 
 /** Name, address or "signed-in only". Typing in the name box is one undo step. */
-export function changePage(pageId: string, change: { title?: string; path?: string; private?: boolean }) {
+export function changePage(pageId: string, change: { title?: string; path?: string; private?: boolean; inMenu?: boolean }) {
   updateDoc((doc) => updatePage(doc, pageId, change), `page:${pageId}:${Object.keys(change).join()}`)
 }
 
@@ -70,3 +70,8 @@ export function createLayout(kind: LayoutKind, replaceHeader: boolean) {
 
 /** Takes the ready-made layout away again. */
 export const dropLayout = () => updateDoc((doc) => removeLayout(doc))
+
+/** Lists every page that can be a menu item in the top bar / side menu. One undo step. */
+export function showAllInMenu() {
+  updateDoc((doc) => listPages(doc).filter(canBeInMenu).reduce((next, page) => updatePage(next, page.id, { inMenu: true }), doc))
+}

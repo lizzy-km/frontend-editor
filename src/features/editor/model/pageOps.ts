@@ -1,5 +1,5 @@
 import { createId } from '@/lib/ids'
-import { PAGE_ATTR, PATH_ATTR, PRIVATE_ATTR, TITLE_ATTR, listPages, slugify, splitLayout, uniquePath } from './pages'
+import { MENU_ATTR, PAGE_ATTR, PATH_ATTR, PRIVATE_ATTR, TITLE_ATTR, listPages, slugify, splitLayout, uniquePath } from './pages'
 import { parsePastedCode } from './parse/parseDocument'
 import { cloneSubtree } from './tree/cloneSubtree'
 import { collectSubtreeIds, getElement } from './tree/queries'
@@ -90,7 +90,7 @@ export function addPage(start: PageDoc, page: NewPage): { doc: PageDoc; pageId: 
 }
 
 /** New name, address or "signed-in only" for a page. Addresses stay unique. */
-export function updatePage(doc: PageDoc, pageId: string, change: { title?: string; path?: string; private?: boolean }): PageDoc {
+export function updatePage(doc: PageDoc, pageId: string, change: { title?: string; path?: string; private?: boolean; inMenu?: boolean }): PageDoc {
   const others = listPages(doc).filter((page) => page.id !== pageId).map((page) => page.path)
   const nodes = patchNode<ElementNode>(doc.nodes, pageId, (node) => {
     const attrs = { ...node.attrs }
@@ -98,6 +98,8 @@ export function updatePage(doc: PageDoc, pageId: string, change: { title?: strin
     if (change.path !== undefined) attrs[PATH_ATTR] = uniquePath(change.path, others)
     if (change.private === true) attrs[PRIVATE_ATTR] = ''
     if (change.private === false) delete attrs[PRIVATE_ATTR]
+    if (change.inMenu === true) attrs[MENU_ATTR] = 'show'
+    if (change.inMenu === false) delete attrs[MENU_ATTR]
     return { ...node, attrs }
   })
   return { ...doc, nodes }

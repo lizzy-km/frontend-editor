@@ -2,6 +2,7 @@ import { AUTH_PAGES } from './authPages'
 import { conditionAttrs } from './conditions'
 import { layoutCss, stripLayoutCss } from './layoutCss'
 import { toSite } from './pageOps'
+import { isDynamicPath } from './routes'
 import { listPages, splitLayout, type PageInfo } from './pages'
 import { htmlToChildNodes } from './parse/domToNodes'
 import { getElement } from './tree/queries'
@@ -24,6 +25,9 @@ export const TOGGLE_ATTR = 'data-fe-menu-toggle'
 export const SIGNOUT_ATTR = 'data-fe-signout'
 
 const AUTH_PATHS = new Set(AUTH_PAGES.map((page) => page.path))
+
+/** Can this page be a menu item? (Not the sign-in pages: they become Log in / Sign up buttons. Not pages that change per item.) */
+export const canBeInMenu = (page: PageInfo) => !AUTH_PATHS.has(page.path) && !isDynamicPath(page.path)
 const escape = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 const conditionText = (page: PageInfo) =>
@@ -46,7 +50,8 @@ const BURGER = `<button type="button" class="lay-burger" ${TOGGLE_ATTR} aria-lab
 /** The boxes of a layout, in page order. */
 export function layoutHtml(kind: LayoutKind, doc: PageDoc): string {
   const pages = listPages(doc)
-  const menu = pages.filter((page) => !AUTH_PATHS.has(page.path)).map((page) => link(page)).join('')
+  // Only the pages switched on with "Show in the menu".
+  const menu = pages.filter((page) => page.inMenu && canBeInMenu(page)).map((page) => link(page)).join('')
   const brand = `<a href="/" class="lay-brand">${escape(doc.title || 'My site')}</a>`
   const account = accountHtml(pages)
   if (kind === 'top') return `<header ${LAYOUT_ATTR}="top" class="lay-top">${brand}${BURGER}<nav class="lay-menu">${menu}${account}</nav></header>`

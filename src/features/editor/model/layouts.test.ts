@@ -1,15 +1,19 @@
 import { describe, expect, it } from 'vitest'
 import { addAuthPages } from './authPages'
-import { applyLayout, layoutHtml, layoutOf, ownHeader, removeLayout } from './layouts'
+import { applyLayout, canBeInMenu, layoutHtml, layoutOf, ownHeader, removeLayout } from './layouts'
 import { addPage, updatePage } from './pageOps'
 import { listPages } from './pages'
 import { parseHtmlDocument } from './parse/parseDocument'
+import type { PageDoc } from './types'
+
+/** Pages are left out of the menu until they are switched on. */
+const inMenu = (doc: PageDoc, paths: string[]) => listPages(doc).filter((page) => paths.includes(page.path)).reduce((next, page) => updatePage(next, page.id, { inMenu: true }), doc)
 
 const site = () => {
   let doc = parseHtmlDocument('<html><head><title>Bakery</title></head><body><header class="top"><a href="/">Old header</a></header><section>Bread</section><footer>Bye</footer></body></html>')
   doc = addPage(doc, { title: 'Shop', path: '/shop', from: 'blank' }).doc
   const account = addPage(doc, { title: 'Account', path: '/account', from: 'blank' })
-  return addAuthPages(updatePage(account.doc, account.pageId, { private: true }))
+  return inMenu(addAuthPages(updatePage(account.doc, account.pageId, { private: true })), ['/', '/shop', '/account', '/login', '/register'])
 }
 
 describe('layouts', () => {
@@ -19,9 +23,24 @@ describe('layouts', () => {
     expect(html).toContain('>Shop</a>')
     expect(html).toContain('href="/account" data-fe-nav data-fe-show="signed-in"')
     expect(html).not.toContain('>Forgot password</a>')
+    expect(html).not.toContain('>Log in</a></nav>')
     expect(html).toContain('data-fe-menu-toggle')
     expect(html).toContain('data-fe-signout data-fe-show="signed-in"')
     expect(html).toContain('>Sign up</a>')
+  })
+
+  it('lists only the pages switched on, and never the sign-in or changing pages', () => {
+    const doc = site()
+    const off = listPages(doc).reduce((next, page) => updatePage(next, page.id, { inMenu: false }), doc)
+    expect(layoutHtml('top', off)).not.toContain('>Shop</a>')
+    const some = updatePage(off, listPages(off).find((page) => page.path === '/shop')!.id, { inMenu: true })
+    const html = layoutHtml('top', some)
+    expect(html).toContain('>Shop</a>')
+    expect(html).not.toContain('>Home</a></a>')
+    expect(html.match(/data-fe-nav/g)!.length).toBeGreaterThan(0)
+    expect(canBeInMenu(listPages(doc).find((page) => page.path === '/login')!)).toBe(false)
+    const dynamic = addPage(doc, { title: 'Item', path: '/item/:id', from: 'blank' }).doc
+    expect(canBeInMenu(listPages(dynamic).find((page) => page.path === '/item/:id')!)).toBe(false)
   })
 
   it('has no account links without a log in page', () => {
