@@ -95,6 +95,17 @@ ${paged
 export const use${name} = () =>
   useQuery({ queryKey: ['${source.name}'], queryFn: async () => (await fetch${name}(1, 100)).items })
 
+/** One row of ${source.name}: the first, the Nth (1 = first), or the one whose id is in the page address (?id=3). */
+export function use${name}Record(which: 'first' | number | { param: string } = 'first') {
+  const query = use${name}()
+  const wanted = typeof which === 'object' ? new URLSearchParams(window.location.search).get(which.param) : null
+  const rows = query.data ?? []
+  const data: ${type} | undefined = typeof which === 'number'
+    ? rows[which - 1] ?? rows[0]
+    : wanted !== null ? rows.find((row) => String((row as { id?: unknown }).id ?? '') === wanted) ?? rows[0] : rows[0]
+  return { ...query, data }
+}
+
 /** ${name} page by page, for infinite scrolling. */
 export const use${name}Infinite = (pageSize = 12) =>
   useInfiniteQuery({

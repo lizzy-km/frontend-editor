@@ -63,7 +63,7 @@ export default function InfiniteScroll<T>({ query, render, empty = <p>Nothing he
 const pascal = (name: string) => name.charAt(0).toUpperCase() + name.slice(1)
 
 /** The fields a card design shows (its props). */
-function usedFields(nodes: NodeMap, templateId: string, source: DataSource): string[] {
+export function usedFields(nodes: NodeMap, templateId: string, source: DataSource): string[] {
   const names = new Set(source.fields.map((field) => field.name))
   const used = new Set<string>()
   for (const id of collectSubtreeIds(nodes, templateId)) {

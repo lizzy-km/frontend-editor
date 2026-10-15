@@ -4,6 +4,7 @@ import { lowerFirst, pascalCase } from './names'
 import { motionImports, motionState, newShow, showImport } from './jsxExtras'
 import { formComponents } from './forms/formTemplates'
 import { listComponents, type ListOptions } from './listTemplates'
+import { recordComponents } from './records/recordTemplates'
 import { findRepeats, type PropValue, type RepeatGroup } from './repeats'
 
 type ClassFor = (node: ElementNode) => string | undefined
@@ -79,8 +80,12 @@ export function partComponent(nodes: NodeMap, classFor: ClassFor, rootId: string
   const forms = formComponents({ nodes, classFor }, rootId, takeName, data?.base ?? '..', router)
   ctx.forms = forms.forms
   items.push(...forms.files)
+  // "One record" data boxes become components with a typed React Query hook.
+  const records = data ? recordComponents({ nodes, classFor }, rootId, takeName, data) : { records: new Map<string, string>(), files: [] }
+  ctx.records = records.records
+  items.push(...records.files)
   const body = writeElement(ctx, rootId, BODY_PAD)
-  const listImports = [...dataLists.lists.values(), ...forms.forms.values()].map((list) => `import ${list} from './${list}'`)
+  const listImports = [...dataLists.lists.values(), ...forms.forms.values(), ...records.records.values()].map((list) => `import ${list} from './${list}'`)
   const allImports = [...linkImport(ctx, router), ...motionImports(ctx.motion, data?.base ?? '..'), ...showImport(ctx.show, data?.base ?? '..'), ...listImports, ...imports]
   const code = [
     ...allImports, ...(allImports.length ? [''] : []),

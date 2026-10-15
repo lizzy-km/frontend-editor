@@ -33,6 +33,8 @@ export type JsxContext = {
   show?: ShowState
   /** Forms written as their own component instead: form id -> component name. */
   forms?: Map<string, string>
+  /** "One record" data boxes written as their own component: box id -> component name. */
+  records?: Map<string, string>
   /** Inside a form component: its fields register with React Hook Form. */
   form?: FormSlot
 }
@@ -142,7 +144,7 @@ export function writeElement(ctx: JsxContext, id: string, pad: string, inSvg = f
 function writeOne(ctx: JsxContext, id: string, pad: string, inSvg = false, inPre = false): string {
   const original = ctx.nodes[id]
   if (!isElement(original)) return ''
-  const list = ctx.lists?.get(id) ?? ctx.forms?.get(id)
+  const list = ctx.lists?.get(id) ?? ctx.forms?.get(id) ?? ctx.records?.get(id)
   if (list) return `${pad}<${list} />`
   const node = modalNode(ctx, asRouterLink(ctx, original))
   const { tag, extra } = motionFor(ctx, node)
