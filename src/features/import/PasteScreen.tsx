@@ -7,6 +7,7 @@ import type { PageDoc } from '@/features/editor/model/types'
 import { Button, Icon, type IconName } from '@/shared/ui'
 import { analyzePaste } from './analyzePaste'
 import { CodeBox } from './CodeBox'
+import { ReactProjectOpener } from './ReactProjectOpener'
 import { asKind, blankDoc, type ProjectKind } from './projectKind'
 import styles from './PasteScreen.module.css'
 
@@ -83,6 +84,7 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
         )}
 
         <AiPromptHelper kind={kind} />
+        <ReactProjectOpener onOpen={onOpen} where={where} />
 
         <button type="button" className={styles.link} onClick={() => setSplit(!split)}>
           {split ? 'I have everything in one piece' : 'My code comes in separate parts (HTML, CSS, JavaScript)'}

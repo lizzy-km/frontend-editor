@@ -404,6 +404,15 @@ run, inside a locked frame.
 
 ## Export (`features/export`)
 
+- **Reopening a React download**: `export/react/snapshot.ts` adds the hidden
+  `.tweak/project.json` (the whole `PageDoc` + a fingerprint per generated file) to
+  every whole-project React zip (`withSnapshot`, in `prepareReact`). `import/readProject.ts`
+  reads a .zip (fflate) or a chosen folder, `readSnapshot` restores the doc and lists
+  files changed since, and `ReactProjectOpener` (paste screen) shows the warning.
+  Projects without the file are refused with a plain message; Tweak does not parse
+  arbitrary React code. Bump `VERSION` in `snapshot.ts` when `PageDoc` changes in a way old
+  snapshots can't be read.
+
 - Every format starts from `buildPageParts(doc, onlyId?)` in `editor/model/serialize`:
   - `partsToSingleFile` makes the .html, copy, and Preview.
   - `partsToSplitFiles` + `zipFiles` make the .zip.

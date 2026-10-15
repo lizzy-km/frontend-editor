@@ -166,6 +166,12 @@ Web page (.html), files for a developer (.zip), a **React project** (.zip:
 Vite + React + TypeScript, one component per part of the page, repeated
 cards as one component with a data list), a picture (.png), or copy the code.
 
+A React download can be **opened again**: on the start screen choose "Open a .zip" or
+"Choose a folder". A hidden `.tweak/project.json` inside the download brings the page
+back exactly; files edited outside Tweak are listed first (Tweak rebuilds the project
+from the page, so those edits would not carry over). Folders from other sources can't be
+opened.
+
 ## No code yet?
 
 The paste screen has a folded "No code yet?" helper: pick one of 35
