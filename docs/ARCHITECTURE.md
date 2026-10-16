@@ -488,6 +488,10 @@ file per topic group, helpers in `kit.mjs`); every topic starts with a figure.
   a copy's own words survive where positions line up. A deleted main component detaches its copies.
 - Outputs: `stripComponents` (from `forVisitors` and both React builders) drops main components and the bookkeeping; the
   `.tweak` snapshot keeps them, so a reopened project still has its components.
+- Looks: each look of a component is its own main component (same `data-fe-component` name, its own `data-fe-variant`);
+  boxes share `data-fe-key` across looks. A copy follows one look; `swapLook` rebuilds it from another look and re-applies
+  what the copy changed (a diff against its old main, by key). Parts: `data-fe-part` on a main box names an option; a copy
+  hides it with the node's `hidden` flag (kept by the merge like any other change).
 - Rules: no component inside a component (one `data-fe-of` per box); a copy's data choice (`data-fe-record/row`) is just
   another attribute the merge keeps when the copy changed it.
 

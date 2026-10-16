@@ -82,6 +82,10 @@ export const WEBSITE: Group = {
           '**Undo my changes to this copy** puts a copy back exactly like the main component. **Make it a normal box** stops it following. **Stop being a component** (on the main one) turns every copy into a normal box.',
           'Boxes you add to the main component appear in every copy; boxes you remove disappear from them. Deleting the main component keeps the copies as normal boxes.',
         ] },
+        { kind: 'list', items: [
+          '**Looks**: one component, several designs. In the Components tab press **+ Add a look** (Dark, Outline, Large…), then **Edit** that look. A copy picks its design under **Actions → Component → Look** and keeps its own words and pictures when you switch.',
+          '**Options**: inside the component select a box (the picture, a badge) and give it a name under **Part of… → Option**. Each copy then has a switch **Show “…”** to show or hide that part in that copy only.',
+        ] },
         { kind: 'note', text: 'You can copy a copy (Ctrl+D); it is a copy of the same component. A component can’t sit inside another component. In the React download copies are written out as plain parts.' },
       ],
     },

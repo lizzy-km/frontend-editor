@@ -9,6 +9,18 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/component-variants — 2026-10-16
+- **Looks (variants)**: a component can have several named designs (Default, Dark, Outline…). In the Components tab
+  *+ Add a look* makes another from the chosen one; pick a look to edit it, rename it or remove it (its copies move to the
+  default look). A copy has a **Look** picker in Actions → Component; switching keeps what the copy changed itself
+  (words, pictures, links, styles, hiding), matched box by box.
+- **Options (parts)**: inside a main component, name a box under Actions → *Part of “…”* → Option. Every copy then gets a
+  switch **Show “Picture”** to show or hide it in that copy only.
+- How: each look is a main component with the same name (`data-fe-variant`); every box has the same `data-fe-key` in every
+  look; `model/reuse/looks.ts` (add, rename, delete, `swapLook`, parts). Names are shared by all looks; the outputs drop the
+  new attributes. Layers say "Component “Card” · Dark".
+- Tests: `looks.test.ts`, `e2e/component-looks.mjs`.
+
 ## feature/component-isolation — 2026-10-16
 - **Edit a component on its own.** *Edit* in the Components panel, *Edit on its own* on a main component (Actions →
   Component), or *Edit the main component* on a copy: the rest of the page steps aside (editor-only CSS, never in the model),

@@ -11,6 +11,12 @@ import { isElement, type ElementNode, type NodeMap } from '../types'
 export const COMPONENT_ATTR = 'data-fe-component'
 export const INSTANCE_ATTR = 'data-fe-instance'
 export const OF_ATTR = 'data-fe-of'
+/** On a main component's top box: the name of its look (a variant) inside the component. Looks of one component share its name. */
+export const VARIANT_ATTR = 'data-fe-variant'
+/** On every box of a component that has looks: the same key in every look, so a copy can switch look and keep its changes. */
+export const KEY_ATTR = 'data-fe-key'
+/** On a box inside a main component: its name as an option, so each copy can show or hide it. */
+export const PART_ATTR = 'data-fe-part'
 
 export const isMain = (node: unknown): node is ElementNode => isElement(node as ElementNode) && COMPONENT_ATTR in (node as ElementNode).attrs
 export const isInstance = (node: unknown): node is ElementNode => isElement(node as ElementNode) && INSTANCE_ATTR in (node as ElementNode).attrs
@@ -39,9 +45,16 @@ export function componentAround(nodes: NodeMap, id: string | null): { kind: 'mai
   return null
 }
 
-/** A name nobody uses yet: "Card", "Card 2"… */
+/** The main components that are looks of the same component (they share its name), the first one being the default look. */
+export const looksOf = (nodes: NodeMap, main: ElementNode) => mainsOf(nodes).filter((node) => node.attrs[COMPONENT_ATTR] === main.attrs[COMPONENT_ATTR])
+
+/** The name of a look ("Default" until it is named). */
+export const lookName = (main: ElementNode) => main.attrs[VARIANT_ATTR] || 'Default'
+
+/** A name nobody uses yet: "Card", "Card 2"… (the looks of one component share a name, so `ignoreId` skips the whole set). */
 export function uniqueComponentName(nodes: NodeMap, wanted: string, ignoreId?: string): string {
-  const taken = new Set(mainsOf(nodes).filter((node) => node.id !== ignoreId).map((node) => node.attrs[COMPONENT_ATTR]))
+  const own = ignoreId && isMain(nodes[ignoreId]) ? (nodes[ignoreId] as ElementNode).attrs[COMPONENT_ATTR] : undefined
+  const taken = new Set(mainsOf(nodes).filter((node) => node.id !== ignoreId && node.attrs[COMPONENT_ATTR] !== own).map((node) => node.attrs[COMPONENT_ATTR]))
   const base = wanted.trim().replace(/\s+/g, ' ').slice(0, 40) || 'Component'
   let name = base
   for (let n = 2; taken.has(name); n++) name = `${base} ${n}`

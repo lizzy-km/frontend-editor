@@ -4,7 +4,7 @@ import { isPageNode } from '../pages'
 import { collectSubtreeIds, getElement, indexInParent } from '../tree/queries'
 import { insertSubtree, patchNode, removeNode } from '../tree/treeOps'
 import { isElement, type ElementNode, type NodeMap } from '../types'
-import { COMPONENT_ATTR, INSTANCE_ATTR, OF_ATTR, componentAround, holdsComponent, isMain, mainOf, uniqueComponentName } from './attrs'
+import { COMPONENT_ATTR, INSTANCE_ATTR, OF_ATTR, componentAround, holdsComponent, isMain, looksOf, mainOf, uniqueComponentName } from './attrs'
 
 /** Can this box become a main component? Not the page itself, not something already part of a component. */
 export function canMakeComponent(nodes: NodeMap, id: string, rootId: string): boolean {
@@ -19,8 +19,14 @@ export function makeComponent(nodes: NodeMap, id: string, wanted: string): NodeM
 }
 
 /** Renames a main component. */
-export const renameComponent = (nodes: NodeMap, id: string, wanted: string): NodeMap =>
-  patchNode<ElementNode>(nodes, id, (node) => ({ ...node, attrs: { ...node.attrs, [COMPONENT_ATTR]: uniqueComponentName(nodes, wanted, id) } }))
+export function renameComponent(nodes: NodeMap, id: string, wanted: string): NodeMap {
+  const main = nodes[id] as ElementNode | undefined
+  const name = uniqueComponentName(nodes, wanted, id)
+  let next = nodes
+  // Every look of the component carries the name.
+  for (const look of main ? looksOf(nodes, main) : []) next = patchNode<ElementNode>(next, look.id, (node) => ({ ...node, attrs: { ...node.attrs, [COMPONENT_ATTR]: name } }))
+  return next
+}
 
 /** A copy of a branch of a main component, each box pointing at the box it copies (data-fe-of). `topId` keeps an existing id. */
 export function copyBranch(nodes: NodeMap, sourceId: string, topId = createId()): { nodes: NodeMap; topId: string } {

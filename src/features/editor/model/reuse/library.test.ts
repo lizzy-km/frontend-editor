@@ -13,7 +13,8 @@ beforeEach(() => useDocStore.getState().load(parseHtmlDocument('<body></body>'))
 describe('the components panel', () => {
   it('lists the components with their copies', () => {
     const { main } = setup()
-    expect(componentList(getDoc().nodes)).toEqual([{ id: main, name: 'Card', copies: instancesOf(getDoc().nodes, main).map((copy) => copy.id) }])
+    const copies = instancesOf(getDoc().nodes, main).map((copy) => copy.id)
+    expect(componentList(getDoc().nodes)).toEqual([{ id: main, name: 'Card', copies, looks: [{ id: main, label: 'Default', copies }] }])
     expect(componentList(getDoc().nodes)[0]!.copies).toHaveLength(2)
   })
 
