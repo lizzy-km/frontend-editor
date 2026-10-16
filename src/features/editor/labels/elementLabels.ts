@@ -2,6 +2,7 @@ import { getTextContent } from '../model/tree/queries'
 import { LIST_ATTR, listInfo } from '../model/dataLists'
 import { RECORD_ATTR } from '../model/dataRecords'
 import { isPageNode, TITLE_ATTR } from '../model/pages'
+import { COMPONENT_ATTR, INSTANCE_ATTR, mainOf } from '../model/reuse/attrs'
 import type { ElementNode, NodeMap } from '../model/types'
 import { labelForTag, type Label } from './tagLabels'
 
@@ -31,6 +32,8 @@ export function labelForNode(node: ElementNode): Label {
 export function describeNode(nodes: NodeMap, node: ElementNode, maxText = 24): string {
   const label = labelForNode(node)
   if (node.tag === 'body') return label.name
+  if (COMPONENT_ATTR in node.attrs) return `Component “${node.attrs[COMPONENT_ATTR]}”`
+  if (INSTANCE_ATTR in node.attrs) return `Copy of “${mainOf(nodes, node)?.attrs[COMPONENT_ATTR] ?? 'a component'}”`
   if (isPageNode(node)) return `Page “${node.attrs[TITLE_ATTR] ?? ''}”`
   if (listInfo(nodes, node.parentId ?? '')?.templateId === node.id) return `${label.name} (card design)`
   if (listInfo(nodes, node.id)) return `List from data “${node.attrs[LIST_ATTR]}”`

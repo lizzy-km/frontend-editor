@@ -467,6 +467,20 @@ Pictures are in `public/guide/` (SVG diagrams, real screenshots from
 `e2e/guide-shots.mjs`). The SVG diagrams are drawn by `scripts/guide-art/` (one
 file per topic group, helpers in `kit.mjs`); every topic starts with a figure.
 
+## Reusable components (`model/reuse/`)
+
+- A main component is a box with `data-fe-component="Name"`; a copy (instance) is a real copy of its boxes in the page:
+  the top box has `data-fe-instance="<main id>"`, every box has `data-fe-of="<id of the main box it copies>"`. Because copies
+  are plain nodes, everything works on them (editing in place, data wiring, drag, duplicate).
+- `propagate(prev, next)` runs inside `useDocStore.commit` (one undo step): for each main component whose boxes changed
+  it applies the change to every copy as a three-way merge: a copy's attribute, style, hidden flag or word is replaced only
+  when it still equals the main component's OLD value. Structure (boxes added, removed, moved) follows the main component;
+  a copy's own words survive where positions line up. A deleted main component detaches its copies.
+- Outputs: `stripComponents` (from `forVisitors` and both React builders) drops main components and the bookkeeping; the
+  `.tweak` snapshot keeps them, so a reopened project still has its components.
+- Rules: no component inside a component (one `data-fe-of` per box); a copy's data choice (`data-fe-record/row`) is just
+  another attribute the merge keeps when the copy changed it.
+
 ## Ready-made widgets (`model/widgets/`, `inspector/widgets/`)
 
 - `registry.ts` lists the Add blocks; `blocks*.ts` build their HTML; `css.ts` adds one marked page-CSS

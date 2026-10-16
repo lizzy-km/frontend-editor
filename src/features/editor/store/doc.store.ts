@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { HISTORY_LIMIT } from '@/config/app.config'
 import { track } from '@/features/analytics/track'
 import { createEmptyDoc } from '../model/parse/parseDocument'
+import { propagate } from '../model/reuse/propagate'
 import type { PageDoc } from '../model/types'
 
 /** Edits with the same key this close together become ONE undo step (e.g. dragging a slider). */
@@ -29,9 +30,12 @@ export const useDocStore = create<DocState>((set, get) => ({
 
   load: (doc) => set({ doc, past: [], future: [], version: 0, lastEdit: null }),
 
-  commit: (next, coalesceKey) => {
+  commit: (changed, coalesceKey) => {
     const { doc, past, lastEdit, version } = get()
-    if (next === doc) return
+    if (changed === doc) return
+    // Changes to a main component reach its instances in the same undo step.
+    const nodes = changed.nodes === doc.nodes ? changed.nodes : propagate(doc.nodes, changed.nodes)
+    const next = nodes === changed.nodes ? changed : { ...changed, nodes }
     const now = Date.now()
     const merge = Boolean(coalesceKey && lastEdit?.key === coalesceKey && now - lastEdit.at < COALESCE_MS)
     set({

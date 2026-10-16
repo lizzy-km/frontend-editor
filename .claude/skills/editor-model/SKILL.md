@@ -131,6 +131,11 @@ that break things if you ignore them.
     to clicks and keys. Closed parts are revealed in the editor with `useRevealWidgets`, never in the model.
     Change the HTML builder, the runtime JS and the inspector panel together.
 
+30. **Reusable components** (`model/reuse/`): copies are plain nodes marked `data-fe-instance` / `data-fe-of`; the main
+    component is `data-fe-component` and is removed from every output (`stripComponents`). Changes are carried to copies by
+    `propagate` inside `useDocStore.commit`, as a three-way merge against the previous document, so edit actions need no
+    special code. Never nest components; any new output path must go through `stripComponents` (or `forVisitors`).
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

@@ -65,6 +65,26 @@ export const WEBSITE: Group = {
       ],
     },
     {
+      id: 'components', title: 'Reusable components', summary: 'Change a part once and every copy follows.',
+      brief: "Select a box → Actions → Component → Make a component. Add copies from Add → Your components.",
+      blocks: [
+        { kind: 'figure', src: '/guide/art-components.svg', alt: 'Change the main component once and every copy follows, except what a copy changed itself', caption: 'Change the main component once and every copy follows, except what a copy changed itself' },
+        { kind: 'p', text: 'A **component** is a part you use again and again: a product card, a team member, a pricing box. Make it once, put copies anywhere, and a change to the **main component** reaches every copy.' },
+        { kind: 'steps', items: [
+          'Select the box you want to reuse (a card, a banner, a button row) and open **Actions → Component → Make a component**. Give it a name.',
+          'It becomes the **main component**: a dashed purple outline in the editor, and it is **left out of Preview and downloads**. Use it as the place where you design the part.',
+          'Open **Add → Your components** and click the component to put a **copy** on the page. Copies are real parts: click their words, pictures and links and change them.',
+          'Change the main component and every copy follows. A word, picture, link or look that a copy changed itself **stays**; the rest keeps following.',
+        ] },
+        { kind: 'list', items: [
+          '**Different data for each copy**: select a copy, open **Actions → Data** and choose another item (or another data list). One card design can show product 3 here and product 7 there.',
+          '**Undo my changes to this copy** puts a copy back exactly like the main component. **Make it a normal box** stops it following. **Stop being a component** (on the main one) turns every copy into a normal box.',
+          'Boxes you add to the main component appear in every copy; boxes you remove disappear from them. Deleting the main component keeps the copies as normal boxes.',
+        ] },
+        { kind: 'note', text: 'You can copy a copy (Ctrl+D); it is a copy of the same component. A component can’t sit inside another component. In the React download copies are written out as plain parts.' },
+      ],
+    },
+    {
       id: 'signin-pages', title: 'Sign-in pages', summary: 'Log in, create account, forgot password in one click.',
       brief: "Pages → Add sign-in pages gives you Log in, Create account and more.",
       blocks: [

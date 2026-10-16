@@ -20,6 +20,7 @@ const HELPER_CSS = `
 [data-fe-editing] { visibility: hidden !important; }
 html { scroll-behavior: auto !important; }
 [data-fe-page] { display: contents; }
+[data-fe-component] { outline: 2px dashed #8b5cf6 !important; outline-offset: 3px; }
 `
 
 /** Shows only the current page of a site (the others stay in the DOM, hidden). */

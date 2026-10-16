@@ -5,6 +5,7 @@ import { BLOCKS } from './blocks'
 import { AddCodeBox } from './AddCodeBox'
 import { Fold } from './Fold'
 import { ReadyBlocks } from './ReadyBlocks'
+import { ReuseBlocks } from './ReuseBlocks'
 import { WidgetBlocks } from './WidgetBlocks'
 import styles from './Sidebar.module.css'
 
@@ -24,6 +25,7 @@ export function AddPanel() {
           </button>
         ))}
       </Fold>
+      <ReuseBlocks />
       <ReadyBlocks />
       <WidgetBlocks />
       <AddCodeBox />

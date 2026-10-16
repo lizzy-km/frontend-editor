@@ -12,6 +12,7 @@ import { handlerFiles } from './handlers'
 import { formProject } from './forms/formTemplates'
 import { popupFiles } from './popups/uiTemplates'
 import { listUiFiles } from './listTemplates'
+import { stripComponents } from '@/features/editor/model/reuse/omit'
 import { mainFile } from './mainTemplate'
 import { usesWidgets, widgetFiles } from './widgetFiles'
 import { DATA_README, readme } from './projectTemplates'
@@ -36,7 +37,8 @@ function onlyPart(doc: PageDoc, id: string): PageDoc {
 }
 
 /** A one-page document (or one part of a page) as a Vite + React + TypeScript project: path -> file text. */
-export function buildReactProject(fullDoc: PageDoc, onlyId?: string, origins?: Origin[]): ExportFiles {
+export function buildReactProject(editorDoc: PageDoc, onlyId?: string, origins?: Origin[]): ExportFiles {
+  const fullDoc = stripComponents(editorDoc) // main components are for editing only
   const doc = onlyId && onlyId !== fullDoc.rootId ? onlyPart(fullDoc, onlyId) : fullDoc
   const body = getElement(doc.nodes, doc.rootId)
   const sources = doc.data ?? []
