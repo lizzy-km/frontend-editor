@@ -1,0 +1,29 @@
+flowchart TD
+  DOC[("PageDoc")] --> NODES["nodes: flat map<br/>ElementNode (tag, attrs, styles per screen,<br/>children, hidden) · TextNode"]
+  DOC --> CSS["css: the pasted styles, kept as text<br/>(wrapped in @layer page)"]
+  DOC --> OTHER["links · scripts · head tags · title · lang"]
+  DOC --> DATA["data: sources<br/>name, fields, rows, optional api"]
+
+  NODES --> EDITS["Edits live on nodes<br/>.fe-id rules beat the page CSS"]
+
+  NODES --> MARKS["Behavior is plain attributes"]
+  MARKS --> PG["Pages<br/>data-fe-page, path, title, menu, private"]
+  MARKS --> LY["Layouts<br/>data-fe-layout (top bar, side menu)"]
+  MARKS --> CD["Who can see<br/>data-fe-show / roles / flags"]
+  MARKS --> DL["Data<br/>data-fe-list · data-fe-record + row<br/>data-fe-bind, data-fe-bind-attr"]
+  MARKS --> CK["Clicks<br/>data-fe-go · data-fe-open · data-fe-call<br/>data-fe-ask · data-fe-close"]
+  MARKS --> FM["Forms<br/>data-fe-submit / success / match / message"]
+  MARKS --> PO["Pop-ups<br/>data-fe-modal"]
+  MARKS --> AN["Animation<br/>data-fe-animate, trigger, duration"]
+  MARKS --> WG["Widgets<br/>data-ui, data-ui-tab / panel / option / day<br/>data-ui-filterable, data-ui-for"]
+  MARKS --> RC["Components<br/>data-fe-component · data-fe-instance · data-fe-of"]
+
+  DL --> ROWS{"How a data box shows rows"}
+  ROWS -->|"every item"| LIST["List from data / Table from data<br/>first child = the one design"]
+  ROWS -->|"one item"| REC["Record: first · number · ?id from the address<br/>· clicked (pop-up)"]
+  CK --> CC["Card click<br/>open page (/product/:id) ·<br/>open pop-up with this item ·<br/>run my code (React)"]
+  CC -.-> REC
+  WG -.->|"search and filters act on"| LIST
+
+  PG --> RT["Routes with changing parts<br/>/user/:id → matchPage"]
+  RT -.-> REC

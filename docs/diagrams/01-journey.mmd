@@ -1,0 +1,60 @@
+flowchart LR
+  subgraph S1 ["1 · Discover"]
+    direction TB
+    V(["Someone opens Tweak"]) --> H["Home page<br/>features, steps, downloads"]
+    H --> G["Guide<br/>quick and full"]
+    H --> X["Explore<br/>shared pages"]
+    X --> PV["Shared page<br/>Make my own copy<br/>(goes straight to the editor)"]
+  end
+
+  subgraph S2 ["2 · Start (/try)"]
+    direction TB
+    T{"How do you start?"}
+    T --> PASTE["Paste code from an AI<br/>HTML, CSS, JavaScript"]
+    T --> AIP["No code yet?<br/>AI prompt helper"]
+    T --> BLANK["Blank page or<br/>example page"]
+    T --> SNAP["Open a React project<br/>.zip or folder"]
+    AIP -.->|"paste the answer"| PASTE
+    PASTE --> PARSE["Parse into an<br/>editable page"]
+    BLANK --> PARSE
+    PARSE --> KIND["One page or<br/>a website"]
+  end
+
+  subgraph S3 ["3 · Build (Editor)"]
+    direction TB
+    ED[["Editor"]]
+    ED --- A1["Change by clicking<br/>words, pictures, colors,<br/>Computer / Tablet / Phone"]
+    ED --- A2["Add parts<br/>basics, ready-made, inputs,<br/>tabs, tables, search, filters"]
+    ED --- A3["Website<br/>pages, menus, layouts,<br/>detail pages, sign-in"]
+    ED --- A4["Data<br/>samples, JSON, your API,<br/>lists, records, card clicks"]
+    ED --- A5["Rules<br/>who sees what, forms,<br/>pop-ups, animation"]
+    ED --- A6["Components<br/>main + copies"]
+    ED --- A7["Code tab<br/>HTML, CSS, JS, React"]
+  end
+
+  subgraph S4 ["4 · Check"]
+    direction TB
+    PRE["Preview<br/>works like the real site"]
+    VA["Viewing as<br/>visitor, member, admin"]
+    PRE --- VA
+  end
+
+  subgraph S5 ["5 · Keep and share"]
+    direction TB
+    K{"Keep the work"}
+    K -->|"no account"| LOC["Draft in this browser"]
+    K -->|"account"| CLOUD["Saved to My pages<br/>autosave"]
+    CLOUD --> SH["Share a link<br/>shows in Explore"]
+    CLOUD --> DL["Download"]
+    DL --> D1["Web page .html"]
+    DL --> D2["Website .zip"]
+    DL --> D3["React project .zip<br/>+ hidden .tweak file"]
+    DL --> D4["Picture .png<br/>copy the code"]
+  end
+
+  S1 ==> S2
+  S2 ==> S3
+  S3 ==> S4
+  S4 ==> S5
+  S4 -.->|"keep editing"| S3
+  S5 -.->|"React project: edit it again later"| S2

@@ -1,0 +1,32 @@
+flowchart LR
+  subgraph BROWSER ["Browser"]
+    APP["Tweak app (React + Vite)"]
+    DRAFT["Local draft<br/>(Try it, no account)"]
+  end
+
+  APP -->|"sign in / up / reset"| AUTH["Firebase Auth"]
+  AUTH --> APP
+
+  APP -->|"autosave (1.5 s after the last edit)"| PACK["packDoc<br/>JSON, gzip + base64 over ~20 KB"]
+  PACK --> CHECK{"fits one saved page?<br/>(~900 KB)"}
+  CHECK -->|"no"| FRIENDLY["Plain message: what is big<br/>(pictures in code, data, styles…)<br/>and what to do"]
+  CHECK -->|"yes"| FS[("Firestore<br/>projects + content<br/>firestore.rules")]
+  FS --> APP
+
+  APP -->|"upload a picture"| WORKER["Cloudflare Worker<br/>workers/assets"]
+  WORKER --> R2[("R2 bucket<br/>pictures + thumbnails")]
+  R2 -.->|"public address"| APP
+
+  APP -->|"thumbnail of the page"| WORKER
+
+  FS --> DASH["My pages<br/>create, rename, delete, limits by plan"]
+  FS --> PUB["Shared page /p/:id<br/>view, make my own copy"]
+  PUB --> GAL["Explore /gallery"]
+
+  APP -->|"Download"| GATE["Download gate<br/>account + monthly limit per page"]
+  GATE --> FS
+
+  APP -->|"page_view, edits (counts only),<br/>web vitals, errors"| GA["Analytics (Firebase / Vercel)<br/>off in dev, under DNT, or opted out"]
+
+  DRAFT -.->|"Save to an account"| AUTH
+  AUTH -.-> FS

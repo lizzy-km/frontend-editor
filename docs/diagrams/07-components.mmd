@@ -1,0 +1,35 @@
+sequenceDiagram
+  actor U as Person
+  participant E as Editor
+  participant S as Page store (commit)
+  participant P as Carry changes to copies
+  participant O as Preview, downloads, React
+
+  U->>E: Select a box, Make a component
+  E->>S: The box is marked as the MAIN component
+  Note over S: Outlined in the editor only,<br/>left out of every output
+
+  U->>E: Add, Your components, click one
+  E->>S: A COPY: every box copied,<br/>each remembers the box it copies
+  Note over S: A copy is plain boxes:<br/>edit words, pictures and links in place
+
+  U->>E: Edit the MAIN component<br/>(words, looks, add or remove a box)
+  E->>S: New version of the page
+  S->>P: Compare the main component<br/>before and after
+  loop every copy
+    P->>P: Still the OLD main value? Take the new one
+    P->>P: Changed in this copy? Keep it
+    P->>P: Box added or removed? Do the same in the copy
+  end
+  P-->>S: Page with the copies updated
+  S-->>E: ONE undo step (main and copies)
+
+  U->>E: Edit a COPY (words, picture, data item)
+  E->>S: Only that copy changes
+  Note over P: Later edits of the main component<br/>keep what this copy changed
+
+  U->>E: Undo my changes, Make it a normal box,<br/>Stop being a component, or delete the main one
+  E->>S: Reset, detach or release
+  S->>P: Main component gone? Copies become normal boxes
+
+  S->>O: Main components left out,<br/>copies written as plain parts

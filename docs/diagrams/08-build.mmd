@@ -1,0 +1,25 @@
+flowchart TD
+  subgraph DEV ["Working on the app"]
+    BR["one branch per feature<br/>small commits, no AI trailer"] --> CHK["tsc -b · eslint (150 lines / 100 per function)<br/>vitest · vite build"]
+    CHK --> E2E["npm run e2e<br/>Playwright on local Chrome<br/>(dev server on :5317)"]
+    E2E --> DOCS["docs/HISTORY, ARCHITECTURE, README,<br/>skills, guide topic + picture"]
+    DOCS --> MERGE["merge --no-ff into main → push when asked"]
+  end
+
+  MERGE --> BUILD["vite build"]
+  ENV[".env / host settings<br/>VITE_FIREBASE_*, VITE_ASSETS_URL,<br/>VITE_SITE_URL, VITE_FIREBASE_MEASUREMENT_ID"] --> BUILD
+
+  BUILD --> CHUNKS["JS chunks<br/>app, konva, quill, codemirror, firebase,<br/>firebase-analytics, one chunk per page"]
+  BUILD --> PUB["public/<br/>guide pictures, share image, icons,<br/>manifest"]
+  BUILD --> SEOP["seo plugin (closeBundle)"]
+  SEOP --> STATIC["static page per public screen<br/>/, /try, /guide, /guide/full, /gallery<br/>own head + structured data + no-script text"]
+  SEOP --> SM["sitemap.xml (needs VITE_SITE_URL)"]
+  SEOP --> RB["robots.txt"]
+
+  STATIC & SM & RB & CHUNKS & PUB --> HOST["Host (Vercel)<br/>files first, other addresses → index.html"]
+  HOST --> RUN["Visitor loads the app"]
+  RUN --> RSEO["RouteSeo keeps title, description,<br/>robots, share tags right on every move;<br/>noindex for account and editor screens"]
+
+  ART["scripts/guide-art<br/>SVG pictures for the guide"] -.-> PUB
+  IMG["scripts/seo/make-images.mjs<br/>share image + icons"] -.-> PUB
+  DIAG["scripts/diagrams/render.mjs<br/>these diagrams"] -.-> DOCS

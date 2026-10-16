@@ -78,6 +78,7 @@ Put the Worker's URL in `.env` as `VITE_ASSETS_URL`.
 
 ## Project guide
 
+- `docs/WORKFLOW.md`: eight diagrams of how the app works, from the person's journey to how it is built and shipped.
 - `docs/ARCHITECTURE.md`: how the pieces fit together (page model, iframe
   renderer, Konva overlay, saving, data).
 - `docs/HISTORY.md`: what each feature branch added, and why.
