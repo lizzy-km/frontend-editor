@@ -1,0 +1,2 @@
+.bar { display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: #ede9fe; color: #4c1d95; border-bottom: 1px solid #c4b5fd; font-size: 14px; }
+.bar span { flex: 1; min-width: 0; }

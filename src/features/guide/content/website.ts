@@ -74,6 +74,7 @@ export const WEBSITE: Group = {
           'Open the **Components** tab on the left. Start a new component (empty box, card, button, banner, person) or press **From my code…** to paste HTML, CSS and JavaScript. Or select a box you already have and use **Actions → Component → Make a component**.',
           'It becomes the **main component**: a dashed purple outline in the editor, and it is **left out of Preview and downloads**. Use it as the place where you design the part.',
           'Press **Add a copy** in the Components tab (or click the component in **Add → Your components**) to put a **copy** on the page. Copies are real parts: click their words, pictures and links and change them. The tab also shows where each component is used, and lets you rename, duplicate and delete it.',
+          'To change the main component without the rest of the page in the way, press **Edit** in the Components tab: the page steps aside, anything you add goes inside the component, and **Done** brings the page back.',
           'Change the main component and every copy follows. A word, picture, link or look that a copy changed itself **stays**; the rest keeps following.',
         ] },
         { kind: 'list', items: [

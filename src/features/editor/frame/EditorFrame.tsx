@@ -48,7 +48,7 @@ export function EditorFrame({ width, height, scale }: Props) {
     let shownView = ''
     const sendView = () => {
       const view = useViewStore.getState()
-      const css = viewCss(useDocStore.getState().doc, view.pageId, view.viewer)
+      const css = viewCss(useDocStore.getState().doc, view.pageId, view.viewer, view.focusId)
       if (css !== shownView) bridge.send('css', { view: css })
       shownView = css
     }

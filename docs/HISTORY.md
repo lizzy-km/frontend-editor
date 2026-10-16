@@ -9,6 +9,15 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/component-isolation — 2026-10-16
+- **Edit a component on its own.** *Edit* in the Components panel, *Edit on its own* on a main component (Actions →
+  Component), or *Edit the main component* on a copy: the rest of the page steps aside (editor-only CSS, never in the model),
+  a purple bar names the component and says how many copies follow, and *Done* brings the page back. Anything you add
+  goes inside the component unless something inside it is selected. Works on any screen size.
+- Deleting the component, or turning it back into a normal box, leaves the editing view. `view.store.focusId`,
+  `editorSource.viewCss(…, focusId)`, `toolbar/FocusBar.tsx`, `actions/reuseActions.editComponent`.
+- Tests: `frame/viewCss.test.ts`, `e2e/component-isolation.mjs`.
+
 ## feature/components-panel — 2026-10-16
 - **Components panel** (new tab on the left rail): your components in one list. **New component** from a start (empty
   box, card, button, banner, person) or **From my code…** (HTML, CSS and JavaScript; several top boxes are put into one box;

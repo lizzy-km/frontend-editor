@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/shared/ui'
-import { addInstance, detach, makeMain, releaseMain, renameMain, resetOverrides } from '../../actions/reuseActions'
+import { addInstance, detach, editComponent, makeMain, releaseMain, renameMain, resetOverrides } from '../../actions/reuseActions'
 import { COMPONENT_ATTR, componentAround, instancesOf, mainOf } from '../../model/reuse/attrs'
 import { canMakeComponent } from '../../model/reuse/make'
 import { labelForNode } from '../../labels/elementLabels'
@@ -45,6 +45,7 @@ export function ReuseSection({ node }: { node: ElementNode }) {
           This is the main component: it is only for editing and never shows on your page. Change it and {count === 1 ? 'its copy follows' : `its ${count} copies follow`}, except for what a copy changed itself.
         </p>
         <div style={buttons}>
+          <Button size="small" variant="primary" icon="pencil" onClick={() => editComponent(around.root.id)}>Edit on its own</Button>
           <Button size="small" icon="plus" onClick={() => addInstance(around.root.id)}>Add a copy</Button>
           <Button size="small" variant="ghost" onClick={() => releaseMain(around.root.id)}>Stop being a component</Button>
         </div>
@@ -60,6 +61,7 @@ export function ReuseSection({ node }: { node: ElementNode }) {
       </p>
       <p className={styles.label}>To show different data, select the copy and use Data to pick an item or a list.</p>
       <div style={buttons}>
+        {main && <Button size="small" variant="primary" icon="pencil" onClick={() => editComponent(main.id)}>Edit the main component</Button>}
         {main && <Button size="small" variant="ghost" onClick={() => select(main.id)}>Go to the main component</Button>}
         {main && <Button size="small" variant="ghost" onClick={() => resetOverrides(around.root.id)}>Undo my changes to this copy</Button>}
         <Button size="small" variant="ghost" onClick={() => detach(around.root.id)}>Make it a normal box</Button>

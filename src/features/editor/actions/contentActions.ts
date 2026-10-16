@@ -1,6 +1,6 @@
 import { htmlToChildNodes } from '../model/parse/domToNodes'
 import { resolvePage } from '../model/pages'
-import { getElement } from '../model/tree/queries'
+import { getElement, isInside } from '../model/tree/queries'
 import { insertSubtree, patchNode, replaceChildren } from '../model/tree/treeOps'
 import type { NodeMap, TextNode } from '../model/types'
 import { getDoc } from '../store/doc.store'
@@ -34,6 +34,9 @@ const LEAF_TAGS = new Set(['img', 'input', 'br', 'hr', 'textarea', 'select', 'vi
 export function resolveInsertTarget(): { parentId: string; index?: number } {
   const doc = getDoc()
   const selected = getElement(doc.nodes, useSelectionStore.getState().selectedId)
+  // Editing a component on its own: new things go inside it unless something inside it is selected.
+  const focus = useViewStore.getState().focusId
+  if (focus && getElement(doc.nodes, focus) && !(selected && isInside(doc.nodes, selected.id, focus))) return { parentId: focus }
   // Nothing selected: the end of the page being edited (sites), else the end of the page.
   if (!selected) return { parentId: resolvePage(doc, useViewStore.getState().pageId)?.id ?? doc.rootId }
   if (!LEAF_TAGS.has(selected.tag)) return { parentId: selected.id }

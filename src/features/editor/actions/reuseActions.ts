@@ -63,6 +63,7 @@ export function showNode(id: string) {
 
 /** A new main component from a ready start (see COMPONENT_STARTS). It sits at the end of this page and is not part of the output. */
 export function createComponent(html: string, name: string): string | null {
+  leaveComponent()
   const parentId = pageEnd()
   const created: NodeMap = {}
   const top = htmlToChildNodes(html, parentId, created).find((id) => created[id]?.kind === 'element')
@@ -75,6 +76,7 @@ export function createComponent(html: string, name: string): string | null {
 
 /** A new main component from pasted HTML, CSS and JavaScript (its styles and scripts join the page). Returns the problem when the code can't be used. */
 export function createComponentFromCode(parts: PastedCode, name: string): { ok: true; id: string } | { ok: false; problem: string } {
+  leaveComponent()
   const result = addCodeToDoc(getDoc(), parts, { parentId: pageEnd() }, true)
   if (!result.ok) return result
   if (!result.firstId) return { ok: false, problem: 'Add some HTML: a component needs at least one box.' }
@@ -91,3 +93,13 @@ export function duplicateMain(mainId: string) {
   updateNodes(() => made.nodes)
   useSelectionStore.getState().select(made.id)
 }
+
+/** Edits a main component on its own: the rest of the page steps aside until you press Done. */
+export function editComponent(mainId: string) {
+  showNode(mainId)
+  useViewStore.getState().setFocus(mainId)
+  track('add_block', { block: 'component-edit' })
+}
+
+/** Back to the whole page. */
+export const leaveComponent = () => useViewStore.getState().setFocus(null)
