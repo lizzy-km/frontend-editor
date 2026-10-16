@@ -6,20 +6,21 @@ export const collectSubtreeIdsOf = collectSubtreeIds
 /**
  * Cuts out of a page's CSS the rules a component needs, so it can be saved on its own: rules that mention a class or id the
  * component uses, rules for the tags it uses, `:root` / `html` / `*` rules (variables, resets), @font-face and @keyframes.
- * It is a good guess, not a parser of every selector: when the component is added to a page the rules go into a low-priority
- * layer, so the page's own rules still win where they disagree.
+ * It is a good guess, not a parser of every selector: when the component is added to a page the rules go in front of the
+ * page's own, so the page's rules still win where they disagree.
  */
-export type Usage = { classes: Set<string>; ids: Set<string>; tags: Set<string> }
+export type Usage = { classes: Set<string>; ids: Set<string>; tags: Set<string>; hooks: Set<string> }
 
 /** The classes, ids and tags used by some boxes. */
 export function usageOf(nodes: NodeMap, ids: string[]): Usage {
-  const usage: Usage = { classes: new Set(), ids: new Set(), tags: new Set() }
+  const usage: Usage = { classes: new Set(), ids: new Set(), tags: new Set(), hooks: new Set() }
   for (const id of ids) {
     const node = nodes[id]
     if (!isElement(node)) continue
     usage.tags.add(node.tag)
     for (const name of (node as ElementNode).attrs.class?.split(/\s+/) ?? []) if (name) usage.classes.add(name)
     if (node.attrs.id) usage.ids.add(node.attrs.id)
+    for (const name of Object.keys(node.attrs)) if (name.startsWith('data-ui-')) usage.hooks.add(name)
   }
   return usage
 }
@@ -50,6 +51,7 @@ function wanted(selectors: string, usage: Usage): boolean {
     const text = selector.trim()
     if (/^(:root|html|\*|body)\b/.test(text) || text === '*') return true
     for (const name of usage.classes) if (new RegExp(`\\.${escape(name)}(?![\\w-])`).test(text)) return true
+    for (const name of usage.hooks) if (text.includes(`[${name}`)) return true
     for (const name of usage.ids) if (new RegExp(`#${escape(name)}(?![\\w-])`).test(text)) return true
     const last = text.split(/[\s>+~]+/).filter(Boolean).at(-1) ?? ''
     return /^[a-z][a-z0-9]*$/i.test(last.replace(/[:[].*$/, '')) && usage.tags.has(last.replace(/[:[].*$/, '').toLowerCase())

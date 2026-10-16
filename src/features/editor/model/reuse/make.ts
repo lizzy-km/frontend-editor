@@ -4,7 +4,7 @@ import { isPageNode } from '../pages'
 import { collectSubtreeIds, getElement, indexInParent } from '../tree/queries'
 import { insertSubtree, patchNode, removeNode } from '../tree/treeOps'
 import { isElement, type ElementNode, type NodeMap } from '../types'
-import { COMPONENT_ATTR, INSTANCE_ATTR, OF_ATTR, componentAround, holdsComponent, isMain, looksOf, mainOf, uniqueComponentName } from './attrs'
+import { COMPONENT_ATTR, INSTANCE_ATTR, LIBRARY_ATTR, OF_ATTR, componentAround, holdsComponent, isMain, looksOf, mainOf, uniqueComponentName } from './attrs'
 
 /** Can this box become a main component? Not the page itself, not something already part of a component. */
 export function canMakeComponent(nodes: NodeMap, id: string, rootId: string): boolean {
@@ -42,6 +42,7 @@ export function copyBranch(nodes: NodeMap, sourceId: string, topId = createId())
     const attrs: Record<string, string> = { ...source.attrs, [OF_ATTR]: id }
     delete attrs.id
     delete attrs[COMPONENT_ATTR]
+    delete attrs[LIBRARY_ATTR]
     copies[newId] = { ...source, id: newId, parentId, attrs, children: source.children.map((child) => copy(child, newId)).filter(Boolean) }
     return newId
   }

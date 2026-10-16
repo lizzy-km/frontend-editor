@@ -2,7 +2,7 @@ import { cloneSubtree } from '../tree/cloneSubtree'
 import { collectSubtreeIds, indexInParent } from '../tree/queries'
 import { insertSubtree, patchNode, removeNode } from '../tree/treeOps'
 import { isElement, type Breakpoint, type ElementNode, type NodeMap, type TextNode } from '../types'
-import { COMPONENT_ATTR, INSTANCE_ATTR, KEY_ATTR, OF_ATTR, PART_ATTR, VARIANT_ATTR, elementsOf, instancesOf, isMain, looksOf, lookName, mainOf } from './attrs'
+import { COMPONENT_ATTR, INSTANCE_ATTR, KEY_ATTR, LIBRARY_ATTR, OF_ATTR, PART_ATTR, VARIANT_ATTR, elementsOf, instancesOf, isMain, looksOf, lookName, mainOf } from './attrs'
 import { instantiate } from './make'
 
 /**
@@ -11,7 +11,7 @@ import { instantiate } from './make'
  * keep what it changed itself. Parts: a box named as an option (data-fe-part) that each copy can show or hide.
  */
 const SIZES: Breakpoint[] = ['desktop', 'tablet', 'mobile']
-const NOT_COPIED = new Set(['id', COMPONENT_ATTR, INSTANCE_ATTR, OF_ATTR, VARIANT_ATTR, KEY_ATTR])
+const NOT_COPIED = new Set(['id', COMPONENT_ATTR, INSTANCE_ATTR, OF_ATTR, VARIANT_ATTR, KEY_ATTR, LIBRARY_ATTR])
 
 const setAttr = (nodes: NodeMap, id: string, name: string, value: string | null) =>
   patchNode<ElementNode>(nodes, id, (node) => {
