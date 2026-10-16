@@ -2,15 +2,20 @@ import { cloneSubtree } from '../tree/cloneSubtree'
 import { indexInParent } from '../tree/queries'
 import { insertSubtree } from '../tree/treeOps'
 import type { ElementNode, NodeMap } from '../types'
-import { COMPONENT_ATTR, instancesOf, mainsOf } from './attrs'
-import { renameComponent } from './make'
+import { COMPONENT_ATTR, VARIANT_ATTR, instancesOf, looksOf, lookName, mainsOf, uniqueComponentName } from './attrs'
 
-/** The components of a page, for the Components panel. */
-export type ComponentInfo = { id: string; name: string; copies: string[] }
+/** A look of a component: its main box and the copies that follow it. */
+export type LookInfo = { id: string; label: string; copies: string[] }
 
-/** Every main component with the ids of its copies. */
+/** The components of a page, for the Components panel: `id` is the default look, `copies` are the copies of every look. */
+export type ComponentInfo = { id: string; name: string; copies: string[]; looks: LookInfo[] }
+
+/** Every component (looks of one component are grouped) with the ids of its copies. */
 export const componentList = (nodes: NodeMap): ComponentInfo[] =>
-  mainsOf(nodes).map((main) => ({ id: main.id, name: main.attrs[COMPONENT_ATTR] ?? '', copies: instancesOf(nodes, main.id).map((copy) => copy.id) }))
+  mainsOf(nodes).filter((main) => looksOf(nodes, main)[0]!.id === main.id).map((main) => {
+    const looks = looksOf(nodes, main).map((look) => ({ id: look.id, label: lookName(look), copies: instancesOf(nodes, look.id).map((copy) => copy.id) }))
+    return { id: main.id, name: main.attrs[COMPONENT_ATTR] ?? '', looks, copies: looks.flatMap((look) => look.copies) }
+  })
 
 /** A new main component made as a copy of another, placed after it (its own copies start empty). */
 export function duplicateComponent(nodes: NodeMap, mainId: string): { nodes: NodeMap; id: string } | null {
@@ -18,7 +23,11 @@ export function duplicateComponent(nodes: NodeMap, mainId: string): { nodes: Nod
   if (!main?.parentId) return null
   const copy = cloneSubtree(nodes, mainId)
   const placed = insertSubtree(nodes, copy.nodes, copy.topId, main.parentId, indexInParent(nodes, mainId) + 1)
-  return { nodes: renameComponent(placed, copy.topId, `${main.attrs[COMPONENT_ATTR] ?? 'Component'} copy`), id: copy.topId }
+  // A new component of its own: a name of its own, and not a look of the original.
+  const name = uniqueComponentName(placed, `${main.attrs[COMPONENT_ATTR] ?? 'Component'} copy`, copy.topId)
+  const attrs: Record<string, string> = { ...(placed[copy.topId] as ElementNode).attrs, [COMPONENT_ATTR]: name }
+  delete attrs[VARIANT_ATTR]
+  return { nodes: { ...placed, [copy.topId]: { ...(placed[copy.topId] as ElementNode), attrs } }, id: copy.topId }
 }
 
 const BUTTON = 'display: inline-block; padding: 12px 22px; border-radius: 10px; background: #e8573a; color: #fff; text-decoration: none; font-weight: 700'

@@ -7,12 +7,15 @@ import { componentList, type ComponentInfo } from '../../model/reuse/library'
 import type { ElementNode, NodeMap } from '../../model/types'
 import { useDocStore } from '../../store/doc.store'
 import { useSelectionStore } from '../../store/selection.store'
+import { LooksBar } from './LooksBar'
 import { NewComponent } from './NewComponent'
 import panel from './Components.module.css'
 
 function Row({ info, nodes, selected }: { info: ComponentInfo; nodes: NodeMap; selected: boolean }) {
   const [open, setOpen] = useState(false)
   const [confirm, setConfirm] = useState(false)
+  const [picked, setPicked] = useState(info.id)
+  const lookId = info.looks.some((look) => look.id === picked) ? picked : info.id // the chosen look, while it exists
   return (
     <li className={panel.row} data-selected={selected}>
       <div className={panel.head}>
@@ -25,16 +28,17 @@ function Row({ info, nodes, selected }: { info: ComponentInfo; nodes: NodeMap; s
         </button>
       </div>
       <div className={panel.actions}>
-        <Button size="small" variant="primary" icon="pencil" onClick={() => editComponent(info.id)}>Edit</Button>
-        <Button size="small" icon="plus" onClick={() => addInstance(info.id)}>Add a copy</Button>
-        <Button size="small" variant="ghost" onClick={() => showNode(info.id)}>Show it</Button>
+        <Button size="small" variant="primary" icon="pencil" onClick={() => editComponent(lookId)}>Edit</Button>
+        <Button size="small" icon="plus" onClick={() => addInstance(lookId)}>Add a copy</Button>
+        <Button size="small" variant="ghost" onClick={() => showNode(lookId)}>Show it</Button>
         <Button size="small" variant="ghost" onClick={() => duplicateMain(info.id)}>Duplicate</Button>
         <Button size="small" variant="ghost" onClick={() => setConfirm(true)}>Delete</Button>
       </div>
+      <LooksBar info={info} lookId={lookId} onPick={setPicked} />
       {confirm && (
         <p className={panel.confirm} role="alert">
           Delete “{info.name}”? Its {info.copies.length} {info.copies.length === 1 ? 'copy stays' : 'copies stay'} on your page as normal boxes.
-          {' '}<Button size="small" variant="danger" onClick={() => { releaseMain(info.id); setConfirm(false) }}>Delete the component</Button>
+          {' '}<Button size="small" variant="danger" onClick={() => { for (const look of info.looks) releaseMain(look.id); setConfirm(false) }}>Delete the component</Button>
           {' '}<Button size="small" variant="ghost" onClick={() => setConfirm(false)}>Keep it</Button>
         </p>
       )}
