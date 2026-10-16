@@ -186,6 +186,19 @@ words, copy the prompt into ChatGPT, Claude or Gemini, and paste the
 answer back. The prompt's rules make the AI write pages that are easy to
 edit here.
 
+## Search engines and link previews (SEO)
+
+- Every public screen has its own title, description, share tags and structured data, listed in
+  `src/config/seoRoutes.ts`. Account, editor and sign-in screens are `noindex`. Moving around the app keeps the
+  page head right (`RouteSeo`).
+- `vite build` also writes a static copy of each public page (`dist/guide/index.html`…) with its own head and a
+  no-script summary, plus `robots.txt` and `sitemap.xml`, so crawlers and link previews that don't run scripts
+  see real content.
+- **Set `VITE_SITE_URL`** (for example `https://tweak.example`) where you build. Without it the canonical links,
+  share picture and sitemap are left out (the build says so).
+- The share picture and icons are made by `node scripts/seo/make-images.mjs` (needs Chrome, writes to `public/`).
+- Pages people share from their account are not indexed by default (`INDEX_SHARED_PAGES` in `src/config/seo.config.ts`).
+
 ## Usage stats
 
 Google Analytics for Firebase counts screens and actions (paste, edits by

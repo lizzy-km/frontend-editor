@@ -9,6 +9,18 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/seo — 2026-10-16
+- **SEO for the app.** One list of public screens (`config/seoRoutes.ts`: title, description, indexed or not, sitemap
+  priority, no-script summary). `RouteSeo` (inside the router root) keeps the head right on every navigation
+  (title, description, robots, canonical, Open Graph, Twitter; account, editor, sign-in and unknown screens are
+  `noindex`); `shared/seo/` has the pure tag builders, the live updater (`applyTags`, adopts hand-written tags so
+  nothing doubles), schema.org builders (Organization, WebSite, SoftwareApplication, BreadcrumbList, HowTo, FAQ).
+  Home, guide and full guide add structured data; a shared page sets its own title (noindex by default).
+- **Build**: `scripts/seo/vitePlugin.ts` writes a static page per public screen (own head, structured data,
+  `<noscript>` summary), `robots.txt` and (with `VITE_SITE_URL`) `sitemap.xml`. Share picture, icons, favicon and
+  web manifest come from `scripts/seo/make-images.mjs`.
+- Tests: `shared/seo/seo.test.ts`, `e2e/seo.mjs`; a build with a site address was checked by hand.
+
 ## feature/card-popup — 2026-10-16
 - **A data card can open a pop-up that shows ITS item.** In a list's *On click* choose "Open a pop-up": the card
   gets `data-fe-open`, and the pop-up becomes a record box with `data-fe-row="clicked"` (new row choice "The card

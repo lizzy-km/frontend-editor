@@ -175,6 +175,18 @@ run, inside a locked frame.
 - Text inputs use `useDraft` (prop → local draft; save on Enter or blur).
   This avoids setState-in-effect.
 
+## SEO (`config/seoRoutes.ts`, `shared/seo/`, `scripts/seo/`)
+
+- `seoRoutes.ts` is the single list of public screens (no imports: the build reads it). A new public screen needs a line
+  there (title ≤ 65 characters, description 70–160, a summary for crawlers without scripts); private ones are covered
+  by `NOINDEX_PREFIXES`; anything unknown is `noindex` with a "not found" title.
+- Runtime: `RouteSeo` -> `Seo` -> `headTags` (pure) -> `applyTags` (finds tags by `data-seo` or adopts hand-written
+  ones). A screen with content-dependent words renders its own `<Seo>` (it wins, as it runs later); structured data
+  uses `<JsonLd>` (`page-*` keys, removed when the screen leaves).
+- Build: `vitePlugin.ts` (closeBundle) uses `staticPages.ts` to write `<route>/index.html`, `robots.txt`, `sitemap.xml`.
+  Canonical, `og:url`, the share picture and the sitemap need `VITE_SITE_URL` and are left out without it.
+  Hosts serve these files before the SPA rewrite (`vercel.json`), so crawlers get the right head per address.
+
 ## Usage stats (`features/analytics`)
 
 - `track(name, params)` is the one way to send an event; `events.ts` lists

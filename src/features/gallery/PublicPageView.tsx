@@ -11,6 +11,8 @@ import styles from './Gallery.module.css'
 import type { Params } from '@/features/editor/model/routes'
 import { SafePageFrame } from '@/features/export/SafePageFrame'
 import { useMakeCopy } from './useMakeCopy'
+import { INDEX_SHARED_PAGES } from '@/config/seo.config'
+import { Seo } from '@/shared/seo/Seo'
 
 async function loadPublicPage(id: string) {
   const [meta, doc] = await Promise.all([getProjectMeta(id), loadProjectContent(id)])
@@ -43,6 +45,7 @@ export default function PublicPageView() {
 
   return (
     <div className={styles.viewer}>
+      <Seo meta={{ title: `${meta.name} — made with Tweak`, description: `${meta.name}, a page shared by ${meta.ownerName || 'someone'} on Tweak. Open it, or make your own copy to start from.`, path: `/p/${meta.id}`, index: INDEX_SHARED_PAGES, type: 'article' }} />
       <header className={styles.bar}>
         <Link to="/gallery" aria-label="Back to Explore"><Icon name="arrowLeft" /></Link>
         <div className={styles.title}>

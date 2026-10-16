@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 import { APP_NAME } from '@/config/app.config'
 import { wasSignedIn } from '@/features/auth/auth.store'
+import { SITE_URL } from '@/config/seo.config'
+import { JsonLd } from '@/shared/seo/Seo'
+import { organizationLd, softwareLd, websiteLd } from '@/shared/seo/jsonLd'
 import { Icon, TopBar } from '@/shared/ui'
 import { HeroMock } from './HeroMock'
 import { AI_NAMES, AUDIENCE, DOWNLOADS, FEATURES, STEPS } from './homeContent'
@@ -10,6 +13,7 @@ import sections from './HomeSections.module.css'
 export default function HomePage() {
   return (
     <div className={styles.page}>
+      <JsonLd data={[organizationLd(SITE_URL), websiteLd(SITE_URL), softwareLd(SITE_URL)]} />
       <TopBar>
         <a href="#features" className="hideOnPhone">What you can build</a>
         <Link to="/gallery" className="hideOnPhone">Explore</Link>

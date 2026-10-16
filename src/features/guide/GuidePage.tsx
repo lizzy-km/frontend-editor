@@ -3,6 +3,8 @@ import { wasSignedIn } from '@/features/auth/auth.store'
 import { TopBar } from '@/shared/ui'
 import { FullGuide } from './FullGuide'
 import { QuickGuide } from './QuickGuide'
+import { guideLd } from './guideSeo'
+import { JsonLd } from '@/shared/seo/Seo'
 import styles from './Guide.module.css'
 
 /** /guide = the quick guide (a page of short answers); /guide/full = every topic in detail. */
@@ -11,6 +13,7 @@ export default function GuidePage() {
   const full = pathname.startsWith('/guide/full')
   return (
     <div className={styles.page}>
+      <JsonLd data={guideLd(full)} />
       <TopBar>
         <Link to="/gallery" className="hideOnPhone">Explore</Link>
         {wasSignedIn() ? <Link to="/projects">My pages</Link> : <Link to="/login">Sign in</Link>}
