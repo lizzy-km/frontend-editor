@@ -50,7 +50,8 @@ export function clickAttrs(ctx: JsxContext, node: ElementNode, go?: { value: str
   const ask = ui ? node.attrs[ASK_ATTR] : undefined
   const steps: string[] = []
   if (go && ctx.links) { ctx.links.navigate = true; steps.push(ctx.links.go(go.value, go.typed)) }
-  if (open) { ui!.add('openModal'); steps.push(`openModal(${JSON.stringify(open)})`) }
+  // A data card hands its item to the pop-up it opens, so the pop-up can show it.
+  if (open) { ui!.add('openModal'); if (ctx.cardRow) ui!.add('modalRow'); steps.push(`openModal(${JSON.stringify(open)}${ctx.cardRow ? ', row' : ''})`) }
   if (close) { ui!.add('closeModal'); steps.push('closeModal()') }
   // A data card calls a function with its row: openUser(row).
   const call = ctx.row && ui ? node.attrs[CALL_ATTR] : undefined
@@ -72,11 +73,15 @@ export function clickAttrs(ctx: JsxContext, node: ElementNode, go?: { value: str
 
 const IMPORTS: Record<string, (base: string) => string> = {
   Modal: (base) => `import Modal from '${base}/components/ui/Modal'`,
-  openModal: (base) => `import { closeModal, openModal } from '${base}/components/ui/popup'`,
-  closeModal: (base) => `import { closeModal, openModal } from '${base}/components/ui/popup'`,
   signOut: (base) => `import { signOut } from '${base}/auth/signOut'`,
   askFirst: (base) => `import { askFirst } from '${base}/components/ui/confirm'`,
 }
+/** The pop-up helpers share one file; only the ones a component uses are imported (strict TypeScript flags unused ones). */
+const POPUP_HELPERS = ['openModal', 'closeModal', 'useModalRow']
 
-/** The import lines for what a file used from the ui folder (the modal helpers share one line). */
-export const uiImports = (ui: UiUse, base: string) => [...new Set([...ui].map((name) => (name.startsWith('call:') ? `import { ${name.slice(5)} } from '${base}/data/handlers'` : IMPORTS[name]?.(base))).filter((line): line is string => Boolean(line)))]
+/** The import lines for what a file used from the ui folder. */
+export const uiImports = (ui: UiUse, base: string) => {
+  const helpers = POPUP_HELPERS.filter((name) => ui.has(name))
+  const rest = [...ui].map((name) => (name.startsWith('call:') ? `import { ${name.slice(5)} } from '${base}/data/handlers'` : IMPORTS[name]?.(base)))
+  return [...new Set([...(helpers.length ? [`import { ${helpers.join(', ')} } from '${base}/components/ui/popup'`] : []), ...rest].filter((line): line is string => Boolean(line)))]
+}

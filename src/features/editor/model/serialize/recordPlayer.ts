@@ -1,6 +1,6 @@
 import { RECORD_ATTR, ROW_ATTR, isRecordBox } from '../dataRecords'
-import { BIND_ATTR, BIND_PREFIX } from '../dataLists'
 import { isElement, type DataValue, type PageDoc } from '../types'
+import { FILL_JS } from './fillRow'
 
 /**
  * Records chosen by the page address (data-fe-row="?id"): the rows are embedded
@@ -8,20 +8,7 @@ import { isElement, type DataValue, type PageDoc } from '../types'
  * the first row (already in place) stays.
  */
 const SCRIPT = (data: string) => `(function () {
-  var DATA = ${data}
-  function show(value) { return value === true ? 'Yes' : value === false ? 'No' : value == null ? '' : String(value) }
-  function value(spec, row) {
-    if (spec.charAt(0) !== '/') return show(row[spec])
-    return spec.replace(/:([A-Za-z_]\\w*)/g, function (_, name) { return encodeURIComponent(show(row[name])) })
-  }
-  function fill(box, row) {
-    [box].concat(Array.prototype.slice.call(box.querySelectorAll('*'))).forEach(function (element) {
-      Array.prototype.slice.call(element.attributes).forEach(function (attr) {
-        if (attr.name === '${BIND_ATTR}') element.textContent = value(attr.value, row)
-        else if (attr.name.indexOf('${BIND_PREFIX}') === 0) element.setAttribute(attr.name.slice(${BIND_PREFIX.length}), value(attr.value, row))
-      })
-    })
-  }
+  var DATA = ${data}${FILL_JS}
   document.querySelectorAll('[${RECORD_ATTR}][${ROW_ATTR}^="?"]').forEach(function (box) {
     var wanted = new URLSearchParams(location.search).get(box.getAttribute('${ROW_ATTR}').slice(1))
     var rows = DATA[box.getAttribute('${RECORD_ATTR}')] || []

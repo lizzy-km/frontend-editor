@@ -18,6 +18,9 @@ export const BIND_ATTR = 'data-fe-bind'
 export const BIND_PREFIX = 'data-fe-bind-'
 /** On a list's card design: clicking a card calls this function with its row (React download). */
 export const CALL_ATTR = 'data-fe-call'
+/** Added to each card of an expanded list whose cards open a pop-up: its place in the data, so the pop-up can show that item. */
+export const ITEM_ATTR = 'data-fe-item'
+export const FROM_ATTR = 'data-fe-from'
 
 export type ListInfo = { id: string; source: string; pageSize: number; load: 'scroll' | 'all'; templateId: string | null }
 
@@ -82,7 +85,7 @@ export function cardHtml(source: DataSource): string {
   const body = field('longText')
   const number = field('number')
   return [
-    '<article class="data-card" style="border: 1px solid rgba(0,0,0,.08); border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.06)">',
+    '<article class="data-card" style="  border: 1px solid rgba(0,0,0,.08); border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.06)">',
     image ? `<img ${BIND_PREFIX}src="${image.name}" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80" alt="" style="display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover">` : '',
     '<div style="padding: 16px 18px 20px">',
     title ? `<h3 ${BIND_ATTR}="${title.name}" style="margin: 0 0 6px; font-size: 18px">${title.name}</h3>` : '',

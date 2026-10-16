@@ -1,5 +1,9 @@
 import { track } from '@/features/analytics/track'
 import { ASK_ATTR, CLOSE_ATTR, MODAL_ATTR, OPEN_ATTR, uniquePopupName } from '../model/popups'
+import { RECORD_ATTR, ROW_ATTR } from '../model/dataRecords'
+import { CALL_ATTR } from '../model/dataLists'
+import { GO_ATTR } from '../model/pages'
+import { patchNode } from '../model/tree/treeOps'
 import { isElement, type ElementNode } from '../model/types'
 import { getDoc } from '../store/doc.store'
 import { updateNodes } from './commit'
@@ -33,4 +37,23 @@ export function renamePopup(id: string, wanted: string) {
     }
     return next
   })
+}
+
+const withAttrs = (node: ElementNode, change: Record<string, string | null>): ElementNode => {
+  const attrs = { ...node.attrs }
+  for (const [name, value] of Object.entries(change)) if (value === null) delete attrs[name]; else attrs[name] = value
+  return { ...node, attrs }
+}
+
+/**
+ * A data card opens a pop-up (or stops doing so): the card design gets the pop-up's name, and the pop-up becomes a
+ * box that shows "the one that was clicked" from the card's data. One undo step.
+ */
+export function cardOpensPopup(designId: string, popup: { id: string; name: string } | null, source: string) {
+  updateNodes((nodes) => {
+    let next = patchNode<ElementNode>(nodes, designId, (node) => withAttrs(node, { [OPEN_ATTR]: popup?.name ?? null, [GO_ATTR]: null, [CALL_ATTR]: null }))
+    if (popup) next = patchNode<ElementNode>(next, popup.id, (node) => withAttrs(node, { [RECORD_ATTR]: source, [ROW_ATTR]: 'clicked' }))
+    return next
+  })
+  if (popup) track('popup_set', { kind: 'open' })
 }

@@ -28,6 +28,8 @@ export type JsxContext = {
   lists?: Map<string, string>
   /** Inside a list's card component: the row's fields and their kinds (bindings become props). */
   row?: Map<string, FieldType>
+  /** Inside a list's card component that receives the whole row as `row` (so a click can hand it on). */
+  cardRow?: boolean
   /** Animated elements (Motion): what the file used. */
   motion?: MotionState
   /** "Who can see this": elements wrapped in <Show>; `used` tells the file to import it. */

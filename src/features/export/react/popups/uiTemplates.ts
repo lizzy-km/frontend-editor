@@ -6,18 +6,22 @@ import type { NodeMap } from '@/features/editor/model/types'
 const MODAL_STORE = `import { useSyncExternalStore } from 'react'
 
 let current: string | null = null
+let item: unknown = null
 const listeners = new Set<() => void>()
 const emit = () => listeners.forEach((listener) => listener())
+const subscribe = (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener) } }
 
-/** Opens the pop-up with this name: openModal('welcome'). */
-export const openModal = (name: string) => { current = name; emit() }
+/** Opens the pop-up with this name: openModal('welcome'). A data card passes its item: openModal('details', product). */
+export const openModal = (name: string, row?: unknown) => { current = name; item = row ?? null; emit() }
 
 /** Closes whichever pop-up is open. */
-export const closeModal = () => { current = null; emit() }
+export const closeModal = () => { current = null; item = null; emit() }
 
 /** The name of the open pop-up (or null). */
-export const useOpenModal = () =>
-  useSyncExternalStore((listener) => { listeners.add(listener); return () => { listeners.delete(listener) } }, () => current)
+export const useOpenModal = () => useSyncExternalStore(subscribe, () => current)
+
+/** The item of the data card that opened the pop-up (undefined when it was opened any other way). */
+export const useModalRow = <T,>() => useSyncExternalStore(subscribe, () => item) as T | undefined
 `
 
 const MODAL = `import { useEffect, useRef, type ReactNode } from 'react'

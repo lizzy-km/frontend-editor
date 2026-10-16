@@ -16,6 +16,7 @@ export const INTERACTIVE: Group = {
           'To add a close button inside the pop-up: select it and turn on **Closes the pop-up**.',
         ] },
         { kind: 'p', text: 'Visitors can close a pop-up with its close button, the **Esc** key, or by clicking outside.' },
+        { kind: 'tip', text: 'A pop-up can show a different item for each data card that opens it: see “When a card is clicked” (**Open a pop-up**).' },
       ],
     },
     {

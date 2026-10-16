@@ -43,3 +43,11 @@ export const dataArt = {
     arrow(360, 115, 450, 115) + t(405, 98, 'click', { anchor: 'middle', size: 13, weight: 700, fill: C.hot }) +
     win(460, 30, 290, 170) + pic(476, 66, 110, 110) + t(600, 100, 'Croissant', { size: 17, weight: 800 }) + bars(600, 116, [120, 90]) + t(600, 170, '$4', { size: 16, weight: 800, fill: C.hot })),
 }
+
+export const cardPopupArt = {
+  'card-popup': svg(W, H, 'A card opens a pop-up that shows that card’s item, with a button to its own page',
+    [0, 1, 2].map((i) => tile(26 + i * 112, 34, 100, 150).replace(/stroke="#e4ddd2"/, i === 1 ? `stroke="${C.hot}"` : 'stroke="#e4ddd2"')).join('') +
+    t(188, 212, 'Click a card', { anchor: 'middle', size: 13, weight: 700 }) + arrow(366, 110, 424, 110) +
+    r(436, 20, 340, 190, { fill: '#2b262022', rx: 16 }) + card(468, 42, 276, 146) + pic(484, 58, 96, 96) + t(598, 82, 'Item 2', { size: 16, weight: 800 }) + bars(598, 98, [110, 80], 14) + t(598, 150, '$22', { size: 15, weight: 800, fill: C.hot }) +
+    btn(598, 156, 130, 'See details →') + t(606, 232, 'The pop-up shows the clicked item and can open its page', { anchor: 'middle', size: 12, weight: 500, fill: C.mute })),
+}

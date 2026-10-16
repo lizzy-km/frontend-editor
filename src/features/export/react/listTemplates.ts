@@ -91,13 +91,14 @@ function cardFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: str
   const type = rowTypeName(source.name)
   const fields = usedFields(ctx.nodes, info.templateId!, source)
   // Links in a card stay plain <a>; a click on the whole card can open a page (navigate) or call a function with the row.
-  const card: JsxContext = { nodes: ctx.nodes, classFor: ctx.classFor, links: linksFor(router), row: new Map(source.fields.map((field) => [field.name, field.type])), motion: motionState(), show: newShow() }
+  const card: JsxContext = { nodes: ctx.nodes, classFor: ctx.classFor, links: linksFor(router), row: new Map(source.fields.map((field) => [field.name, field.type])), cardRow: true, motion: motionState(), show: newShow() }
   // A "one by one" list box: every card is a Motion item.
   const item = staggerItem(ctx.nodes[info.id] as ElementNode)
   if (item) card.motion!.items.set(info.templateId!, item)
   const body = writeElement(card, info.templateId!, '    ')
   const calls = [...(card.show?.ui ?? [])].filter((use) => use.startsWith('call:')).map((use) => use.slice(5))
   for (const call of calls) options.handlers?.set(call, source)
+  const wholeRow = calls.length > 0 || Boolean(card.show?.ui.has('modalRow'))
   return {
     name,
     ids: [info.templateId!],
@@ -105,7 +106,7 @@ function cardFile(ctx: JsxContext, info: ListInfo, source: DataSource, name: str
       ...linkImport(card, router), ...motionImports(card.motion, base), ...showImport(card.show, base), `import type { ${type} } from '${base}/data/types'`, '',
       `/** One ${type} card. Change the design here; the words and pictures come from "${source.name}". */`,
       // A card that calls a function gets the whole row (row), and picks the fields it shows from it.
-      ...(calls.length
+      ...(wholeRow
         ? [`export default function ${name}(row: ${type}) {`, ...(fields.length ? [`  const { ${fields.join(', ')} } = row`] : [])]
         : [`export default function ${name}(${fields.length ? `{ ${fields.join(', ')} }` : '_card'}: ${type}) {`]),
       ...navigateHook(card), '  return (', body, '  )', '}', '',
