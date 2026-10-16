@@ -45,6 +45,7 @@ const PATHS = {
   toggle: 'M7 8h10a4 4 0 010 8H7a4 4 0 010-8zM16 12h.01',
   tabs: 'M3 20V8h5V4h8v4h5v12H3z',
   menu: 'M4 6h16M4 12h16M4 18h16',
+  component: 'M12 3l4 4-4 4-4-4 4-4zM7 12l4 4-4 4-4-4 4-4zM17 12l4 4-4 4-4-4 4-4z',
   select: 'M3 6h18v12H3zM15 11l2 2 2-2',
   input: 'M3 7h18v10H3zM7 10v4',
 } as const

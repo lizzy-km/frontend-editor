@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { VISITOR, type Viewer } from '../model/conditions'
 import type { Breakpoint } from '../model/types'
 
-export type SidePanel = 'pages' | 'layers' | 'add' | 'design' | 'data' | 'code'
+export type SidePanel = 'pages' | 'layers' | 'add' | 'components' | 'design' | 'data' | 'code'
 /** The settings panel's tabs: how it looks, what it does, rarely used. */
 export type InspectorTab = 'design' | 'actions' | 'more'
 export type ZoomMode = 'fit' | number

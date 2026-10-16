@@ -9,6 +9,15 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/components-panel — 2026-10-16
+- **Components panel** (new tab on the left rail): your components in one list. **New component** from a start (empty
+  box, card, button, banner, person) or **From my code…** (HTML, CSS and JavaScript; several top boxes are put into one box;
+  its styles and scripts join the page). Per component: rename in place, **Add a copy**, **Show it**, see where its copies
+  are used (click one to go to it, also on another page), **Duplicate**, **Delete** (asks; the copies stay as normal boxes).
+- `model/reuse/library.ts` (list, duplicate, starts), `actions/reuseActions.ts` (create, show, duplicate),
+  `sidebar/components/`, and the HTML/CSS/JS tabs are now the shared `sidebar/CodePartsBox.tsx` (also used by Paste more code).
+- Tests: `library.test.ts`, `e2e/components-panel.mjs`.
+
 ## feature/dev-docs — 2026-10-16
 - **Developer docs inside the app** at `/dev`: only the development server has the route (it is added when
   `import.meta.env.DEV`, so a production build contains none of it, not even the address), nothing links to it, and it is
