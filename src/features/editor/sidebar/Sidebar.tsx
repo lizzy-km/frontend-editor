@@ -3,6 +3,7 @@ import { isMultiPage } from '../model/pages'
 import { useDocStore } from '../store/doc.store'
 import { useViewStore, type SidePanel } from '../store/view.store'
 import { AddPanel } from './AddPanel'
+import { ComponentsPanel } from './components/ComponentsPanel'
 import { CodePanel } from './CodePanel'
 import { DataPanel } from './data/DataPanel'
 import { DesignPanel } from './design/DesignPanel'
@@ -13,6 +14,7 @@ import styles from './Sidebar.module.css'
 const TABS: { id: SidePanel; label: string; icon: IconName; hint: string }[] = [
   { id: 'layers', label: 'Layers', icon: 'layers', hint: 'Everything on this page, in order' },
   { id: 'add', label: 'Add', icon: 'plus', hint: 'Add text, pictures, forms and ready-made blocks' },
+  { id: 'components', label: 'Components', icon: 'component', hint: 'Parts you reuse: create, edit and add copies' },
   { id: 'pages', label: 'Pages', icon: 'globe', hint: 'The pages of your website' },
   { id: 'design', label: 'Design', icon: 'sun', hint: 'Colors and layout for the whole project' },
   { id: 'data', label: 'Data', icon: 'box', hint: 'Lists like products or posts, and the sign-in API' },
@@ -42,6 +44,7 @@ export function Sidebar() {
         {panel === 'pages' && <PagesPanel />}
         {panel === 'layers' && <LayersPanel />}
         {panel === 'add' && <AddPanel />}
+        {panel === 'components' && <ComponentsPanel />}
         {panel === 'design' && <DesignPanel />}
         {panel === 'data' && <DataPanel />}
         {panel === 'code' && <CodePanel />}

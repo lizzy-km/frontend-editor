@@ -71,9 +71,9 @@ export const WEBSITE: Group = {
         { kind: 'figure', src: '/guide/art-components.svg', alt: 'Change the main component once and every copy follows, except what a copy changed itself', caption: 'Change the main component once and every copy follows, except what a copy changed itself' },
         { kind: 'p', text: 'A **component** is a part you use again and again: a product card, a team member, a pricing box. Make it once, put copies anywhere, and a change to the **main component** reaches every copy.' },
         { kind: 'steps', items: [
-          'Select the box you want to reuse (a card, a banner, a button row) and open **Actions → Component → Make a component**. Give it a name.',
+          'Open the **Components** tab on the left. Start a new component (empty box, card, button, banner, person) or press **From my code…** to paste HTML, CSS and JavaScript. Or select a box you already have and use **Actions → Component → Make a component**.',
           'It becomes the **main component**: a dashed purple outline in the editor, and it is **left out of Preview and downloads**. Use it as the place where you design the part.',
-          'Open **Add → Your components** and click the component to put a **copy** on the page. Copies are real parts: click their words, pictures and links and change them.',
+          'Press **Add a copy** in the Components tab (or click the component in **Add → Your components**) to put a **copy** on the page. Copies are real parts: click their words, pictures and links and change them. The tab also shows where each component is used, and lets you rename, duplicate and delete it.',
           'Change the main component and every copy follows. A word, picture, link or look that a copy changed itself **stays**; the rest keeps following.',
         ] },
         { kind: 'list', items: [

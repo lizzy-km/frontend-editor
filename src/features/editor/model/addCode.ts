@@ -12,13 +12,18 @@ export type AddCodeResult = { ok: true; doc: PageDoc; firstId: string | null; fo
 
 const same = (a: PageDoc['scripts'][number], b: PageDoc['scripts'][number]) => (a.src ? a.src === b.src : (a.code ?? '').trim() === (b.code ?? '').trim())
 
-export function addCodeToDoc(doc: PageDoc, parts: PastedCode, target: { parentId: string; index?: number }): AddCodeResult {
-  const html = stripCodeFences(parts.html)
+/** `single`: the HTML must end up as ONE top box (a component): several top boxes are wrapped in a new box. */
+export function addCodeToDoc(doc: PageDoc, parts: PastedCode, target: { parentId: string; index?: number }, single = false): AddCodeResult {
+  let html = stripCodeFences(parts.html)
   const css = stripCodeFences(parts.css ?? '')
   const js = stripCodeFences(parts.js ?? '')
   if (!html && !css && !js) return { ok: false, problem: 'Paste some HTML, CSS or JavaScript first.' }
   if (html && !looksLikeHtml(html)) return { ok: false, problem: 'The HTML box doesn’t look like web page code. It should start with “<”, like <section> or <div>.' }
 
+  if (single && html && looksLikeHtml(html)) {
+    const probe = parsePastedCode({ html })
+    if ((getElement(probe.nodes, probe.rootId)?.children ?? []).filter((id) => isElement(probe.nodes[id])).length > 1) html = `<div>${html}</div>`
+  }
   const pasted = parsePastedCode({ html, css, js })
   const body = getElement(pasted.nodes, pasted.rootId)
   const created = { ...pasted.nodes }

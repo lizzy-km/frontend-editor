@@ -1,0 +1,20 @@
+.panel { padding: 12px 14px 28px; display: flex; flex-direction: column; gap: 12px; }
+.intro, .muted, .hint { margin: 0; font-size: 12.5px; color: var(--text-soft); line-height: 1.5; }
+.title { margin: 8px 0 0; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.title span { padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--text-soft); font-size: 11.5px; font-weight: 600; }
+.new { display: flex; flex-direction: column; gap: 8px; }
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.row { padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); display: flex; flex-direction: column; gap: 10px; }
+.row[data-selected='true'] { border-color: #8b5cf6; box-shadow: 0 0 0 2px #ede9fe; }
+.head { display: flex; align-items: center; gap: 8px; color: #7c3aed; }
+.rename { flex: 1; min-width: 0; border: 1px solid transparent; border-radius: 6px; background: none; padding: 4px 6px; font: inherit; font-weight: 700; color: var(--text); }
+.rename:hover, .rename:focus { border-color: var(--border); background: var(--bg); outline: none; }
+.count { border: 0; border-radius: 999px; padding: 3px 10px; background: var(--surface-2); color: var(--text-soft); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.count:hover { color: var(--accent); }
+.actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.confirm { margin: 0; padding: 10px; border-radius: 10px; background: color-mix(in srgb, var(--danger) 10%, transparent); font-size: 13px; line-height: 1.7; }
+.used { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.used button { width: 100%; text-align: left; border: 0; border-radius: 8px; padding: 6px 8px; background: none; font: inherit; font-size: 13px; color: var(--text); cursor: pointer; }
+.used button:hover { background: var(--accent-soft); color: var(--accent); }
+.nameRow { display: flex; align-items: center; gap: 10px; font-weight: 600; margin-bottom: 8px; }
+.input { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); font: inherit; }
