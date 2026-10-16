@@ -1,0 +1,53 @@
+flowchart LR
+  subgraph IN ["Ways in"]
+    PASTE["Pasted code<br/>HTML / CSS / JS"] --> CLEAN["strip code fences<br/>combine the parts"]
+    CLEAN --> DOMP["Browser DOMParser<br/>repairs the HTML"]
+    DOMP --> EXTRA["pull out styles, links,<br/>scripts, head tags"]
+    DOMP --> NODES["elementToNodes<br/>flat map: id → node"]
+    SNAPS[".tweak snapshot"] --> DOC
+    EXTRA --> DOC
+    NODES --> DOC
+  end
+
+  DOC[("PageDoc<br/>nodes · css · links · scripts<br/>data sources · head tags · title")]
+
+  subgraph STORE ["Stores (Zustand)"]
+    DOCSTORE["doc store<br/>commit · undo · redo"]
+    SEL["selection store"]
+    VIEW["view store<br/>screen size, tab, page, viewer"]
+  end
+  DOC --> DOCSTORE
+
+  subgraph UI ["Editor screen"]
+    TOOLBAR["Toolbar<br/>device, zoom, Viewing as,<br/>save status, Preview, Download"]
+    RAIL["Left rail<br/>Layers · Add · Pages · Design · Data · Code"]
+    CANVAS["Canvas<br/>Konva overlay on top of an iframe"]
+    INSP["Settings panel<br/>Design · Actions · More"]
+  end
+
+  CANVAS -->|"click, drag, resize,<br/>double-click text (Quill)"| ACTIONS
+  RAIL --> ACTIONS
+  INSP --> ACTIONS
+  TOOLBAR --> ACTIONS
+  ACTIONS["Actions<br/>setStyle, insertHtml, setAttribute,<br/>pages, data, widgets, components"] -->|"one edit = one commit"| COMMIT
+
+  subgraph COMMIT ["commit"]
+    direction TB
+    C1["new document"] --> C2["propagate components<br/>(main component → copies)"]
+    C2 --> C3["save undo step<br/>(drags and typing are coalesced)"]
+  end
+  COMMIT --> DOCSTORE
+  DOCSTORE --> AUTO["Autosave<br/>(accounts) / local draft"]
+  DOCSTORE -->|"changed nodes"| DIFF["diff nodes"]
+  DIFF -->|"postMessage: sync, css"| FRAME
+
+  subgraph FR ["Sandboxed editor frame (sandbox=allow-scripts only)"]
+    FRAME["Frame runtime<br/>patches only changed nodes,<br/>runs the page's own scripts"]
+    LISTS["live list copies,<br/>animation Play, marks"]
+  end
+  FRAME -->|"rects every frame,<br/>hit tests, computed styles"| CANVAS
+  FRAME --- LISTS
+  SEL --> CANVAS
+  SEL --> INSP
+  VIEW --> FRAME
+  VIEW --> CANVAS

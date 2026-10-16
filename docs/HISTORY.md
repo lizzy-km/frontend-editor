@@ -9,6 +9,10 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## docs/workflow-diagrams — 2026-10-16
+- `docs/WORKFLOW.md` with eight diagrams (journey, editor, page model, outputs, accounts, data, components, build and ship).
+  Sources are Mermaid files in `docs/diagrams/`; `node scripts/diagrams/render.mjs` draws the `.svg` and `.png` files.
+
 ## feature/reusable-components — 2026-10-16
 - **Reusable components, like Figma's.** Select a box → Actions → *Component* → *Make a component*: it becomes the
   **main component** (dashed purple outline in the editor; left out of Preview, downloads and the React project).

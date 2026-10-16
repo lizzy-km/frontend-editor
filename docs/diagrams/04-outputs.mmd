@@ -1,0 +1,33 @@
+flowchart LR
+  DOC[("The page<br/>in the editor")] --> STRIP["Leave out main components<br/>(stripComponents)"]
+
+  STRIP --> V1
+  subgraph VIS ["As a visitor sees it (forVisitors)"]
+    direction TB
+    V1["Hide what this viewer<br/>can't see"] --> V2["Fill lists and tables<br/>with their rows"]
+    V2 --> V3["Fill records<br/>first, number, clicked"]
+    V3 --> V4["Add the small scripts<br/>animation, forms, pop-ups,<br/>menus, ?id records, widgets"]
+  end
+
+  V4 --> SITE["One page of the site<br/>links, file names"]
+  SITE --> PARTS["Build the page<br/>head, body, css, scripts"]
+  PARTS --> HTML["Web page .html"]
+  PARTS --> ZIP["Website .zip<br/>one .html per page"]
+  PARTS --> PREV["Preview and<br/>shared page"]
+  PARTS --> PNG["Picture .png"]
+  PARTS --> COPY["Copy the code"]
+
+  STRIP --> R1
+  subgraph RX ["React project (strict TypeScript, Vite)"]
+    direction TB
+    R1["Split into components<br/>parts, repeated items,<br/>lists, records, forms"] --> R2["Write JSX<br/>props, router links,<br/>Motion, who can see"]
+    R2 --> R3["Add what the page needs<br/>data hooks and mock data,<br/>forms with checks, sign-in,<br/>pop-ups, widgets script"]
+  end
+  R3 --> RZIP["React project .zip"]
+  DOC -->|"whole page"| SN["Add the hidden<br/>.tweak/project.json"]
+  SN --> RZIP
+  RZIP -.->|"Open a React project"| BACK["Read it back into the editor<br/>files changed outside<br/>Tweak are listed"]
+  BACK -.-> DOC
+
+  GATE["Downloads need an account<br/>and are counted per page,<br/>per month"]
+  HTML ~~~ GATE

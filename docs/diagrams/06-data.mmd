@@ -1,0 +1,47 @@
+flowchart TD
+  subgraph SRC ["Where data comes from"]
+    PRESET["Sample data<br/>Products, Store products, Categories,<br/>Blog posts, Team, Reviews, Events"]
+    JSONI["Import JSON<br/>paste or drop a file"]
+    API["Connect your own API<br/>address, key, list place, one-item address (:id)"]
+    HAND["Type fields and rows"]
+  end
+  API --> TEST["Test connection (runs in the editor)<br/>→ fields and sample rows"]
+  JSONI --> PARSEJ["parseJsonValue"]
+  TEST --> PARSEJ
+  PARSEJ --> SOURCE
+  PRESET --> SOURCE
+  HAND --> SOURCE
+  SOURCE[("DataSource<br/>name · fields · rows · api")]
+
+  SOURCE --> SHOW["Show it on the page"]
+  SHOW --> LST["List from data<br/>cards (design repeats)"]
+  SHOW --> TBL["Table from data<br/>one row per item"]
+  SHOW --> RECD["One item<br/>(a record box)"]
+  SHOW --> POPR["Pop-up item<br/>the card that opened it"]
+
+  SOURCE --> CH["Filter choices<br/>from the items' own field values,<br/>or another list (categories)"]
+  SRCH["Search bar + filters"] -->|"narrow"| LST
+  SRCH -->|"narrow"| TBL
+  CH --> SRCH
+
+  LST --> CLICK{"Card click"}
+  CLICK -->|"Open a page"| DET["Detail page /product/:id<br/>record with row = ?id"]
+  CLICK -->|"Open a pop-up"| POPR
+  POPR -->|"link / address /product/:id"| DET
+  CLICK -->|"Run my code"| FN["handlers.ts (React download)"]
+
+  subgraph PREVIEWP ["Preview and web page downloads"]
+    EXP["expandDataLists / expandRecords<br/>rows written into the page"]
+    PLAY["recordPlayer (?id) and<br/>clickedPlayer fill from the row"]
+  end
+  LST --> EXP
+  TBL --> EXP
+  RECD --> EXP
+  EXP --> PLAY
+
+  subgraph REACTP ["React download"]
+    HOOK["src/api/*: React Query hooks<br/>mock data, or your API with VITE_USE_MOCK=false<br/>key from .env"]
+    CMP["list / card / record components<br/>with typed props"]
+    HOOK --> CMP
+  end
+  SOURCE --> HOOK
