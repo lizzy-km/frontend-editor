@@ -305,6 +305,17 @@ run, inside a locked frame.
   `dataTemplates.ts`; list cards can navigate or call a handler
   (`CALL_ATTR`, `handlers.ts`). `routerLinks.ts` holds the router import/hook helpers.
 
+## Cards that open a pop-up (`serialize/clickedPlayer.ts`, `fillRow.ts`)
+
+- A list's card design with `data-fe-open="name"` opens that pop-up; the pop-up is a record box with
+  `data-fe-row="clicked"`. Static expansion (`expandDataLists`) marks each card `data-fe-item` (index) and `data-fe-from`
+  (source); `fillCard(..., keepTemplates)` keeps address templates next to their values for these pop-ups.
+- Visitors: a capture-phase click listener fills the pop-up from the clicked card's row, then the normal pop-up
+  player opens it. `fillRow.ts` holds the one browser-side fill script (`value`/`fill`); keep it in step with
+  `resolveBinding` and `frame/runtime/lists.js`.
+- React: the modal store keeps the row (`openModal(name, row)`, `useModalRow`); `cardRow` in `JsxContext` makes the
+  card pass `row`; `recordTemplates` reads `useModalRow()` for `clicked` records.
+
 ## Routes with changing parts (`model/routes.ts`)
 
 - `/user/:id` is an ordinary page path. `matchPage` (exact first, then

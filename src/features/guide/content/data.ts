@@ -96,7 +96,7 @@ export const DATA: Group = {
           'Add a **List from data** and a **Pop-up** (**Add → Ready-made**).',
           'Select the list, open **Actions → Data → On click** and choose **Open a pop-up**. The pop-up is set up to show the card that opened it.',
           'Select the pop-up box, open **Actions → Data** and press **Fill in the fields for me**: its heading, text and picture now show the clicked card’s item. Pick a field for any part yourself, too.',
-          'To go to another page from inside the pop-up, select its link or button and give it an address like **/product/:id** (a **Detail page** has one). The **:id** becomes the clicked item’s id.',
+          'To go to the item’s own page from inside the pop-up, add a **Link** in it (**Add → Link**), select the pop-up, and under **Show these from…** set the link’s **Goes to** to your **Detail page**. The link then opens the page of the clicked item.',
         ] },
         { kind: 'tip', text: 'Opened any other way (a normal button), the pop-up shows the first item. Try it in **Preview**: click different cards.' },
       ],

@@ -10,7 +10,7 @@ export const FILL_JS = `
   function show(value) { return value === true ? 'Yes' : value === false ? 'No' : value == null ? '' : String(value) }
   function value(spec, row) {
     if (spec.charAt(0) !== '/') return show(row[spec])
-    return spec.replace(/:([A-Za-z_]\w*)/g, function (_, name) { return encodeURIComponent(show(row[name])) })
+    return spec.replace(/:([A-Za-z_]\\w*)/g, function (_, name) { return encodeURIComponent(show(row[name])) })
   }
   function fill(box, row) {
     [box].concat(Array.prototype.slice.call(box.querySelectorAll('*'))).forEach(function (element) {

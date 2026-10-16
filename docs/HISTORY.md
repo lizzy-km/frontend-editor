@@ -9,6 +9,20 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/card-popup — 2026-10-16
+- **A data card can open a pop-up that shows ITS item.** In a list's *On click* choose "Open a pop-up": the card
+  gets `data-fe-open`, and the pop-up becomes a record box with `data-fe-row="clicked"` (new row choice "The card
+  that opened it"). The pop-up's words, pictures and link addresses (`/product/:id`) are filled from the clicked
+  card; a link inside it can go to the item's own page ("Goes to" a detail page).
+- Preview and downloads: expanded cards that open a pop-up carry `data-fe-item` / `data-fe-from`; `clickedPlayer.ts`
+  fills the pop-up just before it opens (capture-phase click), using the shared `fillRow.ts` script (also used by
+  `recordPlayer`). React: `openModal(name, row)` / `useModalRow()` in `components/ui/popup.ts`; the card receives the
+  whole row, the record component reads the clicked item (else the first row); record components now handle links
+  and "click goes to" like cards do.
+- Fixed on the way: the React download imported both `openModal` and `closeModal` in every file, which strict
+  TypeScript rejects when only one is used; each file now imports only what it uses.
+- Tests: `clickedPlayer.test.ts` (runs the fill script), `e2e/card-popup.mjs`; the React project was built and used in Chrome.
+
 ## feature/add-code-parts — 2026-10-15
 - Add → **Paste more code** takes **HTML, CSS and JavaScript** (tabs; any one of them is enough).
   HTML can be a section or a whole page: its own `<style>` and `<script>` tags, stylesheet links
