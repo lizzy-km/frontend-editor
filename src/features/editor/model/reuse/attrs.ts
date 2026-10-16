@@ -17,6 +17,8 @@ export const VARIANT_ATTR = 'data-fe-variant'
 export const KEY_ATTR = 'data-fe-key'
 /** On a box inside a main component: its name as an option, so each copy can show or hide it. */
 export const PART_ATTR = 'data-fe-part'
+/** On a main component's top box: where it came from in the account library, `<entry id>@<version>`. */
+export const LIBRARY_ATTR = 'data-fe-library'
 
 export const isMain = (node: unknown): node is ElementNode => isElement(node as ElementNode) && COMPONENT_ATTR in (node as ElementNode).attrs
 export const isInstance = (node: unknown): node is ElementNode => isElement(node as ElementNode) && INSTANCE_ATTR in (node as ElementNode).attrs

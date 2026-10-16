@@ -2,7 +2,7 @@ import { cloneSubtree } from '../tree/cloneSubtree'
 import { indexInParent } from '../tree/queries'
 import { insertSubtree } from '../tree/treeOps'
 import type { ElementNode, NodeMap } from '../types'
-import { COMPONENT_ATTR, VARIANT_ATTR, instancesOf, looksOf, lookName, mainsOf, uniqueComponentName } from './attrs'
+import { COMPONENT_ATTR, LIBRARY_ATTR, VARIANT_ATTR, instancesOf, looksOf, lookName, mainsOf, uniqueComponentName } from './attrs'
 
 /** A look of a component: its main box and the copies that follow it. */
 export type LookInfo = { id: string; label: string; copies: string[] }
@@ -27,6 +27,7 @@ export function duplicateComponent(nodes: NodeMap, mainId: string): { nodes: Nod
   const name = uniqueComponentName(placed, `${main.attrs[COMPONENT_ATTR] ?? 'Component'} copy`, copy.topId)
   const attrs: Record<string, string> = { ...(placed[copy.topId] as ElementNode).attrs, [COMPONENT_ATTR]: name }
   delete attrs[VARIANT_ATTR]
+  delete attrs[LIBRARY_ATTR]
   return { nodes: { ...placed, [copy.topId]: { ...(placed[copy.topId] as ElementNode), attrs } }, id: copy.topId }
 }
 

@@ -3,6 +3,20 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/component-library — 2026-10-16
+- **My library** (Components tab, signed in): *Save to my library* keeps a component (every look, plus the CSS it needs
+  and stylesheet links) in your account. In any other page or site, *Add to this page* brings it in as a main component.
+  *Update my library* saves a new version; pages that use it show *Get the newer version*, and pressing it updates the main
+  component in place so its copies keep following (and keep what they changed). *Save as new* and *Remove from library*.
+- How: Firestore collection `tweaks_components` (owner-only; `version` goes up by one per save; `data` is the packed entry,
+  at most 200,000 characters) in `collections.ts`, `firestore.rules` and a rules test; `workspace/api/componentLibrary.ts`
+  (Firestore Lite, loaded only when a library action runs; `packValue` squeezes like pages). Model: `reuse/pickCss.ts` (cuts the
+  rules a component needs out of the page CSS), `reuse/entry.ts` (`entryFromComponent`, `addEntry`, `updateFromEntry`, which matches
+  boxes by `data-fe-key`); a main component links back with `data-fe-library="<entry id>@<version>"` (dropped by every output).
+- Not covered: a limit on how many components someone saves (only each one's size). The rules tests need the emulator
+  (`npm run test:rules`, Java + firebase-tools) and were not run on the machine that wrote them.
+- Tests: `pickCss.test.ts`, `entry.test.ts`, `libraryActions.test.ts` (mocked API), rules cases, `e2e/components-panel.mjs`.
+
 ## fix/skip-node-modules — 2026-10-15
 - Opening a React project skips `node_modules`, `.git`, `dist` and pictures. A .zip is now
   read as a stream, so those files are never opened and a zip that still contains

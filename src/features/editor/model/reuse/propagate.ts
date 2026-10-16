@@ -1,7 +1,7 @@
 import { createId } from '@/lib/ids'
 import { collectSubtreeIds } from '../tree/queries'
 import { isElement, type Breakpoint, type ElementNode, type EditorNode, type NodeMap, type StyleMap, type TextNode } from '../types'
-import { COMPONENT_ATTR, INSTANCE_ATTR, OF_ATTR, elementsOf, instancesOf, isInstance, isMain, mainOf } from './attrs'
+import { COMPONENT_ATTR, INSTANCE_ATTR, LIBRARY_ATTR, OF_ATTR, elementsOf, instancesOf, isInstance, isMain, mainOf } from './attrs'
 import { copyBranch, detachInstance } from './make'
 
 /**
@@ -9,7 +9,7 @@ import { copyBranch, detachInstance } from './make'
  * component's new value only when it still equals the OLD main value (so the instance had not changed it). What an
  * instance changed itself stays. Boxes added to or removed from the main component are added to or removed from every instance.
  */
-const OWN = new Set(['id', COMPONENT_ATTR, INSTANCE_ATTR, OF_ATTR])
+const OWN = new Set(['id', COMPONENT_ATTR, INSTANCE_ATTR, OF_ATTR, LIBRARY_ATTR])
 const SIZES: Breakpoint[] = ['desktop', 'tablet', 'mobile']
 
 type Merge = { prev: NodeMap; next: NodeMap; out: NodeMap; map: Map<string, string>; touched: boolean }

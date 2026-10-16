@@ -158,6 +158,8 @@ the sample rows until you switch to the real API.
   like. The React download uses Motion.
 - **Reusable components**: make any box a component (Actions → Component), add copies from Add → Your components,
   and change it once to update every copy; a copy keeps what it changed itself and can show different data.
+  Components have looks (variants) and options, can be edited on their own, and can be saved to **My library**
+  (your account) to use in any page or site, with a button to pick up a newer version.
 - **Inputs, tabs, calendar, tables, search and filters** (Add panel): text, email, password,
   number, text area, switch, select (with search), date picker, calendar, four kinds of tabs, a
   dropdown menu, tables (typed, or **from data**), a **search bar** and **filters** that narrow a

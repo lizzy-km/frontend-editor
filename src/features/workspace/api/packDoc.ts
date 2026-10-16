@@ -19,15 +19,20 @@ async function pipe(bytes: Uint8Array, stream: CompressionStream | Decompression
   return new Uint8Array(await new Response(input.pipeThrough(stream as unknown as ReadableWritablePair<Uint8Array, Uint8Array>)).arrayBuffer())
 }
 
-export async function packDoc(doc: PageDoc): Promise<string> {
-  const json = JSON.stringify(doc)
+/** Any JSON value as one text, squeezed when it is big (a saved page, a library component). */
+export async function packValue(value: unknown): Promise<string> {
+  const json = JSON.stringify(value)
   if (json.length < MIN_TO_SQUEEZE || typeof CompressionStream === 'undefined') return json
   const squeezed = `${MARK}${toBase64(await pipe(new TextEncoder().encode(json), new CompressionStream('gzip')))}`
   return squeezed.length < json.length ? squeezed : json
 }
 
-export async function unpackDoc(raw: string): Promise<PageDoc> {
-  if (!raw.startsWith(MARK)) return JSON.parse(raw) as PageDoc
+export async function unpackValue<T>(raw: string): Promise<T> {
+  if (!raw.startsWith(MARK)) return JSON.parse(raw) as T
   if (typeof DecompressionStream === 'undefined') throw new Error('This browser can’t open this saved page.')
-  return JSON.parse(new TextDecoder().decode(await pipe(fromBase64(raw.slice(MARK.length)), new DecompressionStream('gzip')))) as PageDoc
+  return JSON.parse(new TextDecoder().decode(await pipe(fromBase64(raw.slice(MARK.length)), new DecompressionStream('gzip')))) as T
 }
+
+export const packDoc = (doc: PageDoc): Promise<string> => packValue(doc)
+
+export const unpackDoc = (raw: string): Promise<PageDoc> => unpackValue<PageDoc>(raw)
