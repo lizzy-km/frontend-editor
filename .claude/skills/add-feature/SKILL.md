@@ -33,6 +33,8 @@ its own `fix(...)`), and make sure each one passes `tsc` and `eslint`.
 - A toggleable or future feature gets a flag in `src/config/features.config.ts`
   (`enable_<name>`, with a comment). Future features ship with the flag `false`.
 
+- A new **public** route needs a line in `src/config/seoRoutes.ts` (title, description, summary): it feeds the page head, the
+  static copy of the page and the sitemap. Private routes are `noindex` through `NOINDEX_PREFIXES`.
 - A route for a flagged feature goes through `flagged('enable_x', ...)` in
   `src/app/router.tsx`, so it returns 404 while the flag is off. Links to it
   check `features.enable_x` too.

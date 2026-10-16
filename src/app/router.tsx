@@ -1,9 +1,10 @@
 import { lazy, Suspense, type ComponentType, type ReactElement } from 'react'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Outlet } from 'react-router-dom'
 import { features, type FeatureName } from '@/config/features.config'
 import { RequireAuth } from '@/features/auth/RequireAuth'
 import { PageSpinner } from '@/shared/ui'
 import { RouteError } from './RouteError'
+import { RouteSeo } from './RouteSeo'
 
 /** Same as page(), but only for signed-in people. */
 const privatePage = (load: () => Promise<{ default: ComponentType }>) => <RequireAuth>{page(load)}</RequireAuth>
@@ -21,8 +22,19 @@ function page(load: () => Promise<{ default: ComponentType }>) {
   )
 }
 
+/** Every screen sits inside this: it keeps the page head (title, description, noindex) right for the address. */
+function Root() {
+  return (
+    <>
+      <RouteSeo />
+      <Outlet />
+    </>
+  )
+}
+
 export const router = createBrowserRouter([
   {
+    element: <Root />,
     errorElement: <RouteError />,
     children: [
       { path: '/', element: page(() => import('@/features/home/HomePage')) },

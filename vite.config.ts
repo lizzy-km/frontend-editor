@@ -1,9 +1,12 @@
 import { defineConfig } from 'vitest/config'
+import { loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
+import { seoPlugin } from './scripts/seo/vitePlugin.ts'
 
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(({ mode }) => ({
+  // VITE_SITE_URL (from .env or the host's settings) is the address of the deployed site: sitemap, canonical links, share pictures.
+  plugins: [react(), seoPlugin(loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL?.trim().replace(/\/+$/, '') ?? '')],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
@@ -30,4 +33,4 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['src/**/*.test.ts'],
   },
-})
+}))
