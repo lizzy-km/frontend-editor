@@ -175,6 +175,16 @@ run, inside a locked frame.
 - Text inputs use `useDraft` (prop → local draft; save on Enter or blur).
   This avoids setState-in-effect.
 
+## Developer docs (`src/dev/`, route `/dev`)
+
+- Development only: `router.tsx` adds the route behind `import.meta.env.DEV` (the build drops the branch and the lazy chunk),
+  `DevDocsPage` also returns the not-found page when it is not DEV, and `RouteSeo` marks it `noindex`. Nothing links to it.
+- `docsFiles.ts` holds the `import.meta.glob` reads of the repo (docs, skills, sources, e2e specs, diagrams). Vite refuses
+  to serve `.env*` files, so settings come from the declarations in `src/vite-env.d.ts` (keep a comment above each).
+- `markdown.tsx` (reader), `codeIndex.ts` (exports + the comment above each), `overviewData.ts` (routes, flags, settings,
+  specs, scripts): pure and tested in `dev.test.ts`. A new diagram needs its entry in `WorkflowView.tsx` `DIAGRAMS`.
+- After a production build, search `dist` for "Tweak developer docs": there must be no match.
+
 ## SEO (`config/seoRoutes.ts`, `shared/seo/`, `scripts/seo/`)
 
 - `seoRoutes.ts` is the single list of public screens (no imports: the build reads it). A new public screen needs a line

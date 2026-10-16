@@ -1,6 +1,6 @@
 # How Tweak works: the workflow in pictures
 
-Eight diagrams, from what a person does to how the code is built and shipped. Each picture is drawn from a
+Nine diagrams, from what a person does to how the code is built and shipped. Each picture is drawn from a
 Mermaid file in [`diagrams/`](diagrams) (`.mmd`, readable and editable as text) and saved as `.svg` and `.png`.
 
 | # | Diagram | Question it answers |
@@ -13,6 +13,7 @@ Mermaid file in [`diagrams/`](diagrams) (`.mmd`, readable and editable as text) 
 | 6 | [Data](#6-data) | How do lists, tables, filters and pop-ups get their items? |
 | 7 | [Reusable components](#7-reusable-components) | How does one change reach every copy? |
 | 8 | [Building and shipping](#8-building-and-shipping) | How do we check, build, and make it findable? |
+| 9 | [System architecture](#9-system-architecture) | Which layers does the app have, and what sits in each? |
 
 ## 1. The journey
 
@@ -71,7 +72,17 @@ that copy still has the old value.
 Every feature goes through the same checks before it is merged. The build also writes a static page for each public
 screen, `robots.txt` and (when `VITE_SITE_URL` is set) `sitemap.xml`.
 
+## 9. System architecture
+
+![System architecture](diagrams/09-architecture.png)
+
+Layers from the host down to the services. Features never reach into another feature's internals; everything the editor
+does goes through actions into the stores and the model, and the sandboxed frame, the exports and saving hang off that core.
+
 ---
+
+**In the app:** with `npm run dev` running, open `/dev` for these diagrams (zoom, Mermaid source) next to the architecture
+doc and a searchable code reference. That page exists only in development.
 
 **Changing a diagram:** edit its `.mmd` file, then run `node scripts/diagrams/render.mjs` (needs Chrome and an internet
 connection for the Mermaid script) and commit the `.svg` and `.png` files. GitHub also draws the `.mmd` text directly if

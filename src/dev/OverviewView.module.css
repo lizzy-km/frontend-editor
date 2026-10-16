@@ -1,0 +1,11 @@
+.grid { display: flex; flex-direction: column; gap: 32px; }
+.grid h3 { margin: 0 0 10px; font-size: 19px; }
+.grid table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--surface); border-radius: 12px; overflow: hidden; }
+.grid th, .grid td { padding: 8px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.grid th { background: var(--surface-2); font-size: 12.5px; text-transform: uppercase; letter-spacing: .03em; color: var(--text-soft); }
+.grid code { padding: 1px 6px; border-radius: 6px; background: var(--surface-2); font-size: .92em; }
+.numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.numbers div { display: flex; flex-direction: column; gap: 2px; padding: 16px 18px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.numbers b { font-size: 30px; letter-spacing: -0.02em; color: var(--accent); }
+.numbers span { font-size: 13px; color: var(--text-soft); }
+.muted { color: var(--text-soft); font-size: 14px; }

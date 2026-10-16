@@ -1,0 +1,13 @@
+block-beta
+  columns 8
+  L1["Hosting"] VERCEL["Vercel static hosting · files first, then index.html<br/>static public pages, sitemap.xml, robots.txt"]:7
+  L2["App shell<br/>src/app · src/shared"] ROUTER["Router<br/>lazy pages, RouteSeo"]:2 UI["shared/ui<br/>buttons, modal, toasts, icons"]:3 SH2["shared/code (CodeMirror)<br/>shared/seo · shared/hooks"]:2
+  L3["Screens<br/>src/features"] HOME["home"] GUIDE["guide"] IMPORT["import<br/>paste screen"] PROMPTS["prompts<br/>AI prompt helper"] GALLERY["gallery"] WORK["workspace<br/>my pages, editor page"] AUTHF["auth, billing,<br/>marketplace (off)"]
+  L4["Editor<br/>features/editor"] CANVAS["canvas<br/>Konva overlay"]:1 TEXT["text<br/>Quill"]:1 SIDEBAR["sidebar<br/>layers, add, pages,<br/>design, data, code"]:2 INSPECTOR["inspector<br/>design, actions, more,<br/>widgets, components"]:2 TOOL["toolbar,<br/>quick actions"]:1
+  L5["Core"] ACTIONS["actions<br/>every edit is one commit"]:2 STORES["stores (Zustand)<br/>doc + undo, selection, view"]:2 MODEL["model<br/>parse, tree, serialize, pages, data,<br/>conditions, forms, widgets, reuse"]:3
+  L6["Around the core"] FRAME["Sandboxed editor frame<br/>iframe, allow-scripts only,<br/>runtime/*.js, postMessage"]:2 EXPORT["export<br/>.html .zip .png,<br/>React project builders,<br/>snapshot"]:2 PERSIST["persistence, workspace api<br/>autosave, packDoc, draft"]:2 ANALYTICS["analytics<br/>counts only"]:1
+  L7["Services"] FBAUTH["Firebase Auth"] FIRESTORE[("Firestore<br/>firestore.rules")] WORKER["Cloudflare Worker<br/>workers/assets"] R2[("R2<br/>pictures")] GA["Google and<br/>Vercel Analytics"] USERAPI["The user's own API<br/>(data sources)"]:2
+
+
+  classDef layer fill:#e8573a,stroke:#e8573a,color:#fff,font-weight:bold
+  class L1,L2,L3,L4,L5,L6,L7 layer
