@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Canvas } from '../canvas/Canvas'
 import { useEditorShortcuts } from '../shortcuts/useEditorShortcuts'
+import { FocusBar } from '../toolbar/FocusBar'
 import { useViewStore } from '../store/view.store'
 import styles from './EditorLayout.module.css'
 
@@ -22,6 +23,7 @@ export function EditorLayout({ toolbar, left, right, overlays }: Props) {
   return (
     <div className={styles.shell}>
       {toolbar}
+      <FocusBar />
       <div className={styles.body}>
         {left && <aside className={`${styles.left} ${wideLeft ? styles.wide : ''}`}>{left}</aside>}
         <main className={styles.main}>

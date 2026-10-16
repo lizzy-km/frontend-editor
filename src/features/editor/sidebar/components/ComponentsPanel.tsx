@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Button, Icon } from '@/shared/ui'
-import { addInstance, duplicateMain, releaseMain, renameMain, showNode } from '../../actions/reuseActions'
+import { addInstance, duplicateMain, editComponent, releaseMain, renameMain, showNode } from '../../actions/reuseActions'
 import { describeNode } from '../../labels/elementLabels'
 import { pageOfNode } from '../../model/pages'
 import { componentList, type ComponentInfo } from '../../model/reuse/library'
@@ -25,6 +25,7 @@ function Row({ info, nodes, selected }: { info: ComponentInfo; nodes: NodeMap; s
         </button>
       </div>
       <div className={panel.actions}>
+        <Button size="small" variant="primary" icon="pencil" onClick={() => editComponent(info.id)}>Edit</Button>
         <Button size="small" icon="plus" onClick={() => addInstance(info.id)}>Add a copy</Button>
         <Button size="small" variant="ghost" onClick={() => showNode(info.id)}>Show it</Button>
         <Button size="small" variant="ghost" onClick={() => duplicateMain(info.id)}>Duplicate</Button>

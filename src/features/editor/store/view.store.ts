@@ -20,6 +20,8 @@ type ViewState = {
   pageId: string | null
   /** "Viewing as": who the editor and Preview show the page to (signed in, roles, flags). */
   viewer: Viewer
+  /** A main component being edited on its own (everything else on the page is out of the way); null = the whole page. */
+  focusId: string | null
   setBreakpoint: (breakpoint: Breakpoint) => void
   setZoom: (zoom: ZoomMode) => void
   setScale: (scale: number) => void
@@ -28,6 +30,7 @@ type ViewState = {
   setInspectorTab: (tab: InspectorTab) => void
   setPageId: (pageId: string | null) => void
   setViewer: (viewer: Viewer) => void
+  setFocus: (focusId: string | null) => void
 }
 
 export const ZOOM_MIN = 0.25
@@ -42,6 +45,7 @@ export const useViewStore = create<ViewState>((set) => ({
   inspectorTab: 'design',
   pageId: null,
   viewer: VISITOR,
+  focusId: null,
   setBreakpoint: (breakpoint) => set({ breakpoint }),
   setZoom: (zoom) => set({ zoom: zoom === 'fit' ? 'fit' : Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoom)) }),
   setScale: (scale) => set({ scale }),
@@ -50,4 +54,5 @@ export const useViewStore = create<ViewState>((set) => ({
   setInspectorTab: (inspectorTab) => set({ inspectorTab }),
   setPageId: (pageId) => set({ pageId }),
   setViewer: (viewer) => set({ viewer }),
+  setFocus: (focusId) => set({ focusId }),
 }))
