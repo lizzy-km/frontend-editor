@@ -7,7 +7,9 @@ import { componentList, type ComponentInfo } from '../../model/reuse/library'
 import type { ElementNode, NodeMap } from '../../model/types'
 import { useDocStore } from '../../store/doc.store'
 import { useSelectionStore } from '../../store/selection.store'
+import { LibraryButtons } from './LibraryButtons'
 import { LooksBar } from './LooksBar'
+import { MyLibrary } from './MyLibrary'
 import { NewComponent } from './NewComponent'
 import panel from './Components.module.css'
 
@@ -35,6 +37,7 @@ function Row({ info, nodes, selected }: { info: ComponentInfo; nodes: NodeMap; s
         <Button size="small" variant="ghost" onClick={() => setConfirm(true)}>Delete</Button>
       </div>
       <LooksBar info={info} lookId={lookId} onPick={setPicked} />
+      <LibraryButtons mainId={info.id} nodes={nodes} />
       {confirm && (
         <p className={panel.confirm} role="alert">
           Delete “{info.name}”? Its {info.copies.length} {info.copies.length === 1 ? 'copy stays' : 'copies stay'} on your page as normal boxes.
@@ -64,6 +67,7 @@ export function ComponentsPanel() {
     <div className={panel.panel}>
       <p className={panel.intro}>A component is a part you reuse. Change the main one and every copy follows. Main components are only for editing: they never show on your page.</p>
       <NewComponent />
+      <MyLibrary />
       <p className={panel.title}>Your components <span>{list.length}</span></p>
       {list.length === 0
         ? <p className={panel.muted}>None yet. Make one above, or select a box and use Actions → Component.</p>

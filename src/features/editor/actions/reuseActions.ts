@@ -52,7 +52,7 @@ export const detach = (instanceId: string) => updateNodes((nodes) => detachInsta
 export const releaseMain = (mainId: string) => updateNodes((nodes) => releaseComponent(nodes, mainId))
 
 /** Where a new component goes: the end of the page being edited. */
-const pageEnd = () => resolvePage(getDoc(), useViewStore.getState().pageId)?.id ?? getDoc().rootId
+export const pageEnd = () => resolvePage(getDoc(), useViewStore.getState().pageId)?.id ?? getDoc().rootId
 
 /** Goes to a box wherever it is (switching to its page on a website) and selects it. */
 export function showNode(id: string) {
