@@ -18,6 +18,7 @@ import { handlerFiles } from './handlers'
 import { formProject } from './forms/formTemplates'
 import { popupFiles } from './popups/uiTemplates'
 import { listUiFiles } from './listTemplates'
+import { stripComponents } from '@/features/editor/model/reuse/omit'
 import { mainFile } from './mainTemplate'
 import { usesWidgets, widgetFiles } from './widgetFiles'
 import { notFoundSource, routerSource, ROUTERS, type RouteFile, type RouterKind } from './routerTemplates'
@@ -56,7 +57,8 @@ function pageSource(name: string, title: string, parts: Parts, folder: string): 
 }
 
 /** A multi-page site as a Vite + React + TypeScript app with a router, a shared Layout and one file per page. */
-export function buildSiteProject(doc: PageDoc, { router, origins }: Options): ExportFiles {
+export function buildSiteProject(editorDoc: PageDoc, { router, origins }: Options): ExportFiles {
+  const doc = stripComponents(editorDoc) // main components are for editing only
   const pages = listPages(doc)
   const body = getElement(doc.nodes, doc.rootId)!
   const first = body.children.indexOf(pages[0]!.id)

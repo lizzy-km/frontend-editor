@@ -9,6 +9,21 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/reusable-components — 2026-10-16
+- **Reusable components, like Figma's.** Select a box → Actions → *Component* → *Make a component*: it becomes the
+  **main component** (dashed purple outline in the editor; left out of Preview, downloads and the React project).
+  *Add → Your components* puts **copies** (instances) on the page: real parts you can edit in place. A change to the
+  main component reaches every copy in the same undo step, except what a copy changed itself (words, pictures, links,
+  looks, hiding). Boxes added to or removed from the main component are added to or removed from the copies.
+- Different data per copy: select a copy and use Data (item, or another list). Copies you have not touched follow the
+  main component's data; a copy where you chose another item keeps it.
+- Copy a copy (Ctrl+D): still a copy. Undo my changes to this copy / Make it a normal box / Stop being a component;
+  deleting the main component turns its copies into normal boxes. Layers say "Component “Name”" and "Copy of “Name”".
+- How: `model/reuse/` (`attrs`, `make`, `propagate` = a three-way merge using the main component's previous value as the
+  base, `omit` for the outputs), hooked into the one commit in `doc.store.ts`; `inspector/sections/ReuseSection.tsx`,
+  `sidebar/ReuseBlocks.tsx`. Not yet: variants, and React components with props (copies are written as plain parts).
+- Tests: `reuse*.test.ts`, `e2e/components.mjs`, `e2e/components-data.mjs`; guide topic with a picture.
+
 ## feature/seo — 2026-10-16
 - **SEO for the app.** One list of public screens (`config/seoRoutes.ts`: title, description, indexed or not, sitemap
   priority, no-script summary). `RouteSeo` (inside the router root) keeps the head right on every navigation

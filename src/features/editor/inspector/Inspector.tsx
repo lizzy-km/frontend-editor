@@ -26,6 +26,7 @@ import { PageSection } from './sections/PageSection'
 import { PictureSection } from './sections/PictureSection'
 import { VisibilitySection } from './sections/VisibilitySection'
 import { WordsSection } from './sections/WordsSection'
+import { ReuseSection } from './sections/ReuseSection'
 import { WidgetSection } from './widgets/WidgetSection'
 import { StyleSections } from './StyleSections'
 import { useComputedStyle } from './useComputedStyle'
@@ -90,6 +91,7 @@ export function Inspector() {
       )}
       {tab === 'actions' && (
         <>
+          <ReuseSection key={`reuse-${node.id}`} node={node} />
           <WidgetSection nodeId={node.id} />
           {node.tag === 'a' && <LinkSection node={node} />}
           {node.tag !== 'a' && <GoToPageSection key={`go-${node.id}`} node={node} />}

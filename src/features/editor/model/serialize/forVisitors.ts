@@ -10,6 +10,7 @@ import { withForms } from './formPlayer'
 import { withLayouts } from './layoutPlayer'
 import { withPopups } from './popupPlayer'
 import { withRecords } from './recordPlayer'
+import { stripComponents } from '../reuse/omit'
 import { withWidgets } from '../widgets/widgetPlayer'
 
 const effects = Object.fromEntries(EFFECTS.map((effect) => [effect.value, { from: poseCss(effect.from), hover: poseCss(effect.hover) }]))
@@ -92,4 +93,4 @@ function forViewer(doc: PageDoc, viewer: Viewer): PageDoc {
  * viewer may see (downloads: a signed-out visitor), lists filled with their
  * data rows, and the animation, form, pop-up and layout players added.
  */
-export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR, params: Params = {}): PageDoc => withWidgets(withLayouts(withClickedRows(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(doc, viewer)), params))))))))
+export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR, params: Params = {}): PageDoc => withWidgets(withLayouts(withClickedRows(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(stripComponents(doc), viewer)), params))))))))

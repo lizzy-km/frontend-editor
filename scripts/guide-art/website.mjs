@@ -21,6 +21,10 @@ export const website = {
   layouts: svg(W, H, 'Layouts: top bar, side menu or both',
     mini(30, 20, true, false, 'Top bar') + mini(290, 20, false, true, 'Side menu') + mini(550, 20, true, true, 'Both')),
   'detail-pages': '',
+  components: svg(W, H, 'Change the main component once and every copy follows, except what a copy changed itself',
+    card(30, 40, 200, 150, { stroke: C.hot, dash: true }) + t(130, 32, 'Main component', { anchor: 'middle', size: 13, weight: 800, fill: C.hot }) + r(46, 56, 168, 56, { fill: C.soft }) + t(46, 140, 'Title', { size: 16, weight: 800 }) + bars(46, 154, [120, 90], 12) +
+    [0, 1, 2].map((i) => arrow(244, 90 + (i - 1) * 40, 300, 90 + (i - 1) * 40) + card(310 + i * 150, 40, 130, 150) + r(322 + i * 150, 54, 106, 44, { fill: C.soft }) + t(322 + i * 150, 126, i === 1 ? 'My own title' : 'Title', { size: 13, weight: 800, fill: i === 1 ? C.hot : C.ink }) + bars(322 + i * 150, 142, [90, 60], 12)).join('') +
+    t(550, 214, 'Copies follow the main one. A copy keeps what it changed itself.', { anchor: 'middle', size: 13, weight: 500, fill: C.mute })),
   'signin-pages': svg(W, H, 'Log in, sign up and account pages are added for you',
     [['Log in', 'email + password'], ['Sign up', 'make an account'], ['Account', 'only signed-in people']].map(([a, b], i) => {
       const x = 40 + i * 250
