@@ -112,5 +112,30 @@ service cloud.firestore {
 
       allow delete: if isUser(resource.data.ownerId);
     }
+
+    // ---- tweaks_components/{id}: one saved component of someone's library ---
+    // Private to the owner. `data` is the packed component (a small string), `version` counts the saves.
+    match /tweaks_components/{entryId} {
+      function validEntry() {
+        return request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 100
+          && request.resource.data.data is string && request.resource.data.data.size() <= 200000
+          && request.resource.data.updatedAt == request.time;
+      }
+
+      allow read: if isUser(resource.data.ownerId);
+
+      allow create: if isUser(request.resource.data.ownerId)
+        && request.resource.data.keys().hasOnly(['ownerId', 'name', 'data', 'version', 'createdAt', 'updatedAt'])
+        && request.resource.data.version == 1
+        && request.resource.data.createdAt == request.time
+        && validEntry();
+
+      allow update: if isUser(resource.data.ownerId)
+        && changedOnly(['name', 'data', 'version', 'updatedAt'])
+        && request.resource.data.version == resource.data.version + 1
+        && validEntry();
+
+      allow delete: if isUser(resource.data.ownerId);
+    }
   }
 }

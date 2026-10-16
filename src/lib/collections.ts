@@ -7,4 +7,5 @@ export const COLLECTIONS = {
   users: 'tweak_users',
   projects: 'tweaks_projects',
   projectContent: 'tweaks_project_content',
+  components: 'tweaks_components',
 } as const
