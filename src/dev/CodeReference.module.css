@@ -1,0 +1,22 @@
+.stats { margin: 0 0 12px; font-size: 14px; color: var(--text-soft); }
+.search { width: 100%; box-sizing: border-box; margin-bottom: 16px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); font: inherit; }
+.search:focus { outline: none; border-color: var(--focus); }
+.folder { margin-bottom: 8px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.folder > summary { padding: 12px 16px; font-weight: 700; cursor: pointer; font-family: ui-monospace, Consolas, monospace; font-size: 14px; }
+.folder > summary em, .file summary em { margin-left: 10px; color: var(--text-soft); font-weight: 400; font-style: normal; font-size: 12.5px; }
+.file { border-top: 1px solid var(--border); }
+.file summary { display: grid; grid-template-columns: 240px minmax(0, 1fr) auto; gap: 12px; padding: 9px 16px; cursor: pointer; font-size: 14px; }
+.file summary span { color: var(--text-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file ul, .results { list-style: none; margin: 0; padding: 4px 16px 14px 32px; display: flex; flex-direction: column; gap: 12px; }
+.results { padding: 0; }
+.entry { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; }
+.results .entry { border: 1px solid var(--border); background: var(--surface); }
+.entry p { margin: 2px 0 4px; font-size: 14px; }
+.entry small { color: var(--text-soft); font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+.entry code { display: block; font-size: 12px; color: var(--text-soft); overflow-x: auto; white-space: pre; }
+.missing { color: var(--text-soft); font-style: italic; }
+.kind { flex: none; min-width: 74px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); text-align: center; font-size: 11.5px; font-weight: 700; }
+.kind[data-kind='component'] { background: #e1eafa; color: #2b4fa0; }
+.kind[data-kind='function'] { background: var(--accent-soft); color: var(--accent); }
+.kind[data-kind='type'] { background: #dff0e6; color: #2c7a4b; }
+@media (max-width: 800px) { .file summary { grid-template-columns: 1fr; } }

@@ -51,6 +51,8 @@ export const router = createBrowserRouter([
       { path: '/p/:projectId', element: page(() => import('@/features/gallery/PublicPageView')) },
       { path: '/plans', element: flagged('enable_billing', privatePage(() => import('@/features/billing/PlansPage'))) },
       { path: '/market', element: flagged('enable_marketplace', page(() => import('@/features/marketplace/MarketplacePage'))) },
+      // Developer docs: only the development server has this route, and nothing links to it.
+      ...(import.meta.env.DEV ? [{ path: '/dev', element: page(() => import('@/dev/DevDocsPage')) }] : []),
       { path: '*', element: page(() => import('./NotFoundPage')) },
     ],
   },

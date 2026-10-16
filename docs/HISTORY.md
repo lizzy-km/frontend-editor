@@ -9,6 +9,18 @@ with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
   `node_modules` loads as fast as a clean one (no more size refusal for the whole zip).
   A folder skips them when reading (the browser still lists its files).
 
+## feature/dev-docs — 2026-10-16
+- **Developer docs inside the app** at `/dev`: only the development server has the route (it is added when
+  `import.meta.env.DEV`, so a production build contains none of it, not even the address), nothing links to it, and it is
+  never indexed. Tabs: *Overview* (counts; routes with who can open them; feature flags; settings; npm scripts; every
+  end-to-end spec), *Workflow* (the nine diagrams with zoom, full size and Mermaid source), *Architecture*
+  (ARCHITECTURE.md with a table of contents), *Code reference* (every source file with its description and commented
+  exports, searchable, read from the source when the tab opens), *Rules* (the skills), *History*, *README*.
+- Everything is read from the repository (`import.meta.glob`), so it is never out of date; a small Markdown reader renders
+  the docs as React elements. The new rule "every exported function has a one-line comment" now also feeds this page.
+- New diagram 9, the system architecture (layers), in `docs/WORKFLOW.md` and the page.
+- Tests: `src/dev/dev.test.ts`, `e2e/dev-docs.mjs`; a production build was searched for the page's text (none).
+
 ## docs/workflow-diagrams — 2026-10-16
 - `docs/WORKFLOW.md` with eight diagrams (journey, editor, page model, outputs, accounts, data, components, build and ship).
   Sources are Mermaid files in `docs/diagrams/`; `node scripts/diagrams/render.mjs` draws the `.svg` and `.png` files.

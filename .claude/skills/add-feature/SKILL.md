@@ -44,7 +44,7 @@ its own `fix(...)`), and make sure each one passes `tsc` and `eslint`.
 ## 3. Size and shape rules (ESLint enforces the numbers)
 - A file is at most 150 lines; split it before it reaches that.
 - A function is at most 100 lines; aim for under 40. One responsibility each.
-- Every exported function gets a one-line comment saying what it does in plain words.
+- Every exported function gets a one-line comment saying what it does in plain words (the `/dev` code reference shows it).
 - Prefer data-driven config (arrays of fields or options) over repeated JSX,
   so adding one more thing means adding one entry.
 
