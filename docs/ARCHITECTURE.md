@@ -492,6 +492,11 @@ file per topic group, helpers in `kit.mjs`); every topic starts with a figure.
   boxes share `data-fe-key` across looks. A copy follows one look; `swapLook` rebuilds it from another look and re-applies
   what the copy changed (a diff against its old main, by key). Parts: `data-fe-part` on a main box names an option; a copy
   hides it with the node's `hidden` flag (kept by the merge like any other change).
+- Account library: `reuse/entry.ts` turns a component (all looks, boxes keyed) into a `LibraryEntry` with the CSS it needs
+  (`pickCss`: rules for its classes, ids, tags and `data-ui-*` hooks, plus `:root`, `*`, @font-face, @keyframes). `addEntry` and
+  `updateFromEntry` put it into a page (new ids; update reuses ids by `data-fe-key` so `propagate` carries the change to
+  copies). A linked main has `data-fe-library="<id>@<version>"`. Storage is `tweaks_components` through
+  `workspace/api/componentLibrary.ts`, reached only by dynamic import from `actions/libraryActions.ts` (Firebase stays lazy).
 - Rules: no component inside a component (one `data-fe-of` per box); a copy's data choice (`data-fe-record/row`) is just
   another attribute the merge keeps when the copy changed it.
 

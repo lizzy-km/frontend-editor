@@ -86,6 +86,12 @@ export const WEBSITE: Group = {
           '**Looks**: one component, several designs. In the Components tab press **+ Add a look** (Dark, Outline, Large…), then **Edit** that look. A copy picks its design under **Actions → Component → Look** and keeps its own words and pictures when you switch.',
           '**Options**: inside the component select a box (the picture, a badge) and give it a name under **Part of… → Option**. Each copy then has a switch **Show “…”** to show or hide that part in that copy only.',
         ] },
+        { kind: 'figure', src: '/guide/art-library.svg', alt: 'Save a component to your library, then add it to any other page, and update it later', caption: 'Save once, use in any page or site, and update every page when you improve it' },
+        { kind: 'list', items: [
+          '**My library** (Components tab, you need to be signed in): press **Save to my library** on a component. It keeps every look and the styles it needs.',
+          'In another page or site open the Components tab and press **Add to this page** under **My library**. It arrives as a main component (with its looks) and you add copies as usual.',
+          'Improved it? Press **Update my library**. In any other page that uses it, the component shows **Get the newer version**: pressing it updates the main component and every copy follows, each keeping what it changed itself. **Save as new** keeps a separate library component. **Remove from library** never touches pages that already use it.',
+        ] },
         { kind: 'note', text: 'You can copy a copy (Ctrl+D); it is a copy of the same component. A component can’t sit inside another component. In the React download copies are written out as plain parts.' },
       ],
     },

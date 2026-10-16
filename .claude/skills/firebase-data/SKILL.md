@@ -13,6 +13,7 @@ Names live in `src/lib/collections.ts` (prefixed so a shared Firebase project ca
 | `tweak_users/{uid}` | owner | `displayName, email, photoURL, plan ('free'|'pro'), projectCount, lastProjectOp, createdAt` |
 | `tweaks_projects/{id}` | owner, or anyone if `isPublic` | `ownerId, ownerName, name, isPublic, thumbnailUrl, remixOf, createdAt, updatedAt` |
 | `tweaks_project_content/{id}` | owner, or anyone if `isPublic` | `ownerId, isPublic (mirror), doc (JSON string of PageDoc), updatedAt` |
+| `tweaks_components/{id}` | owner only | `ownerId, name, data (packed LibraryEntry, at most 200,000 chars), version, createdAt, updatedAt`: the account component library; `version` rises by exactly 1 per save; no per-user count limit |
 
 ## Invariants
 1. **The page counter only moves together with a project.** Create and delete are
