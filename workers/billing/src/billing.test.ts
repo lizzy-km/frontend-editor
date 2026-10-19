@@ -5,6 +5,7 @@ import { planUntil } from './fulfil'
 import { fromFields, toFields } from './firestoreValues'
 import { signatureOf, sortKeys, stateOf, verifySignature } from './nowpayments'
 import { ConflictError } from './store'
+import { appUrlFor, workerUrl } from './http'
 import { ENV, NOW, testDeps } from './testKit'
 import { handleWebhook } from './webhook'
 
@@ -124,5 +125,24 @@ describe('POST /webhook/nowpayments', () => {
     expect((await callback(racing as typeof deps, {})).status).toBe(409)
     expect(ConflictError).toBeDefined()
     expect(store.docs.get('tweak_users/alice')).toBeUndefined()
+  })
+})
+
+describe('addresses', () => {
+  const env = { ...ENV, ALLOWED_ORIGINS: 'http://localhost:5174, https://live.test/', APP_URL: 'http://localhost:5174;https://other.test/', WORKER_URL: 'https://pay.test/' }
+  const asked = (origin?: string) => new Request('http://worker.test/checkout', { method: 'POST', headers: origin ? { Origin: origin } : {} })
+
+  it('sends people back to the allowed app address that asked, else to the first APP_URL, never with a trailing slash', () => {
+    expect(appUrlFor(asked('https://live.test'), env)).toBe('https://live.test')
+    expect(appUrlFor(asked('http://localhost:5174'), env)).toBe('http://localhost:5174')
+    expect(appUrlFor(asked('https://evil.test'), env)).toBe('http://localhost:5174')
+    expect(appUrlFor(asked(), env)).toBe('http://localhost:5174')
+  })
+
+  it('takes the trailing slash off the worker address, and the checkout uses both', async () => {
+    expect(workerUrl(env)).toBe('https://pay.test')
+    const { deps, calls } = testDeps()
+    await handleCheckout(post('/checkout', { kind: 'plan', planId: 'pro' }, { Origin: 'https://live.test' }), { ...env, ALLOWED_ORIGINS: 'https://live.test' }, deps)
+    expect(calls[0]!.body).toMatchObject({ ipn_callback_url: 'https://pay.test/webhook/nowpayments', success_url: 'https://live.test/plans?payment=pay000001', cancel_url: 'https://live.test/plans?payment=pay000001&cancelled=1' })
   })
 })

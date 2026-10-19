@@ -19,9 +19,9 @@ enabled = true
 
 [vars]
 FIREBASE_PROJECT_ID = "anynote-m"
-ALLOWED_ORIGINS = "http://localhost:5174"
-APP_URL = "http://localhost:5174;https://tweak-web-editor.vercel.app/"
-WORKER_URL = "https://tweak.bill.quix-dev.online/"
+ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5174,http://localhost:5317,https://tweak-web-editor.vercel.app"
+APP_URL = "http://localhost:5174"
+WORKER_URL = "https://tweak.bill.quix-dev.online"
 
 
 # "true" = NOWPayments sandbox (no real money). Set "false" only when going live.
