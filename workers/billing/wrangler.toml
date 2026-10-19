@@ -12,12 +12,21 @@
 name = "tweak-billing"
 main = "src/index.ts"
 compatibility_date = "2026-09-01"
+workers_dev = true
+
+[observability]
+enabled = true
 
 [vars]
-FIREBASE_PROJECT_ID = "your-firebase-project-id"
+FIREBASE_PROJECT_ID = "anynote-m"
 ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5317"
 # The app's own address (where people return after paying) and this worker's address (where the processor calls back).
 APP_URL = "http://localhost:5317"
-WORKER_URL = "http://localhost:8787"
+WORKER_URL = "https://tweak-billing.dolic.workers.dev"
 # "true" = NOWPayments sandbox (no real money). Set "false" only when going live.
 NOWPAYMENTS_SANDBOX = "true"
+
+[observability.logs]
+enabled = false
+invocation_logs = true
+
