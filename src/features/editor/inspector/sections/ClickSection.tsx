@@ -1,6 +1,9 @@
 import { useMemo } from 'react'
 import { Switch } from '@/shared/ui'
+import { setFlagClick } from '../../actions/flagActions'
 import { renamePopup, setAsk, setCloses, setOpens } from '../../actions/popupActions'
+import { accessOf } from '../../model/conditions'
+import { FLAG_ATTR, FLAG_MODES, flagClickOf, type FlagMode } from '../../model/flagClicks'
 import { ASK_ATTR, CLOSE_ATTR, MODAL_ATTR, OPEN_ATTR, popupsOf } from '../../model/popups'
 import { getAncestorIds } from '../../model/tree/queries'
 import type { ElementNode } from '../../model/types'
@@ -29,7 +32,9 @@ export function ClickSection({ node }: { node: ElementNode }) {
   const nodes = useDocStore((state) => state.doc.nodes)
   const popups = useMemo(() => popupsOf(nodes), [nodes])
   const inPopup = useMemo(() => getAncestorIds(nodes, node.id).some((id) => MODAL_ATTR in ((nodes[id] as ElementNode | undefined)?.attrs ?? {})), [nodes, node.id])
-  const used = Boolean(node.attrs[OPEN_ATTR] || node.attrs[ASK_ATTR] || CLOSE_ATTR in node.attrs)
+  const flags = useDocStore((state) => accessOf(state.doc).flags)
+  const flagClick = flagClickOf(node.attrs)
+  const used = Boolean(node.attrs[FLAG_ATTR] || node.attrs[OPEN_ATTR] || node.attrs[ASK_ATTR] || CLOSE_ATTR in node.attrs)
   return (
     <Section title="When clicked" icon="pencil" defaultOpen={used}>
       {popups.length > 0 && (
@@ -40,6 +45,17 @@ export function ClickSection({ node }: { node: ElementNode }) {
         </div>
       )}
       {inPopup && <Switch label="Closes the pop-up" checked={CLOSE_ATTR in node.attrs} onChange={(on) => setCloses(node.id, on)} />}
+      <div className={styles.row} title="Clicking changes a flag for the visitor. Boxes set to “Only when these flags are on” then appear or hide. Add flags under “Who can see this”.">
+        <span className={styles.label}>Flag</span>
+        <SelectControl label="Flag to change" value={flagClick?.flag ?? ''} onChange={(flag) => setFlagClick(node.id, flag, flagClick?.mode ?? 'toggle')}
+          options={[{ value: '', label: flags.length ? 'Nothing' : 'None yet: add one under “Who can see this”' }, ...flags.map((flag) => ({ value: flag, label: flag }))]} />
+      </div>
+      {flagClick && (
+        <div className={styles.row}>
+          <span className={styles.label}>Then</span>
+          <SelectControl label="What happens to the flag" value={flagClick.mode} onChange={(mode) => setFlagClick(node.id, flagClick.flag, mode as FlagMode)} options={FLAG_MODES} />
+        </div>
+      )}
       <div className={styles.row} title="A question visitors must say yes to before the click does anything. Empty = no question.">
         <span className={styles.label}>Ask first</span>
         <TextControl label="Ask first question" value={node.attrs[ASK_ATTR] ?? ''} placeholder="e.g. Are you sure?" onChange={(message) => setAsk(node.id, message)} />

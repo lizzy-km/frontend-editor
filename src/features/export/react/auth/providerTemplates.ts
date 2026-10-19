@@ -101,7 +101,7 @@ export async function signOut(): Promise<void> {
 `
 
 export const SHOW = `import type { ReactNode } from 'react'
-import { isOn } from '../config/flags'
+import { isOn, useFlags } from '../config/flags'
 import { useAuth } from './useAuth'
 
 /** Who sees something: signed in or out, any of some roles, and flags that must be on. */
@@ -110,6 +110,7 @@ export type When = { signedIn?: boolean; roles?: string[]; flags?: string[] }
 /** Shows its children only when "when" matches (else the fallback, nothing by default). */
 export function Show({ when, children, fallback = null }: { when: When; children: ReactNode; fallback?: ReactNode }) {
   const { user } = useAuth()
+  useFlags()
   const signedIn = Boolean(user)
   const visible = (when.signedIn === undefined || when.signedIn === signedIn)
     && (!when.roles?.length || when.roles.some((role) => user?.roles.includes(role)))
@@ -118,20 +119,43 @@ export function Show({ when, children, fallback = null }: { when: When; children
 }
 `
 
-/** src/config/flags.ts with the site's flags (all off; turn on here or with VITE_FLAGS). */
+/** src/config/flags.ts with the site's flags (all off; turn on here or with VITE_FLAGS), and what a click does to them. */
 export function flagsSource(flags: string[]): string {
-  return `/**
+  return `import { useSyncExternalStore } from 'react'
+
+/**
  * Feature flags from the editor. Turn one on here, or for one build with
- * VITE_FLAGS=beta,newCheckout in .env.
+ * VITE_FLAGS=beta,newCheckout in .env. A button can also change a flag for the
+ * visitor (setFlag); that choice is remembered in the browser.
  */
 const fromEnv = (import.meta.env.VITE_FLAGS ?? '').split(',').map((flag: string) => flag.trim()).filter(Boolean)
 
-export const flags: Record<string, boolean> = {
+const KEY = 'tweak:flags'
+const start: Record<string, boolean> = {
 ${flags.map((flag) => `  ${JSON.stringify(flag)}: false,`).join('\n')}
   ...Object.fromEntries(fromEnv.map((flag: string) => [flag, true])),
 }
 
+function remembered(): Record<string, boolean> {
+  try { return JSON.parse(localStorage.getItem(KEY) ?? '{}') } catch { return {} }
+}
+
+let flags: Record<string, boolean> = { ...start, ...remembered() }
+const listeners = new Set<() => void>()
+
 /** Are all these flags on? */
 export const isOn = (...names: string[]) => names.every((name) => flags[name] === true)
+
+/** Turns a flag on, off, or switches it, for this visitor. */
+export function setFlag(name: string, mode: 'on' | 'off' | 'toggle') {
+  flags = { ...flags, [name]: mode === 'toggle' ? !flags[name] : mode === 'on' }
+  try { localStorage.setItem(KEY, JSON.stringify(flags)) } catch { /* storage blocked: the flag lasts until the page closes */ }
+  listeners.forEach((listener) => listener())
+}
+
+/** Re-draws the component whenever a flag changes. */
+export function useFlags() {
+  return useSyncExternalStore((listener) => { listeners.add(listener); return () => { listeners.delete(listener) } }, () => flags)
+}
 `
 }
