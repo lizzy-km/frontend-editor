@@ -322,6 +322,15 @@ run, inside a locked frame.
   `config/features.config.ts` to expose it): `PlansPage` (plan + end date, months 1/3/12, pay button), `payments.startCheckout` (POST to
   `VITE_BILLING_URL/checkout` with the Firebase ID token), `CheckoutStatus` (after the return `?payment=<id>`: asks `getMyPayment` every 4 s
   until the payment is settled), `PaymentHistory` (`listMyPayments`), `paymentWords` (statuses in plain words).
+- Marketplace (server side, `workers/billing`): `checkoutOrder.ts` (`POST /checkout` with `{ kind: "order", listingId }`: the listing must be
+  active and in the 1-500 price range, the seller's project must still exist, no buying your own page or twice) records `tweaks_orders/{id}`
+  (price, fee `MARKET_FEE_PERCENT`, seller earnings, all fixed now) and a pending `kind: "order"` payment. `fulfilOrder.ts` runs inside the
+  webhook's one atomic commit: a private copy for the buyer (new project + content, counted on their profile like any project), the sale in
+  `tweaks_ledger` and on the seller's `earningsUsd`, `salesCount` on the listing, the order `delivered`. If the seller's page is gone the order
+  is flagged `needsReview` and nobody is credited. `payout.ts` (`POST /payout`) holds an amount from the balance, writes `tweaks_payouts`
+  and a ledger line; a person pays it by hand and sets its status to `paid`.
+- Rules: `tweaks_listings` (active ones readable by anyone, the seller manages their own; price 1-500; `salesCount` worker-only; cannot be
+  deleted once sold), `tweaks_orders` / `tweaks_ledger` / `tweaks_payouts` (readable by the people they concern, writable by nobody).
 - Prices live in two places that must match: `workers/billing/src/catalog.ts` (charged) and `features/billing/plans.ts` (shown).
 
 ## Real APIs (`model/apiTest.ts`, `sidebar/data/ApiConnectDialog.tsx`)

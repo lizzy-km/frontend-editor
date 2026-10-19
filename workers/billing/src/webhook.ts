@@ -33,7 +33,7 @@ export async function handleWebhook(request: Request, env: Env, deps: Deps): Pro
   }
   try {
     const paid = { status: state, paymentStatus: raw, providerPaymentId: String(body.payment_id ?? ''), updatedAt: now, ...(state === 'paid' ? { paidAt: now } : {}) }
-    const effects = state === 'paid' ? await (FULFILLERS[record.kind] ?? (async () => []))(deps.store, payment, now) : []
+    const effects = state === 'paid' ? await (FULFILLERS[record.kind] ?? (async () => []))(deps.store, payment, now, deps.newId) : []
     await deps.store.commit([{ path: payment.path, data: paid, merge: true, expect: { updateTime: payment.updateTime } }, ...effects])
     return json({ ok: true }, 200)
   } catch (error) {
