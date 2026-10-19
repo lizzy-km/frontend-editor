@@ -24,14 +24,14 @@ export function mainFile({ root, query, auth, confirm = false, widgets = false }
   if (query) app = `<QueryClientProvider client={queryClient}>\n    ${app.replace(/\n/g, '\n  ')}\n  </QueryClientProvider>`
   return [
     "import { createRoot } from 'react-dom/client'",
-    ...(query ? ["import { QueryClient, QueryClientProvider } from '@tanstack/react-query'"] : []),
+    ...(query ? ["import { QueryClientProvider } from '@tanstack/react-query'"] : []),
     ...(root === 'app' ? ["import App from './App'"] : [`import { RouterProvider } from '${ROUTERS[root].lib}'`, "import { router } from './router'"]),
     ...(confirm ? ["import { ConfirmHost } from './components/ui/confirm'"] : []),
+    ...(query ? ["import { queryClient } from './api/queryClient'"] : []),
     ...(auth ? ["import { AuthProvider } from './auth/AuthProvider'"] : []),
     "import './styles/page.css'",
     ...(widgets ? ["import './widgets'"] : []),
     '',
-    ...(query ? ['/** Caches API answers; data stays fresh for a minute before it is fetched again. */', 'const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 60_000 } } })', ''] : []),
     "// No <StrictMode>: the page's own scripts (public/scripts) expect the page to be put on screen once.",
     `createRoot(document.getElementById('root')!).render(\n  ${app},\n)`,
     '',

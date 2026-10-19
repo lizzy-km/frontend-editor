@@ -1,4 +1,5 @@
 import { rowTypeName } from '@/features/editor/model/data'
+import { QUERY_CLIENT, updateSource } from './dataUpdate'
 import { itemParts } from './itemAddress'
 import type { DataSource, DataValue, FieldType } from '@/features/editor/model/types'
 
@@ -68,6 +69,7 @@ function sourceFile(source: DataSource): string {
 import { mockData } from '../data/mockData'
 import type { ${type} } from '../data/types'
 import { api, pickList, USE_MOCK } from './client'
+import { queryClient } from './queryClient'
 
 /** One page of ${source.name}, and the next page number (null at the end). */
 export type ${type}Page = { items: ${type}[]; nextPage: number | null }
@@ -149,7 +151,7 @@ export const use${name}Infinite = (pageSize = 12) =>
     initialPageParam: 1,
     getNextPageParam: (last) => last.nextPage,
   })
-`
+${updateSource(source)}`
 }
 
 /** src/data/*, src/api/* and .env.example for the project's data sources (none = no files). */
@@ -165,6 +167,7 @@ export function dataFiles(sources: DataSource[]): Record<string, string> {
     'src/data/types.ts': typesFile(sources),
     'src/data/mockData.ts': mockFile(sources),
     ...clientFiles(),
+    'src/api/queryClient.ts': QUERY_CLIENT,
   }
   // Keys the APIs need: one line each in .env.example.
   const keys = [...new Set(sources.flatMap((source) => (source.api?.auth ? [source.api.auth.envVar] : [])))]

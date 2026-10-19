@@ -25,7 +25,8 @@ describe('update clicks for visitors', () => {
     const cards = Object.values(out.nodes).filter((n): n is ElementNode => isElement(n) && n.attrs.class === 'card')
     expect(cards.map((card) => card.attrs['data-fe-item'])).toEqual(['0', '1', '2', '3', '4'])
     expect(script(withApi(one))).toContain('/products')
-    const unconnected = addSource(parseHtmlDocument(`<body><div data-fe-list="storeProducts"><article><button data-fe-update='${updateAttrValue(one)}'>x</button></article></div></body>`), DATA_PRESETS[1]!.source).doc
+    const added = addSource(parseHtmlDocument(`<body><div data-fe-list="storeProducts"><article><button data-fe-update='${updateAttrValue(one)}'>x</button></article></div></body>`), DATA_PRESETS[1]!.source)
+    const unconnected = { ...added.doc, data: added.doc.data!.map((source) => ({ ...source, api: undefined })) }
     expect(forVisitors(unconnected).scripts.some((s) => (s.code ?? '').includes('PATCH'))).toBe(false)
   })
 

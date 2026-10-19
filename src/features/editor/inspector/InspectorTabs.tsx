@@ -1,5 +1,7 @@
 import { LIST_ATTR } from '../model/dataLists'
 import { RECORD_ATTR } from '../model/dataRecords'
+import { FLAG_ATTR } from '../model/flagClicks'
+import { UPDATE_ATTR } from '../model/updateClicks'
 import { ASK_ATTR, CLOSE_ATTR, OPEN_ATTR } from '../model/popups'
 import { GO_ATTR } from '../model/pages'
 import { conditionOf, hasCondition } from '../model/conditions'
@@ -16,7 +18,7 @@ const TABS: { id: InspectorTab; label: string; hint: string }[] = [
 /** Is something already set under Actions? (A dot on the tab tells people it is not empty.) */
 export function hasActions(node: ElementNode): boolean {
   const { attrs } = node
-  return Boolean(attrs[GO_ATTR] || attrs[OPEN_ATTR] || attrs[ASK_ATTR] || CLOSE_ATTR in attrs || attrs['data-fe-animate'] || attrs['data-fe-submit'] || LIST_ATTR in attrs || RECORD_ATTR in attrs)
+  return Boolean(attrs[FLAG_ATTR] || attrs[UPDATE_ATTR] || attrs[GO_ATTR] || attrs[OPEN_ATTR] || attrs[ASK_ATTR] || CLOSE_ATTR in attrs || attrs['data-fe-animate'] || attrs['data-fe-submit'] || LIST_ATTR in attrs || RECORD_ATTR in attrs)
     || hasCondition(conditionOf(node))
 }
 

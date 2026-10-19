@@ -28,6 +28,26 @@ export const INTERACTIVE: Group = {
       ],
     },
     {
+      id: 'update-data', title: 'Change data when clicked', summary: 'A button saves a change to one item in your API.',
+      brief: "Select a button → Actions → When clicked → Update data, then choose the data, the item and what changes.",
+      blocks: [
+        { kind: 'figure', src: '/guide/art-update-data.svg', alt: 'A click sends a change to your API for one item, then the card shows the new value', caption: 'A click sends a change to your API for one item, then the card shows the new value' },
+        { kind: 'p', text: 'Use this for “Add to favourites”, “Mark as done”, “Like” or “Sold out” buttons. You need data connected to a real API first (Data tab → **Connect your API**).' },
+        { kind: 'steps', items: [
+          'Select the button or link (inside a data card, or anywhere on the page) and open **Actions → When clicked**.',
+          'Under **Update data** choose the data to change. Only data connected to an API is listed.',
+          'Choose **Which item**: **The card this button is in** (for buttons inside a list from data), or **One item, by its id** and type the id.',
+          'Choose what changes: **Set to** a value, **Switch yes / no** for a yes/no field, or **Add** a number (for example likes + 1). **Add another change** changes more fields at once.',
+        ] },
+        { kind: 'list', items: [
+          'When a visitor clicks, the change is sent to that item’s address (a PATCH request), and the card shows the new words straight away. If your API says no, the visitor sees a short message and nothing changes.',
+          'On a chosen item only **Set to** is possible, because the app does not read that item first.',
+          'A key your API needs is used in the React download (set it in the .env file). A plain .html page can only change data that needs no key.',
+          'In the React download the button calls a ready-made function and the lists refresh. Until you turn on the real API (VITE_USE_MOCK=false) it changes the sample data instead.',
+        ] },
+      ],
+    },
+    {
       id: 'animation', title: 'Animation', summary: 'Fade, slide, zoom when scrolled into view.',
       brief: "Select anything → Actions → Animation → choose an effect and when it plays. Press Play to see it.",
       blocks: [

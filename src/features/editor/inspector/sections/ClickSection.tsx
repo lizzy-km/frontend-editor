@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Switch } from '@/shared/ui'
 import { setFlagClick } from '../../actions/flagActions'
 import { renamePopup, setAsk, setCloses, setOpens } from '../../actions/popupActions'
+import { UPDATE_ATTR } from '../../model/updateClicks'
 import { accessOf } from '../../model/conditions'
 import { FLAG_ATTR, FLAG_MODES, flagClickOf, type FlagMode } from '../../model/flagClicks'
 import { ASK_ATTR, CLOSE_ATTR, MODAL_ATTR, OPEN_ATTR, popupsOf } from '../../model/popups'
@@ -11,6 +12,7 @@ import { useDocStore } from '../../store/doc.store'
 import { SelectControl } from '../controls/ChoiceControls'
 import styles from '../controls/Controls.module.css'
 import { TextControl } from '../controls/TextControl'
+import { UpdateDataControl } from './UpdateDataControl'
 import panel from '../Inspector.module.css'
 import { Section } from '../Section'
 
@@ -34,7 +36,7 @@ export function ClickSection({ node }: { node: ElementNode }) {
   const inPopup = useMemo(() => getAncestorIds(nodes, node.id).some((id) => MODAL_ATTR in ((nodes[id] as ElementNode | undefined)?.attrs ?? {})), [nodes, node.id])
   const flags = useDocStore((state) => accessOf(state.doc).flags)
   const flagClick = flagClickOf(node.attrs)
-  const used = Boolean(node.attrs[FLAG_ATTR] || node.attrs[OPEN_ATTR] || node.attrs[ASK_ATTR] || CLOSE_ATTR in node.attrs)
+  const used = Boolean(node.attrs[UPDATE_ATTR] || node.attrs[FLAG_ATTR] || node.attrs[OPEN_ATTR] || node.attrs[ASK_ATTR] || CLOSE_ATTR in node.attrs)
   return (
     <Section title="When clicked" icon="pencil" defaultOpen={used}>
       {popups.length > 0 && (
@@ -56,6 +58,7 @@ export function ClickSection({ node }: { node: ElementNode }) {
           <SelectControl label="What happens to the flag" value={flagClick.mode} onChange={(mode) => setFlagClick(node.id, flagClick.flag, mode as FlagMode)} options={FLAG_MODES} />
         </div>
       )}
+      <UpdateDataControl node={node} />
       <div className={styles.row} title="A question visitors must say yes to before the click does anything. Empty = no question.">
         <span className={styles.label}>Ask first</span>
         <TextControl label="Ask first question" value={node.attrs[ASK_ATTR] ?? ''} placeholder="e.g. Are you sure?" onChange={(message) => setAsk(node.id, message)} />
