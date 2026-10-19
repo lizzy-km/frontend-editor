@@ -134,7 +134,8 @@ and Preview has **Viewing as** to test visitors, members and admins.
 "Who can see this" shows an element or page to everyone, signed-in people
 (optionally with some roles) or signed-out visitors, and can require feature
 flags. A button or link can turn a flag on, off or switch it (**When clicked → Flag**), so boxes that depend on it
-appear or hide right away. "Viewing as" in the toolbar shows the page as each of them. The React
+appear or hide right away. **When clicked → Update data** saves a change (set, switch yes/no, or add a number) to one
+item of a data source connected to an API, either the data card the button is in or an item picked by its id. "Viewing as" in the toolbar shows the page as each of them. The React
 download gets real sign-in code for any API (set the addresses under
 **Sign-in API** in the Data tab) and a demo mode with sample accounts until
 you switch to your API.

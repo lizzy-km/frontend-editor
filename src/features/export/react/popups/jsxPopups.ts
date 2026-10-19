@@ -1,6 +1,8 @@
 import { NAV_ATTR, SIGNOUT_ATTR, TOGGLE_ATTR } from '@/features/editor/model/layouts'
 import { CALL_ATTR } from '@/features/editor/model/dataLists'
 import { flagClickOf } from '@/features/editor/model/flagClicks'
+import { updateClickOf, type UpdateClick } from '@/features/editor/model/updateClicks'
+import { updateName } from '../dataUpdate'
 import { ASK_ATTR, CLOSE_ATTR, MODAL_ATTR, OPEN_ATTR } from '@/features/editor/model/popups'
 import { PARAMS_ATTR } from '../jsxExtras'
 import type { ElementNode } from '@/features/editor/model/types'
@@ -26,6 +28,18 @@ function nativeStep(ctx: JsxContext, node: ElementNode, href: string | undefined
   if ((node.tag === 'Link' || node.tag === 'NavLink') && ctx.links) { ctx.links.navigate = true; return ctx.links.go(JSON.stringify(node.attrs.to), true) }
   const submits = (node.tag === 'button' && (node.attrs.type ?? 'submit') === 'submit') || (node.tag === 'input' && node.attrs.type === 'submit')
   return submits ? 'element.form?.requestSubmit()' : null
+}
+
+/** `updateProductsItem(row.id, { liked: !row.liked })`: null when the click has nothing to work from (no data card around it). */
+function updateStep(ctx: JsxContext, update: UpdateClick): string | null {
+  const clicked = update.item === 'clicked'
+  if (clicked && !ctx.cardRow) return null
+  const id = clicked ? 'String(row.id)' : JSON.stringify((update.item as { id: string }).id)
+  const changes = update.changes.filter((change) => !clicked ? change.op === 'set' : true).map((change) => {
+    const value = change.op === 'toggle' ? `!row.${change.field}` : change.op === 'add' ? `Number(row.${change.field}) + ${Number(change.value) || 0}` : JSON.stringify(change.value)
+    return `${JSON.stringify(change.field)}: ${value}`
+  })
+  return changes.length ? `void ${updateName(update.source)}(${id}, { ${changes.join(', ')} })` : null
 }
 
 /** Menu links: the open page is highlighted (NavLink does it itself; TanStack's Link needs activeProps). */
@@ -63,6 +77,9 @@ export function clickAttrs(ctx: JsxContext, node: ElementNode, go?: { value: str
   if (ui && SIGNOUT_ATTR in node.attrs) { ui.add('signOut'); steps.push('void signOut()') }
   const flag = ui ? flagClickOf(node.attrs) : null
   if (flag) { ui!.add('setFlag'); steps.push(`setFlag(${JSON.stringify(flag.flag)}, ${JSON.stringify(flag.mode)})`) }
+  const update = ui ? updateClickOf(node.attrs) : null
+  const send = update && updateStep(ctx, update)
+  if (update && send) { ui!.add(`update:${update.source}`); if (update.item === 'clicked') ui!.add('modalRow'); steps.push(send) }
   const nav = navProps(ctx, node)
   if (!steps.length && !ask) return nav
   const keys = (go && ctx.links) || call ? KEYS : ''
@@ -86,6 +103,6 @@ const POPUP_HELPERS = ['openModal', 'closeModal', 'useModalRow']
 /** The import lines for what a file used from the ui folder. */
 export const uiImports = (ui: UiUse, base: string) => {
   const helpers = POPUP_HELPERS.filter((name) => ui.has(name))
-  const rest = [...ui].map((name) => (name.startsWith('call:') ? `import { ${name.slice(5)} } from '${base}/data/handlers'` : IMPORTS[name]?.(base)))
+  const rest = [...ui].map((name) => (name.startsWith('update:') ? `import { ${updateName(name.slice(7))} } from '${base}/api/${name.slice(7)}'` : name.startsWith('call:') ? `import { ${name.slice(5)} } from '${base}/data/handlers'` : IMPORTS[name]?.(base)))
   return [...new Set([...(helpers.length ? [`import { ${helpers.join(', ')} } from '${base}/components/ui/popup'`] : []), ...rest].filter((line): line is string => Boolean(line)))]
 }

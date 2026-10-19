@@ -12,6 +12,7 @@ import { withForms } from './formPlayer'
 import { withLayouts } from './layoutPlayer'
 import { withPopups } from './popupPlayer'
 import { withRecords } from './recordPlayer'
+import { withUpdateClicks } from './updatePlayer'
 import { stripComponents } from '../reuse/omit'
 import { withWidgets } from '../widgets/widgetPlayer'
 
@@ -101,5 +102,5 @@ function forViewer(doc: PageDoc, viewer: Viewer): PageDoc {
  */
 export function forVisitors(doc: PageDoc, viewer: Viewer = VISITOR, params: Params = {}): PageDoc {
   const filled = withClickedRows(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(stripComponents(doc), viewer)), params))))))
-  return withWidgets(withLayouts(withFlagClicks(filled, viewer)))
+  return withWidgets(withLayouts(withFlagClicks(withUpdateClicks(filled), viewer)))
 }

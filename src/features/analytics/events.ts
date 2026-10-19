@@ -57,7 +57,7 @@ export type AnalyticsEvents = {
   /** The sign-in pages were added to a site (how many were new). */
   auth_pages_add: { added: number }
   /** An element was set to open a pop-up, or to ask first. */
-  popup_set: { kind: 'open' | 'ask' | 'flag' }
+  popup_set: { kind: 'open' | 'ask' | 'flag' | 'update' }
   /** A ready-made layout was put on a site (which one, and whether the old header was replaced). */
   layout_apply: { kind: 'top' | 'side' | 'both'; replaced: boolean }
   /** A project-wide color was changed (a page color or a theme variable). */

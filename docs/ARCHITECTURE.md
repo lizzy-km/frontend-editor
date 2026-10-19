@@ -407,6 +407,14 @@ run, inside a locked frame.
   `popups/uiTemplates.ts` has the ui files. The store file is `popup.ts`, not
   `modal.ts`, so it never differs from `Modal.tsx` only by case.
 
+## Update data on click (`model/updateClicks.ts`, `serialize/updatePlayer.ts`)
+
+- `data-fe-update` is JSON `{ source, item: "clicked" | { id }, changes: [{ field, op: set|toggle|add, value }] }`. Only sources with an
+  `api` can be chosen; the item address is `itemUrl` or `<url>/:id` (`itemAddress`). Keep the three places in step when the request
+  shape changes: `updatePlayer` (browser), `dataUpdate.updateSource` (React) and `UpdateChanges` (which ops are allowed).
+- A card that updates its own item must know which row it is: `expandDataLists` marks such cards like cards that open a pop-up
+  (`data-fe-item`, `data-fe-from`); in React the card takes the whole `row` (like `modalRow`).
+
 ## Flag clicks (`model/flagClicks.ts`, `serialize/flagPlayer.ts`)
 
 - A click changes a flag with `data-fe-flag="name"` + `data-fe-flag-mode="on|off|toggle"`. Static outputs: when the page has such a click,

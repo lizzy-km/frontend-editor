@@ -3,6 +3,20 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/click-update-data — 2026-10-19
+- **When clicked → Update data**: a button or link sends a change to one item of an API-connected data source: *which data*,
+  *which item* (the card the button is in, or one item by id) and the changes (*Set to*, *Switch yes / no*, *Add*). The
+  card shows the new value afterwards; failures show a short message and change nothing.
+- How: `data-fe-update` holds JSON (`model/updateClicks.ts`: parse, `changedValue`, `requestBody`, `itemAddress`, `updatableSources`).
+  Preview, public view and .html downloads: `serialize/updatePlayer.ts` sends `PATCH <item address>` with the rows baked into the page
+  (cards carry `data-fe-item`/`data-fe-from`, added by `expandLists` for cards with an update) and re-fills the card with `fillRow`.
+  React: every source file gets `update<Name>Item(id, changes)` (`export/react/dataUpdate.ts`: PATCH, or the sample data while
+  `VITE_USE_MOCK`; then `queryClient.invalidateQueries`), the shared `src/api/queryClient.ts` replaces the client made in `main.tsx`,
+  and `popups/jsxPopups.updateStep` writes the click step. Editor: `inspector/sections/UpdateDataControl.tsx` + `UpdateChanges.tsx`.
+- Limits: PATCH only; no key header in a plain .html page; toggle/add need the clicked card's row.
+- Tests: `updateClicks.test.ts`, `updatePlayer.test.ts` (fetch mocked), `updateExport.test.ts` (React output), `e2e/click-update-data.mjs`
+  (settings, and a real PATCH from Preview).
+
 ## feature/click-flags — 2026-10-19
 - **When clicked → Flag**: a button or link can turn a site flag on, off or switch it. Boxes set to "Only when these flags are on"
   appear or hide straight away for that visitor, and the choice is remembered in their browser (`localStorage` `tweak:flags`).
