@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { readServiceAccount } from './googleAuth'
+import { readServiceAccount } from './serviceAccount'
 
 const KEY = '-----BEGIN PRIVATE KEY-----\nAAAA\nBBBB\n-----END PRIVATE KEY-----\n'
 const account = { type: 'service_account', client_email: 'x@p.iam.gserviceaccount.com', private_key: KEY, token_uri: 'https://oauth2.googleapis.com/token' }

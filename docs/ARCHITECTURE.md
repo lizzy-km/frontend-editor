@@ -524,6 +524,20 @@ Pictures are in `public/guide/` (SVG diagrams, real screenshots from
 `e2e/guide-shots.mjs`). The SVG diagrams are drawn by `scripts/guide-art/` (one
 file per topic group, helpers in `kit.mjs`); every topic starts with a figure.
 
+## Finished examples (`features/showcase/`)
+
+- `catalog.ts` lists the examples (`shop`, `cafe`, `agency`, `members`, each in its own folder as a `Showcase`: id, title, tagline, `features`
+  tags, `requires` attribute names, `build()`); `ShowcasePicker` (under the paste box, `PasteScreen`) opens one with `onOpen(build())`, so it
+  enters the editor like any pasted page (`track('open_showcase')`).
+- `site.ts` is the one builder: `buildSite(spec)` makes the document the way the editor would (`toSite` + `addPage` per page, `addSource`,
+  the CSS of each widget used, roles and flags, `applyLayout` top bar, optional `addAuthPages`); `widget(blockId, ctx)` returns a ready-made widget's
+  HTML. Pages are plain HTML strings; keep each example's files small (css.ts, rows.ts, one file per page).
+- The shop reads the Platzi Fake Store API (`api.escuelajs.co`): its `products` source has `api` set and an embedded snapshot of real rows (the
+  editor shows the snapshot; the React download can use the live API). Update-data clicks are not used because that API updates with PUT.
+- `showcase.test.ts` is the quality gate every example passes: described, at least four pages, everything it claims is really used
+  (`requires`), data / filter / pop-up / link targets exist, https pictures with alt text, Preview output, and a React export for both routers.
+  `e2e/showcase.mjs` opens each from the start screen; `e2e/showcase-behavior.mjs` uses their search, filters, pop-ups, tabs and flags in Preview.
+
 ## Reusable components (`model/reuse/`)
 
 - A main component is a box with `data-fe-component="Name"`; a copy (instance) is a real copy of its boxes in the page:

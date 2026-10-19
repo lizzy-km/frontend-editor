@@ -3,6 +3,17 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/showcase-examples — 2026-10-20
+- **Finished examples**: on the paste screen, *No idea yet? Start from a finished example* opens one of four whole websites in the editor:
+  **Online shop** (Alder & Co.: products and categories from the Platzi Fake Store API `api.escuelajs.co`, search, category buttons from the categories data, a quick-look pop-up
+  showing the clicked product, favourites flag, a page for each product, contact form, demo basket), **Cafe and restaurant** (Maple & Rye: searchable and filterable menu with a dish
+  pop-up, tabs for opening hours, booking form with date picker / guests / time / dietary switch, events with a calendar), **Studio portfolio** (Northlight: filterable projects and a page
+  for each, a *Team member* reusable component with two looks and four copies, services in tabs, enquiry form with pop-ups) and **Members and SaaS** (Tasklane: pricing tabs, sign-in pages,
+  a members-only dashboard with a searchable tasks table, an admin-only page, a beta flag that reveals a feature, sign-up pop-up, "ask first" delete).
+- How: `features/showcase/` (`site.ts` builder, `catalog.ts`, one folder per example, `ShowcasePicker`). Written by four helpers in parallel from one brief and held to one shared test.
+- Tests: `showcase.test.ts` (24 checks), `site.test.ts`, `catalog.test.ts`, `e2e/showcase.mjs`, `e2e/showcase-behavior.mjs` (search, filters, pop-ups, tabs, flags, pages in Preview).
+- Not covered: the examples' phone layouts were not checked by eye; the shop's live API is only used in the React download once the real API is switched on.
+
 ## feature/marketplace-ui — 2026-10-20
 - **Marketplace screens** (development only): *Browse* (search, sort by newest / most bought / price), a listing's page with *Buy with crypto*, *Sell a page*
   (list one of your saved pages with a title, words and a price from $1 to $500; edit, pause, remove while nothing sold), *My orders* (pages bought, with a link
