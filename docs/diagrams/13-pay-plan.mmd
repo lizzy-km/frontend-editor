@@ -1,0 +1,25 @@
+sequenceDiagram
+  autonumber
+  actor P as Person
+  participant A as App (Plans page)
+  participant W as Billing worker
+  participant F as Firestore
+  participant N as NOWPayments
+  P->>A: Choose Pro, pick months (1 to 12)
+  A->>W: POST /checkout {kind: plan, planId, months} + Firebase token
+  W->>W: Verify token, price the plan HERE (never from the browser)
+  W->>F: Create tweaks_payments/{id} status = pending
+  W->>N: Create hosted invoice (amount, order_id = payment id)
+  N-->>W: invoice id and checkout address
+  W->>F: Save invoiceId on the payment
+  W-->>A: {checkoutUrl, reference}
+  A->>P: Send to the payment page
+  P->>N: Pays in crypto
+  N->>W: POST /webhook/nowpayments (HMAC-SHA512 signed)
+  W->>W: Check signature, amount, currency, payment record
+  W->>F: One commit: payment = paid, user plan = pro, planUntil + months
+  P->>A: Comes back to /plans?payment=id
+  loop every 4 s, up to 3 min
+    A->>F: Read my payment
+  end
+  A->>P: "Paid. Thank you."

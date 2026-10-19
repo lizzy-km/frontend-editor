@@ -1,0 +1,18 @@
+stateDiagram-v2
+  [*] --> pending: checkout started
+  pending --> paid: processor says finished, amount matches
+  pending --> underpaid: partially_paid
+  pending --> failed: failed, or the invoice could not be made
+  pending --> expired: not paid in time
+  pending --> mismatch: amount or currency differs
+  paid --> refunded: processor says refunded (needsReview)
+  underpaid --> [*]
+  failed --> [*]
+  expired --> [*]
+  mismatch --> [*]
+  refunded --> [*]
+  paid --> [*]
+  note right of paid
+    Fulfilment runs once.
+    A repeated webhook finds paid and does nothing.
+  end note

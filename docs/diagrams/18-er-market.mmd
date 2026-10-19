@@ -1,0 +1,65 @@
+erDiagram
+  USER ||--o{ LISTING : "sells (ownerId)"
+  USER ||--o{ ORDER : "buys (buyerId)"
+  USER ||--o{ ORDER : "sold in (sellerId)"
+  USER ||--o{ LEDGER : "earns (sellerId)"
+  USER ||--o{ PAYOUT : "requests (sellerId)"
+  PROJECT ||--o{ LISTING : "is listed as (projectId)"
+  LISTING ||--o{ ORDER : "bought as (listingId)"
+  ORDER ||--o| PROJECT : "delivers a copy (deliveredProjectId)"
+  ORDER ||--o| LEDGER : "sale entry (orderId)"
+  PAYOUT ||--o| LEDGER : "hold entry (payoutId)"
+  ORDER ||--|| PAYMENT : "paid by (ref)"
+
+  LISTING {
+    string id PK "tweaks_listings/{id}"
+    string ownerId FK
+    string sellerName
+    string projectId FK
+    string title "1 to 100 letters"
+    string description "up to 1000 letters"
+    number priceUsd "1 to 500"
+    string thumbnailUrl
+    string status "active or paused"
+    number salesCount "worker only"
+  }
+  ORDER {
+    string id PK "tweaks_orders/{id}, worker only"
+    string buyerId FK
+    string sellerId FK
+    string listingId FK
+    string projectId FK "the seller's page"
+    string title
+    number priceUsd
+    number feeUsd "10 percent, fixed at checkout"
+    number sellerEarningsUsd "price minus fee"
+    string status "pending paid delivered"
+    string deliveredProjectId FK
+    boolean needsReview
+  }
+  LEDGER {
+    string id PK "sale_{orderId} or hold_{payoutId}"
+    string sellerId FK
+    string type "sale or payout-hold"
+    number amountUsd "signed"
+    number feeUsd
+    string orderId FK
+    string payoutId FK
+  }
+  PAYOUT {
+    string id PK "tweaks_payouts/{id}, worker only"
+    string sellerId FK
+    number amountUsd "at least 20"
+    string wallet "10 to 120 characters, no spaces"
+    string status "requested paid cancelled"
+  }
+  PROJECT {
+    string id PK
+    string ownerId FK
+    string boughtFrom FK "listing id"
+  }
+  PAYMENT {
+    string id PK
+    string kind "order"
+    string ref FK "order id"
+  }

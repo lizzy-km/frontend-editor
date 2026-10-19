@@ -1,0 +1,25 @@
+sequenceDiagram
+  autonumber
+  actor B as Buyer
+  participant A as App (Listing page)
+  participant W as Billing worker
+  participant F as Firestore
+  participant N as NOWPayments
+  B->>A: Buy
+  A->>W: POST /checkout {kind: order, listingId}
+  W->>F: Read listing and the seller's page
+  W->>W: Checks: active, price 1 to 500, not own page, not bought yet
+  W->>F: One commit: order (pending, fee fixed) + payment (pending)
+  W->>N: Create hosted invoice
+  W-->>A: {checkoutUrl}
+  B->>N: Pays in crypto
+  N->>W: Signed webhook: finished
+  W->>F: Read order, page content, listing, buyer, seller
+  alt seller's page still exists
+    W->>F: One commit: buyer gets a private copy (project + content, projectCount + 1)
+    W->>F: Seller earnings + sale minus fee, ledger "sale", listing salesCount + 1
+    W->>F: Order = delivered, payment = paid
+  else seller's page is gone
+    W->>F: Order = paid, needsReview, nothing delivered
+  end
+  B->>A: Back on /market/orders: sees "Delivered" and a link to the copy

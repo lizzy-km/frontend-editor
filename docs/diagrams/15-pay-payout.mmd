@@ -1,0 +1,14 @@
+flowchart TD
+  S([Seller opens Earnings]) --> R[Enters wallet and amount]
+  R --> V{Wallet 10 to 120 characters,<br/>amount at least $20,<br/>amount within balance?}
+  V -- no --> E[Plain error, nothing changes]
+  V -- yes --> O{Another request<br/>still waiting?}
+  O -- yes --> E2["Error: one at a time"]
+  O -- no --> C["POST /payout: one commit"]
+  C --> C1[Payout record: requested]
+  C --> C2[Balance earningsUsd minus amount]
+  C --> C3[Ledger entry: payout-hold, negative]
+  C1 --> H([A person pays the wallet by hand])
+  H --> D{Outcome}
+  D -- paid --> P[Set payout status to paid in the Firebase console]
+  D -- cancelled --> X[Set status to cancelled and add the money back to the balance]

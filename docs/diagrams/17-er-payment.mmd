@@ -1,0 +1,37 @@
+erDiagram
+  USER ||--o{ PAYMENT : "pays (ownerId)"
+  USER ||--o{ PROJECT : "owns (ownerId)"
+  PAYMENT }o--o| ORDER : "kind order: ref = order id"
+
+  USER {
+    string uid PK "tweak_users/{uid}"
+    string plan "free or pro, worker only"
+    timestamp planUntil "worker only, Pro counts until then"
+    number earningsUsd "seller balance, worker only"
+    number projectCount "moves only with a project"
+  }
+  PAYMENT {
+    string id PK "tweaks_payments/{id}, read-only for the owner"
+    string ownerId FK "the payer"
+    string kind "plan or order"
+    string ref "plan id, or order id"
+    number months "plans only, 1 to 12"
+    number amountUsd "priced by the worker"
+    string status "pending paid underpaid failed expired refunded mismatch"
+    string provider "nowpayments"
+    string invoiceId
+    string providerPaymentId
+    string paymentStatus "the processor's own word"
+    boolean needsReview
+    string note
+    timestamp paidAt
+    timestamp createdAt
+    timestamp updatedAt
+  }
+  PROJECT {
+    string id PK "tweaks_projects/{id}"
+    string boughtFrom FK "listing id, on a delivered copy"
+  }
+  ORDER {
+    string id PK "tweaks_orders/{id}"
+  }
