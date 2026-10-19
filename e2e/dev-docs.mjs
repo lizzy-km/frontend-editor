@@ -19,7 +19,7 @@ check('overview: feature flags and settings are listed', (await page.getByText('
 
 // Workflow
 await page.getByRole('tab', { name: 'Workflow' }).click()
-check('workflow: nine diagrams', (await page.getByRole('navigation', { name: 'Diagrams' }).getByRole('button').count()) === 9)
+check('workflow: twelve diagrams (nine workflow, three ER)', (await page.getByRole('navigation', { name: 'Diagrams' }).getByRole('button').count()) === 12)
 await page.getByRole('navigation', { name: 'Diagrams' }).getByRole('button', { name: /Reusable components/ }).click()
 await page.waitForTimeout(600)
 check('workflow: the diagram picture shows', await page.locator('img[alt="Reusable components"]').isVisible())

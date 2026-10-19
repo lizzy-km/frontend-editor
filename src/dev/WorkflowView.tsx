@@ -14,6 +14,9 @@ export const DIAGRAMS = [
   { id: '07-components', title: 'Reusable components', text: 'How one change to the main component reaches every copy.' },
   { id: '08-build', title: 'Building and shipping', text: 'Checks, build, static SEO pages, host.' },
   { id: '09-architecture', title: 'System architecture', text: 'The layers from the host down to the services.' },
+  { id: '10-er-storage', title: 'ER: saved data', text: 'The Firestore collections: users, pages, page content, library components, and how they point at each other.' },
+  { id: '11-er-page', title: 'ER: the page document', text: 'What one saved page holds: boxes, styles, attributes, data sources, scripts, head tags, access.' },
+  { id: '12-er-features', title: 'ER: features on boxes', text: 'How lists, pop-ups, clicks, flags, components and the library relate to boxes and data.' },
 ]
 
 /** The workflow diagrams: pick one, zoom, open it full size, or read its Mermaid source. */

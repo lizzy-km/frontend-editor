@@ -1,0 +1,45 @@
+erDiagram
+  USER ||--o{ PROJECT : "owns (ownerId)"
+  USER ||--o{ LIBRARY_COMPONENT : "owns (ownerId)"
+  PROJECT ||--|| PROJECT_CONTENT : "same id"
+  PROJECT }o--o| PROJECT : "remixOf (public copy)"
+
+  USER {
+    string uid PK "tweak_users/{uid}"
+    string displayName
+    string email
+    string photoURL
+    string plan "free or pro, never client-written"
+    number projectCount "moves only with a project"
+    string lastProjectOp "id of the project in the same batch"
+    timestamp createdAt
+  }
+  PROJECT {
+    string id PK "tweaks_projects/{id}"
+    string ownerId FK
+    string ownerName
+    string name
+    boolean isPublic
+    string thumbnailUrl
+    string remixOf FK
+    number downloadPeriod "UTC YYYYMM"
+    number downloadCount "limited by plan"
+    timestamp createdAt
+    timestamp updatedAt
+  }
+  PROJECT_CONTENT {
+    string id PK "tweaks_project_content/{id}"
+    string ownerId FK
+    boolean isPublic "mirror of the project flag"
+    string doc "PageDoc as JSON, gzip+base64 when big, max about 900 KB"
+    timestamp updatedAt
+  }
+  LIBRARY_COMPONENT {
+    string id PK "tweaks_components/{id}"
+    string ownerId FK
+    string name
+    string data "packed LibraryEntry, max 200000 chars"
+    number version "+1 on every save"
+    timestamp createdAt
+    timestamp updatedAt
+  }

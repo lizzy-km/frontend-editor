@@ -3,6 +3,12 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/er-diagram — 2026-10-19
+- Three ER (entity-relationship) diagrams, in the hidden developer page (`/dev` → Workflow) and `docs/WORKFLOW.md`:
+  *saved data* (Firestore collections and their links), *the page document* (boxes, styles, data sources, scripts, access) and
+  *features on boxes* (lists, pop-ups, clicks, flags, components, library). Sources are `docs/diagrams/10..12-er-*.mmd`.
+- Redrawn with `node scripts/diagrams/render.mjs` (also refreshes the other diagrams' pictures).
+
 ## feature/click-update-data — 2026-10-19
 - **When clicked → Update data**: a button or link sends a change to one item of an API-connected data source: *which data*,
   *which item* (the card the button is in, or one item by id) and the changes (*Set to*, *Switch yes / no*, *Add*). The
