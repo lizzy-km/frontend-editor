@@ -3,6 +3,16 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/marketplace-server — 2026-10-20
+- The marketplace's money side, in `workers/billing`: buying a listing (`POST /checkout` `{ kind: "order", listingId }`) records an order at the
+  listing's price with the 10 % fee fixed, then a confirmed payment hands the buyer a private copy of the seller's page, credits the seller
+  (ledger + `earningsUsd`), counts the sale and marks the order delivered, all in one repeat-safe commit. A missing seller page flags the order for
+  review instead. `POST /payout` holds a seller's money for a hand-paid payout (min $20, one open request).
+- Rules and collections: `tweaks_listings` (seller-managed, price 1-500), `tweaks_orders`, `tweaks_ledger`, `tweaks_payouts` (read-only for the people
+  involved), plus rules tests (`npm run test:rules`: not run here, needs the emulator).
+- Tests: `workers/billing/src/market.test.ts` (9).
+- Not on screen yet (next: browse, listing page, sell, orders, earnings).
+
 ## feature/billing-ui — 2026-10-20
 - **Plans page** (development only): the plan you have and when it ends, a months picker (1, 3, 12) and *Pay with crypto*, which starts a
   checkout at the billing Worker and sends you to the payment page. Coming back (`/plans?payment=<id>`) shows how the payment is going in plain

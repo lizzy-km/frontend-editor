@@ -80,7 +80,11 @@ npx wrangler secret put GOOGLE_SERVICE_ACCOUNT     # service-account JSON with t
 npm run deploy
 ```
 
-Put the Worker's URL in `.env` as `VITE_BILLING_URL`. In NOWPayments set the instant payment notification address to
+Put the Worker's URL in `.env` as `VITE_BILLING_URL`.
+
+Marketplace sales go through the same Worker (the platform keeps 10 %, set in `workers/billing/src/catalog.ts`). A seller's payout request
+shows up in the `tweaks_payouts` collection (status `requested`): pay it by hand, then set its status to `paid`. If you cancel one, set it to
+`cancelled` and add the amount back to the seller's `earningsUsd` on `tweak_users/<id>`. In NOWPayments set the instant payment notification address to
 `<worker url>/webhook/nowpayments`. Then deploy the new `firestore.rules`.
 
 ## Scripts

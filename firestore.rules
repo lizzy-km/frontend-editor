@@ -126,6 +126,51 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ---- marketplace -----------------------------------------------------------------
+    // tweaks_listings/{id}: a page for sale. Anyone may read an ACTIVE listing; the seller manages their own.
+    // `salesCount` is written only by the billing worker, so it is not in the lists below.
+    match /tweaks_listings/{listingId} {
+      function listingOk() {
+        return request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 100
+          && request.resource.data.description is string && request.resource.data.description.size() <= 1000
+          && request.resource.data.priceUsd is number && request.resource.data.priceUsd >= 1 && request.resource.data.priceUsd <= 500
+          && request.resource.data.status in ['active', 'paused']
+          && (request.resource.data.thumbnailUrl == null || request.resource.data.thumbnailUrl is string)
+          && request.resource.data.updatedAt == request.time;
+      }
+
+      allow read: if resource.data.status == 'active' || isUser(resource.data.ownerId);
+
+      allow create: if isUser(request.resource.data.ownerId)
+        && request.resource.data.keys().hasOnly(['ownerId', 'sellerName', 'projectId', 'title', 'description', 'priceUsd', 'thumbnailUrl', 'status', 'salesCount', 'createdAt', 'updatedAt'])
+        && request.resource.data.salesCount == 0
+        && request.resource.data.createdAt == request.time
+        && get(projectPath(request.resource.data.projectId)).data.ownerId == request.auth.uid
+        && listingOk();
+
+      // The price and words may change; a sale already made keeps the price it was made at (it is stored on the order).
+      allow update: if isUser(resource.data.ownerId)
+        && changedOnly(['title', 'description', 'priceUsd', 'thumbnailUrl', 'status', 'updatedAt'])
+        && listingOk();
+
+      allow delete: if isUser(resource.data.ownerId) && resource.data.salesCount == 0;
+    }
+
+    // tweaks_orders/{id}, tweaks_ledger/{id}, tweaks_payouts/{id}: money records. Buyer and seller can read their own; only the
+    // billing worker writes them.
+    match /tweaks_orders/{orderId} {
+      allow read: if isUser(resource.data.buyerId) || isUser(resource.data.sellerId);
+      allow write: if false;
+    }
+    match /tweaks_ledger/{entryId} {
+      allow read: if isUser(resource.data.sellerId);
+      allow write: if false;
+    }
+    match /tweaks_payouts/{payoutId} {
+      allow read: if isUser(resource.data.sellerId);
+      allow write: if false;
+    }
+
     // ---- tweaks_components/{id}: one saved component of someone's library ---
     // Private to the owner. `data` is the packed component (a small string), `version` counts the saves.
     match /tweaks_components/{entryId} {

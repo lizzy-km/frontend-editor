@@ -10,10 +10,14 @@ Names live in `src/lib/collections.ts` (prefixed so a shared Firebase project ca
 
 | Path | Who can read | What |
 |---|---|---|
-| `tweak_users/{uid}` | owner | `displayName, email, photoURL, plan ('free'|'pro'), planUntil (set by the billing worker), projectCount, lastProjectOp, createdAt` |
+| `tweak_users/{uid}` | owner | `displayName, email, photoURL, plan ('free'|'pro'), planUntil and earningsUsd (set by the billing worker), projectCount, lastProjectOp, createdAt` |
 | `tweaks_projects/{id}` | owner, or anyone if `isPublic` | `ownerId, ownerName, name, isPublic, thumbnailUrl, remixOf, createdAt, updatedAt` |
 | `tweaks_project_content/{id}` | owner, or anyone if `isPublic` | `ownerId, isPublic (mirror), doc (JSON string of PageDoc), updatedAt` |
 | `tweaks_payments/{id}` | owner (read only) | `ownerId, kind ('plan'), ref, months, amountUsd, status, provider, invoiceId, paymentStatus, paidAt, needsReview, createdAt, updatedAt`: written ONLY by `workers/billing` (rules: `allow write: if false`) |
+| `tweaks_listings/{id}` | anyone if `status == 'active'`, else the seller | `ownerId, sellerName, projectId, title, description, priceUsd (1-500), thumbnailUrl, status ('active'|'paused'), salesCount (worker only), createdAt, updatedAt` |
+| `tweaks_orders/{id}` | buyer and seller (read only) | `buyerId, sellerId, listingId, projectId, title, priceUsd, feeUsd, sellerEarningsUsd, status, deliveredProjectId, needsReview`: worker only |
+| `tweaks_ledger/{id}` | the seller (read only) | `sellerId, type ('sale'|'payout-hold'), amountUsd (signed), orderId/payoutId, createdAt`: worker only |
+| `tweaks_payouts/{id}` | the seller (read only) | `sellerId, amountUsd, wallet, status ('requested'|'paid'|'cancelled'), createdAt, updatedAt`: worker only; a person pays by hand |
 | `tweaks_components/{id}` | owner only | `ownerId, name, data (packed LibraryEntry, at most 200,000 chars), version, createdAt, updatedAt`: the account component library; `version` rises by exactly 1 per save; no per-user count limit |
 
 ## Invariants
