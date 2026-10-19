@@ -329,6 +329,12 @@ run, inside a locked frame.
   `tweaks_ledger` and on the seller's `earningsUsd`, `salesCount` on the listing, the order `delivered`. If the seller's page is gone the order
   is flagged `needsReview` and nobody is credited. `payout.ts` (`POST /payout`) holds an amount from the balance, writes `tweaks_payouts`
   and a ledger line; a person pays it by hand and sets its status to `paid`.
+- Screens (`features/marketplace`, development only: `enable_marketplace`): `MarketplacePage` (browse, search and sort via `browse.ts`),
+  `ListingPage` (details + Buy, which calls `billing/payments.startCheckout({ kind: 'order', listingId })` and sends the person to the payment page),
+  `SellPage` + `ListingForm` (list, edit, pause, remove; checks in `validate.ts`), `OrdersPage` (bought with a link to the delivered copy, sold; shows
+  `billing/CheckoutStatus` after paying via `?payment=<id>`), `EarningsPage` (balance, ledger, payouts, `requestPayout`). Reads and listing writes are in
+  `workspace/api/marketListings.ts` and `marketMoney.ts`; money is never written from the browser. `callBilling` (`billing/payments.ts`) is the one
+  signed call to the Worker.
 - Rules: `tweaks_listings` (active ones readable by anyone, the seller manages their own; price 1-500; `salesCount` worker-only; cannot be
   deleted once sold), `tweaks_orders` / `tweaks_ledger` / `tweaks_payouts` (readable by the people they concern, writable by nobody).
 - Prices live in two places that must match: `workers/billing/src/catalog.ts` (charged) and `features/billing/plans.ts` (shown).

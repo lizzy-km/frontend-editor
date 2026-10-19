@@ -106,7 +106,7 @@ shows up in the `tweaks_payouts` collection (status `requested`): pay it by hand
   ER (entity-relationship) diagrams of the saved data, the page document and the features on boxes.
 - **Developer docs in the app**: run `npm run dev` and open `/dev` (development only, never in a production build): the
   diagrams, architecture, a searchable code reference read from the source, the rules and the history.
-- `docs/FEATURES.md`: one section per feature (57 of them): what it does, what it accepts and produces, what it needs, how it works and where to debug.
+- `docs/FEATURES.md`: one section per feature (58 of them): what it does, what it accepts and produces, what it needs, how it works and where to debug.
 - `docs/ARCHITECTURE.md`: how the pieces fit together (page model, iframe
   renderer, Konva overlay, saving, data).
 - `docs/HISTORY.md`: what each feature branch added, and why.
