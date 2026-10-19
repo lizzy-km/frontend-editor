@@ -318,6 +318,10 @@ run, inside a locked frame.
   `Store` and `Deps`, so tests use `testKit.ts` (in-memory store, fake processor).
 - Plans have an end date: `planUntil`. The rules (`planOf`) and the app (`effectivePlan`) treat an ended Pro as Free; a plan with no
   `planUntil` never ends. `tweaks_payments` is readable by its owner and writable by nobody but the worker.
+- Screen (`features/billing`, development only: `enable_billing` / `enable_marketplace` follow `import.meta.env.DEV`; set one to `true` in
+  `config/features.config.ts` to expose it): `PlansPage` (plan + end date, months 1/3/12, pay button), `payments.startCheckout` (POST to
+  `VITE_BILLING_URL/checkout` with the Firebase ID token), `CheckoutStatus` (after the return `?payment=<id>`: asks `getMyPayment` every 4 s
+  until the payment is settled), `PaymentHistory` (`listMyPayments`), `paymentWords` (statuses in plain words).
 - Prices live in two places that must match: `workers/billing/src/catalog.ts` (charged) and `features/billing/plans.ts` (shown).
 
 ## Real APIs (`model/apiTest.ts`, `sidebar/data/ApiConnectDialog.tsx`)

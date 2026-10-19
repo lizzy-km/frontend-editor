@@ -1119,11 +1119,11 @@ Common facts: Firebase code is only reached through lazy imports (bundle rule in
   - Gallery shows "We couldn't load pages right now" -> missing index or rules not deployed. Public link says "This page isn't shared" -> project private, or the two `isPublic` values differ (a write bypassed `setProjectPublic`). "Make my own copy" fails with a limit message -> visitor has no free slot. Page scripts misbehave in the public view -> sandbox is `allow-scripts` only by design; never add `allow-same-origin`.
 
 ### Plans, limits and download counting
-- **What it does:** Free accounts get 10 saved pages and 10 downloads per page per month; Pro (not sold yet) has 100 pages and unlimited downloads. Each download or code copy of a saved page uses one allowance.
+- **What it does:** Free accounts get 10 saved pages and 10 downloads per page per month; Pro (development only for now: pay with crypto through `workers/billing`, one month per payment) has 100 pages and unlimited downloads until `planUntil`. Each download or code copy of a saved page uses one allowance.
 - **Where in the app:** The Download dialog ("Download your page", `ExportDialog`, with `DownloadsLeft` / `SignInToDownload` notices); the usage meter on My pages; `/plans` only when `enable_billing` is on.
 - **Accepts (input):** a click on a download format in a saved page; plan from `tweak_users/{uid}.plan`.
 - **Produces (output / redirect):** `downloadPeriod` (UTC `YYYYMM`) and `downloadCount` on `tweaks_projects/{id}`; the file only after counting; toast "Sorry - ..." with `DownloadLimitError` ("You've used this page's N downloads for this month."); `track('download')` / `track('download_blocked')`. Try it uses the `signin` gate instead (account needed).
-- **Needs:** sign-in; Firebase; `PLANS` in `src/features/billing/plans.ts` kept equal to `maxProjects()` / `maxDownloads()` in `firestore.rules`; defaults in `config/app.config.ts`. `plan` is never client-writable; `payments.ts` is a placeholder (throws "Crypto payments are coming soon.") and upgrades must come from a trusted server.
+- **Needs:** sign-in; Firebase; `PLANS` in `src/features/billing/plans.ts` kept equal to `maxProjects()` / `maxDownloads()` in `firestore.rules`; defaults in `config/app.config.ts`. `plan` is never client-writable; Upgrades come only from `workers/billing` after a confirmed NOWPayments callback (`tweaks_payments`, `planUntil`); `payments.ts` only starts a checkout (needs `VITE_BILLING_URL`). An ended Pro counts as Free (`planOf` in the rules, `effectivePlan` in the app).
 - **How it works:**
   1. `ProjectEditorPage` calls `useDownloadGate(id)` -> `readDownloadUsage` (transaction read) -> `{ kind: 'counted', status, used, max, resetsOn, consume }`.
   2. `ExportDialog.run`: `prepare(scope)` first, then `gate.consume()`, then `deliver()`: a failed export never uses a download.
@@ -1133,7 +1133,7 @@ Common facts: Firebase code is only reached through lazy imports (bundle rule in
   6. If the usage read fails, `status` is `unknown` and the server decides on click.
 - **Debug:**
   - Files: `src/features/billing/plans.ts`, `payments.ts`, `PlansPage.tsx`, `src/features/workspace/api/downloads.ts`, `useDownloadGate.ts`, `src/features/export/downloadGate.ts`, `ExportDialog.tsx`, `firestore.rules`.
-  - Tests: `src/features/workspace/api/downloads.test.ts` (UTC month, reset); `tests/rules/downloads.test.ts` (limit of 10, no skipping, new month, Pro unlimited, other users, no made-up count); e2e `e2e/flags.mjs` (`/plans` and `/market` hidden while flags are off), `e2e/export.mjs` for the dialog.
+  - Tests: `src/features/workspace/api/downloads.test.ts` (UTC month, reset); `tests/rules/downloads.test.ts` (limit of 10, no skipping, new month, Pro unlimited, other users, no made-up count); `src/features/billing/plans.test.ts`, `payments.test.ts`, `workers/billing/src/billing.test.ts`; e2e `e2e/flags.mjs` (`/plans` and `/market` exist in dev and are hidden in a production build: see the file's header), `e2e/export.mjs` for the dialog.
   - Inspect: project doc `downloadPeriod` / `downloadCount`; localStorage `tweak:e2e-open-downloads` (only honoured in `vite dev`) opens the Try-it gate for tests.
   - Count says "used" on one device but not another -> `consume` failure refreshes usage; check the transaction. Rules refuse a download the UI allowed -> limits drifted between `plans.ts` and `firestore.rules`, or clock/UTC month mismatch. Download buttons stay disabled -> gate `status` is `loading` (usage read pending).
 

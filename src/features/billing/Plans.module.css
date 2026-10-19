@@ -14,3 +14,18 @@
 .card li { display: flex; gap: 8px; align-items: center; }
 .card li svg { color: var(--success); }
 .badge { align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 13px; }
+
+.muted { margin: 0; font-size: 13px; color: var(--text-soft); }
+.months { display: flex; gap: 6px; flex-wrap: wrap; }
+.months button { padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.months button[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.notice { margin: 0 0 8px; padding: 14px 18px; border-radius: 14px; background: var(--accent-soft); border: 1px solid var(--border); }
+.notice p { margin: 4px 0 0; font-size: 14px; }
+.notice[data-status='paid'] { background: color-mix(in srgb, var(--success) 12%, transparent); }
+.notice[data-status='failed'], .notice[data-status='expired'], .notice[data-status='mismatch'], .notice[data-status='underpaid'] { background: color-mix(in srgb, var(--danger) 10%, transparent); }
+.history { margin-top: 24px; }
+.history h2 { font-size: 18px; margin: 0 0 8px; }
+.history ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.history li { display: grid; grid-template-columns: 1fr auto auto auto; gap: 16px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); font-size: 14px; }
+.history li time { color: var(--text-soft); }
+.history li [data-status='paid'] { color: var(--success); font-weight: 700; }
