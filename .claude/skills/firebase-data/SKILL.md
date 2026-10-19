@@ -10,9 +10,10 @@ Names live in `src/lib/collections.ts` (prefixed so a shared Firebase project ca
 
 | Path | Who can read | What |
 |---|---|---|
-| `tweak_users/{uid}` | owner | `displayName, email, photoURL, plan ('free'|'pro'), projectCount, lastProjectOp, createdAt` |
+| `tweak_users/{uid}` | owner | `displayName, email, photoURL, plan ('free'|'pro'), planUntil (set by the billing worker), projectCount, lastProjectOp, createdAt` |
 | `tweaks_projects/{id}` | owner, or anyone if `isPublic` | `ownerId, ownerName, name, isPublic, thumbnailUrl, remixOf, createdAt, updatedAt` |
 | `tweaks_project_content/{id}` | owner, or anyone if `isPublic` | `ownerId, isPublic (mirror), doc (JSON string of PageDoc), updatedAt` |
+| `tweaks_payments/{id}` | owner (read only) | `ownerId, kind ('plan'), ref, months, amountUsd, status, provider, invoiceId, paymentStatus, paidAt, needsReview, createdAt, updatedAt`: written ONLY by `workers/billing` (rules: `allow write: if false`) |
 | `tweaks_components/{id}` | owner only | `ownerId, name, data (packed LibraryEntry, at most 200,000 chars), version, createdAt, updatedAt`: the account component library; `version` rises by exactly 1 per save; no per-user count limit |
 
 ## Invariants
@@ -52,7 +53,10 @@ Names live in `src/lib/collections.ts` (prefixed so a shared Firebase project ca
    +1 within `maxDownloads(plan)`, and the limits must match
    `plans.ts maxDownloadsPerMonth`. Record a download BEFORE delivering the
    file, after preparing it (see `export/ExportDialog.tsx`).
-9. **Public pages are untrusted code for the viewer.** Render them only in a
+9. **Plans end.** The effective plan is `planOf(data)` in the rules and `effectivePlan(data)` in `features/billing/plans.ts`:
+   Pro counts only until `planUntil` (none = never ends). Only `workers/billing` writes `plan`, `planUntil` and `tweaks_payments`,
+   after a confirmed payment; fulfilment is idempotent (precondition on the payment's `updateTime`). Never grant a plan from the browser.
+10. **Public pages are untrusted code for the viewer.** Render them only in a
    sandbox WITHOUT `allow-same-origin`, like Preview does.
 
 ## Indexes

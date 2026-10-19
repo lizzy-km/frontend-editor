@@ -1,0 +1,23 @@
+# Cloudflare Worker for money: starts checkouts, receives the payment processor's webhook, and (only after a
+# payment is confirmed) upgrades plans and delivers marketplace orders. The browser never does any of this itself.
+#
+# Setup:
+#   1. npm install   (in this folder)
+#   2. Set the vars below. WORKER_URL is this worker's own address once deployed.
+#   3. Secrets (never put these in this file):
+#        npx wrangler secret put NOWPAYMENTS_API_KEY
+#        npx wrangler secret put NOWPAYMENTS_IPN_SECRET
+#        npx wrangler secret put GOOGLE_SERVICE_ACCOUNT      (the whole service-account JSON, with the Cloud Datastore User role)
+#   4. npm run deploy
+name = "tweak-billing"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+[vars]
+FIREBASE_PROJECT_ID = "your-firebase-project-id"
+ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5317"
+# The app's own address (where people return after paying) and this worker's address (where the processor calls back).
+APP_URL = "http://localhost:5317"
+WORKER_URL = "http://localhost:8787"
+# "true" = NOWPayments sandbox (no real money). Set "false" only when going live.
+NOWPAYMENTS_SANDBOX = "true"

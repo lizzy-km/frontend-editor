@@ -307,6 +307,19 @@ run, inside a locked frame.
   `useAutosave` puts them in `useSaveStore.problem` and the toolbar shows them.
   Never show "check your connection" for an error you can explain.
 
+## Billing and payments (`workers/billing`, `features/billing`)
+
+- Money only changes things on the server. `workers/billing` (Cloudflare Worker, no Firebase SDK): `POST /checkout` (signed-in
+  person; price comes from `catalog.ts`, never from the browser) records a pending `tweaks_payments/{id}` and starts a hosted
+  NOWPayments invoice; `POST /webhook/nowpayments` (HMAC-SHA512 over the sorted JSON, `x-nowpayments-sig`) checks the amount, then in ONE
+  Firestore commit marks the payment paid (precondition on its `updateTime`, so a repeated callback cannot pay twice) and runs the
+  payment kind's fulfiller (`fulfil.ts`: plan -> `plan` + `planUntil` on `tweak_users/{uid}`). Only the processor's `finished` counts as paid.
+- Firestore is reached by REST as a service account (`googleAuth.ts` signs a JWT; `firestoreRest.ts` is the `Store`). Handlers take a
+  `Store` and `Deps`, so tests use `testKit.ts` (in-memory store, fake processor).
+- Plans have an end date: `planUntil`. The rules (`planOf`) and the app (`effectivePlan`) treat an ended Pro as Free; a plan with no
+  `planUntil` never ends. `tweaks_payments` is readable by its owner and writable by nobody but the worker.
+- Prices live in two places that must match: `workers/billing/src/catalog.ts` (charged) and `features/billing/plans.ts` (shown).
+
 ## Real APIs (`model/apiTest.ts`, `sidebar/data/ApiConnectDialog.tsx`)
 
 - The test runs in the editor with `fetch` (so CORS applies there); its result

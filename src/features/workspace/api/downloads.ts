@@ -1,5 +1,5 @@
 import { runTransaction } from 'firebase/firestore/lite'
-import { planFor } from '@/features/billing/plans'
+import { effectivePlan, planFor } from '@/features/billing/plans'
 import { firestore } from '@/lib/firebase'
 import { projectRef, userRef } from './refs'
 
@@ -32,7 +32,7 @@ export async function readDownloadUsage(projectId: string, uid: string): Promise
   return runTransaction(firestore(), async (transaction) => {
     const [project, user] = await Promise.all([transaction.get(projectRef(projectId)), transaction.get(userRef(uid))])
     const data = project.data() ?? {}
-    return { used: usedThisMonth(data.downloadPeriod, data.downloadCount), max: planFor(user.data()?.plan).maxDownloadsPerMonth }
+    return { used: usedThisMonth(data.downloadPeriod, data.downloadCount), max: planFor(effectivePlan(user.data())).maxDownloadsPerMonth }
   })
 }
 
@@ -44,7 +44,7 @@ export async function recordDownload(projectId: string, uid: string): Promise<Do
   return runTransaction(firestore(), async (transaction) => {
     const [project, user] = await Promise.all([transaction.get(projectRef(projectId)), transaction.get(userRef(uid))])
     const data = project.data() ?? {}
-    const max = planFor(user.data()?.plan).maxDownloadsPerMonth
+    const max = planFor(effectivePlan(user.data())).maxDownloadsPerMonth
     const used = usedThisMonth(data.downloadPeriod, data.downloadCount)
     if (max !== null && used >= max) throw new DownloadLimitError(max)
     transaction.update(projectRef(projectId), { downloadPeriod: downloadPeriod(), downloadCount: used + 1 })

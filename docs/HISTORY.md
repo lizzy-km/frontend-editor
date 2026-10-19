@@ -3,6 +3,17 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/billing-server — 2026-10-20
+- The money server: `workers/billing` (Cloudflare Worker) starts NOWPayments checkouts (sandbox by default) and receives their signed
+  callback. A confirmed payment marks `tweaks_payments/{id}` paid and upgrades the plan (`plan`, `planUntil`, one month per payment,
+  paying early adds to what is left) in one atomic, repeat-safe commit. Wrong signature, wrong amount, underpayment and unknown payments
+  change nothing; a refund of something already paid is flagged for review.
+- Plans now end: `planOf` in `firestore.rules` and `effectivePlan` in the app agree (an ended Pro is Free; no end date = never ends).
+  `tweaks_payments` is owner-read, nobody-write. New setting `VITE_BILLING_URL`.
+- Tests: `workers/billing/src/billing.test.ts` (12, run by the normal `npx vitest run`), `features/billing/plans.test.ts`, new rules cases
+  (`npm run test:rules`: not run here, needs the emulator).
+- Not wired to the screen yet (next: Plans page, payment history, dev-only flags).
+
 ## feature/features-workflow — 2026-10-19
 - `docs/FEATURES.md`: a per-feature reference (57 features in five groups) with the same seven lines each: what it does, where in the
   app, accepts, produces (output / redirect), needs, how it works (real functions and files in call order), and where to debug

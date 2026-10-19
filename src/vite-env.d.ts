@@ -17,4 +17,6 @@ interface ImportMetaEnv {
   readonly VITE_ASSETS_URL?: string
   /** The address of the deployed site (https://…, no trailing slash). Canonical links, share pictures and sitemap.xml need it. */
   readonly VITE_SITE_URL?: string
+  /** Address of the deployed billing Worker (workers/billing): starts checkouts for paid plans and purchases. Empty turns checkout off. */
+  readonly VITE_BILLING_URL?: string
 }
