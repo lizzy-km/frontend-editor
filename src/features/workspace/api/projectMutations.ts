@@ -2,7 +2,7 @@ import { doc, getDoc, increment, serverTimestamp, updateDoc, writeBatch } from '
 import { track } from '@/features/analytics/track'
 import type { AppUser } from '@/features/auth/types'
 import { ensureUserProfile } from '@/features/auth/userProfile'
-import { planFor } from '@/features/billing/plans'
+import { effectivePlan, planFor } from '@/features/billing/plans'
 import type { PageDoc } from '@/features/editor/model/types'
 import { firestore } from '@/lib/firebase'
 import { serializeDoc } from './projectContent'
@@ -17,7 +17,7 @@ export async function createProject(user: AppUser, pageDoc: PageDoc, remixOf: st
   // The counter lives on the profile; without it the rules refuse the whole batch.
   await ensureUserProfile(user)
   const profile = (await getDoc(userRef(user.uid))).data() ?? {}
-  const plan = planFor(profile.plan as string | undefined)
+  const plan = planFor(effectivePlan(profile))
   if (Number(profile.projectCount ?? 0) >= plan.maxProjects) {
     track('page_limit_reached', { plan: plan.id })
     throw new ProjectLimitError(plan.maxProjects)

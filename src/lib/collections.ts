@@ -8,4 +8,5 @@ export const COLLECTIONS = {
   projects: 'tweaks_projects',
   projectContent: 'tweaks_project_content',
   components: 'tweaks_components',
+  payments: 'tweaks_payments',
 } as const

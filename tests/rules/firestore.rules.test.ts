@@ -18,9 +18,9 @@ beforeEach(() => env.clearFirestore())
 const alice = () => env.authenticatedContext('alice').firestore() as unknown as Firestore
 const bob = () => env.authenticatedContext('bob').firestore() as unknown as Firestore
 
-async function seedUser(count = 0, plan = 'free') {
+async function seedUser(count = 0, plan = 'free', planUntil?: Date) {
   await env.withSecurityRulesDisabled(async (context) => {
-    await setDoc(doc(context.firestore() as unknown as Firestore, 'tweak_users/alice'), { plan, projectCount: count, displayName: 'A', email: 'a@x', photoURL: null })
+    await setDoc(doc(context.firestore() as unknown as Firestore, 'tweak_users/alice'), { plan, projectCount: count, displayName: 'A', email: 'a@x', photoURL: null, ...(planUntil ? { planUntil } : {}) })
   })
 }
 
@@ -123,5 +123,41 @@ describe('component library', () => {
     await assertSucceeds(setDoc(ref(alice()), entry()))
     await assertSucceeds(getDocs(query(collection(alice(), 'tweaks_components'), where('ownerId', '==', 'alice'))))
     await assertFails(getDocs(query(collection(bob(), 'tweaks_components'), where('ownerId', '==', 'alice'))))
+  })
+})
+
+describe('plans and payments', () => {
+  const DAY = 24 * 3600 * 1000
+  const payment = { ownerId: 'alice', kind: 'plan', ref: 'pro', amountUsd: 6, status: 'paid' }
+
+  it('lets a paid-up Pro save more than 10 pages, but not once the plan has run out', async () => {
+    await seedUser(10, 'pro', new Date(Date.now() + 5 * DAY))
+    await assertSucceeds(createBatch(alice(), 'p11').commit())
+    await env.clearFirestore()
+    await seedUser(10, 'pro', new Date(Date.now() - DAY))
+    await assertFails(createBatch(alice(), 'p11').commit())
+  })
+
+  it('keeps a hand-granted Pro (no end date) working', async () => {
+    await seedUser(10, 'pro')
+    await assertSucceeds(createBatch(alice(), 'p11').commit())
+  })
+
+  it('never lets the browser change the plan or its end date', async () => {
+    await seedUser(0)
+    await assertFails(updateDoc(doc(alice(), 'tweak_users/alice'), { plan: 'pro' }))
+    await assertFails(updateDoc(doc(alice(), 'tweak_users/alice'), { planUntil: new Date(Date.now() + 365 * DAY) }))
+  })
+
+  it('shows people their own payments only, and nobody can write one', async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore() as unknown as Firestore, 'tweaks_payments/pay1'), payment)
+    })
+    await assertSucceeds(getDoc(doc(alice(), 'tweaks_payments/pay1')))
+    await assertFails(getDoc(doc(bob(), 'tweaks_payments/pay1')))
+    await assertFails(setDoc(doc(alice(), 'tweaks_payments/pay2'), { ...payment, status: 'paid' }))
+    await assertFails(updateDoc(doc(alice(), 'tweaks_payments/pay1'), { status: 'refunded' }))
+    await assertFails(deleteDoc(doc(alice(), 'tweaks_payments/pay1')))
+    await assertSucceeds(getDocs(query(collection(alice(), 'tweaks_payments'), where('ownerId', '==', 'alice'))))
   })
 })

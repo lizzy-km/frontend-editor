@@ -12,6 +12,12 @@ service cloud.firestore {
     function projectPath(id) { return /databases/$(database)/documents/tweaks_projects/$(id); }
     function changedOnly(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
 
+    // The plan someone has RIGHT NOW: "pro" only while it has not run out. `planUntil` is written by the billing worker
+    // after a confirmed payment; a plan with no `planUntil` (set by hand) never runs out.
+    function planOf(data) {
+      return data.get('plan', 'free') == 'pro' && (!('planUntil' in data) || data.planUntil > request.time) ? 'pro' : 'free';
+    }
+
     // Keep in sync with src/features/billing/plans.ts
     function maxProjects(plan) { return plan == 'pro' ? 100 : 10; }
     // Downloads per page per month; Pro is unlimited (a very large number).
@@ -50,7 +56,7 @@ service cloud.firestore {
       function countUp(uid) {
         return changedOnly(['projectCount', 'lastProjectOp'])
           && request.resource.data.projectCount == resource.data.projectCount + 1
-          && request.resource.data.projectCount <= maxProjects(resource.data.plan)
+          && request.resource.data.projectCount <= maxProjects(planOf(resource.data))
           && !exists(projectPath(opId()))
           && existsAfter(projectPath(opId()))
           && getAfter(projectPath(opId())).data.ownerId == uid;
@@ -89,7 +95,7 @@ service cloud.firestore {
         return changedOnly(['downloadPeriod', 'downloadCount'])
           && request.resource.data.downloadPeriod == thisMonth()
           && request.resource.data.downloadCount == before + 1
-          && request.resource.data.downloadCount <= maxDownloads(get(userPath(request.auth.uid)).data.get('plan', 'free'));
+          && request.resource.data.downloadCount <= maxDownloads(planOf(get(userPath(request.auth.uid)).data));
       }
 
       allow delete: if isUser(resource.data.ownerId)
@@ -111,6 +117,13 @@ service cloud.firestore {
         && request.resource.data.isPublic == getAfter(projectPath(projectId)).data.isPublic;
 
       allow delete: if isUser(resource.data.ownerId);
+    }
+
+    // ---- tweaks_payments/{id}: payment records, written ONLY by the billing worker ------
+    // A person can read their own payments (the Plans page shows them) and nothing else: no client writes at all.
+    match /tweaks_payments/{paymentId} {
+      allow read: if isUser(resource.data.ownerId);
+      allow write: if false;
     }
 
     // ---- tweaks_components/{id}: one saved component of someone's library ---

@@ -1,4 +1,5 @@
 import { getDoc, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore/lite'
+import { effectivePlan, planEnd } from '@/features/billing/plans'
 import { identifyUser } from '@/features/analytics/track'
 import { projectRef, projectsCol, toProjectMeta, userRef } from './refs'
 import type { ProjectMeta } from './types'
@@ -37,10 +38,10 @@ export async function getProjectMeta(id: string): Promise<ProjectMeta | null> {
 }
 
 /** How many pages this person has saved, and their plan. */
-export async function getUsage(uid: string): Promise<{ count: number; plan: string }> {
+export async function getUsage(uid: string): Promise<{ count: number; plan: string; planUntil: number | null }> {
   const snapshot = await getDoc(userRef(uid))
   const data = snapshot.data() ?? {}
-  const plan = String(data.plan ?? 'free')
+  const plan = effectivePlan(data)
   identifyUser(uid, plan) // usage stats are split by plan
-  return { count: Number(data.projectCount ?? 0), plan }
+  return { count: Number(data.projectCount ?? 0), plan, planUntil: plan === 'free' ? null : planEnd(data) }
 }

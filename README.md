@@ -64,6 +64,25 @@ npm run deploy
 
 Put the Worker's URL in `.env` as `VITE_ASSETS_URL`.
 
+## Turning on paid plans (billing Worker, development first)
+
+Paid plans and the marketplace are **development only** for now. The money part is a second Cloudflare Worker, because only a
+trusted server may change a plan or hand over a purchase (the browser never does).
+
+```bash
+cd workers/billing
+npm install
+npx wrangler login
+# edit wrangler.toml: FIREBASE_PROJECT_ID, ALLOWED_ORIGINS, APP_URL, WORKER_URL (keep NOWPAYMENTS_SANDBOX = "true" while testing)
+npx wrangler secret put NOWPAYMENTS_API_KEY        # from your NOWPayments sandbox account
+npx wrangler secret put NOWPAYMENTS_IPN_SECRET     # the IPN secret key from the same account
+npx wrangler secret put GOOGLE_SERVICE_ACCOUNT     # service-account JSON with the "Cloud Datastore User" role
+npm run deploy
+```
+
+Put the Worker's URL in `.env` as `VITE_BILLING_URL`. In NOWPayments set the instant payment notification address to
+`<worker url>/webhook/nowpayments`. Then deploy the new `firestore.rules`.
+
 ## Scripts
 
 | Command | What it does |
@@ -75,6 +94,7 @@ Put the Worker's URL in `.env` as `VITE_ASSETS_URL`.
 | `npm run e2e` | Browser checks on your local Chrome. Start `npx vite --port 5317` first |
 | `npm run test:rules` | Firestore security-rules tests. Needs Java + `firebase-tools` |
 | `cd workers/assets && npm run check` | Worker typecheck + dry-run build |
+| `cd workers/billing && npm run check` | The same for the billing Worker (its tests run with the normal `npx vitest run`) |
 
 ## Project guide
 
