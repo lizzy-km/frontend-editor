@@ -120,7 +120,8 @@ Cloudflare's Git-connected build runs `npm run build` inside `workers/billing` (
 - `docs/WORKFLOW.md`: twelve diagrams: how the app works, from the person's journey to the system layers, build and ship, plus three
   ER (entity-relationship) diagrams of the saved data, the page document and the features on boxes.
 - **Developer docs in the app**: run `npm run dev` and open `/dev` (development only, never in a production build): the
-  diagrams, architecture, a searchable code reference read from the source, the rules and the history.
+  diagrams, architecture, a searchable code reference read from the source, the rules and the history. `/dev/payment` documents payments and
+  the marketplace: functions, workflow, data model and ER diagrams.
 - `docs/FEATURES.md`: one section per feature (58 of them): what it does, what it accepts and produces, what it needs, how it works and where to debug.
 - `docs/ARCHITECTURE.md`: how the pieces fit together (page model, iframe
   renderer, Konva overlay, saving, data).

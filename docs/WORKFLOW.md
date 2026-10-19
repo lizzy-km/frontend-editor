@@ -104,7 +104,8 @@ copies follow their main component, which can link back to a library entry.
 ---
 
 **In the app:** with `npm run dev` running, open `/dev` for these diagrams (zoom, Mermaid source) next to the architecture
-doc and a searchable code reference. That page exists only in development.
+doc and a searchable code reference. That page exists only in development. Diagrams `13`-`18` (payments and the marketplace) are shown on
+`/dev/payment`, together with the functions, data model and rules of that part.
 
 **Changing a diagram:** edit its `.mmd` file, then run `node scripts/diagrams/render.mjs` (needs Chrome and an internet
 connection for the Mermaid script) and commit the `.svg` and `.png` files. GitHub also draws the `.mmd` text directly if

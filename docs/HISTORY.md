@@ -3,6 +3,14 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## docs/dev-payment — 2026-10-19
+- **`/dev/payment`**: a developer page just for payments and the marketplace (development only, like `/dev`, linked from its header). Tabs: Overview,
+  Functions (worker addresses, screens, main functions), Workflow (4 diagrams), Data model (every collection field by field with who reads and writes),
+  ER diagrams (2) and Rules and limits (prices and limits read live from `workers/billing/src/catalog.ts`, plus the guarantees that keep money safe).
+- New diagrams `13`-`18` in `docs/diagrams` (buying a plan, buying a page, seller payout, payment states, ER payments, ER marketplace).
+- `WorkflowView` now takes the list of diagrams to show, so both pages share it. Code in `src/dev/payment/`.
+- Test: `parseCatalog` in `dev.test.ts`.
+
 ## feature/marketplace-ui — 2026-10-20
 - **Marketplace screens** (development only): *Browse* (search, sort by newest / most bought / price), a listing's page with *Buy with crypto*, *Sell a page*
   (list one of your saved pages with a title, words and a price from $1 to $500; edit, pause, remove while nothing sold), *My orders* (pages bought, with a link

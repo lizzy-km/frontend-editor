@@ -184,6 +184,9 @@ run, inside a locked frame.
   to serve `.env*` files, so settings come from the declarations in `src/vite-env.d.ts` (keep a comment above each).
 - `markdown.tsx` (reader), `codeIndex.ts` (exports + the comment above each), `overviewData.ts` (routes, flags, settings,
   specs, scripts): pure and tested in `dev.test.ts`. A new diagram needs its entry in `WorkflowView.tsx` `DIAGRAMS`.
+- `/dev/payment` (`src/dev/payment/`) is a second dev-only page for payments and the marketplace, built the same way: tabs for functions,
+  workflow, data model, ER diagrams and rules. It reuses `WorkflowView` with its own diagram list (`13`-`18`) and reads the worker's
+  `catalog.ts` constants live. When the money flow or collections change, update `functionsData.ts`, `modelData.ts` and the `.mmd` files.
 - After a production build, search `dist` for "Tweak developer docs": there must be no match.
 
 ## SEO (`config/seoRoutes.ts`, `shared/seo/`, `scripts/seo/`)
