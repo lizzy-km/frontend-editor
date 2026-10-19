@@ -87,6 +87,21 @@ shows up in the `tweaks_payouts` collection (status `requested`): pay it by hand
 `cancelled` and add the amount back to the seller's `earningsUsd` on `tweak_users/<id>`. In NOWPayments set the instant payment notification address to
 `<worker url>/webhook/nowpayments`. Then deploy the new `firestore.rules`.
 
+### If checkout does not work
+
+While `NOWPAYMENTS_SANDBOX = "true"` the Worker adds a short reason to its error answers, and the app shows it in the red message.
+
+| What you see | What it means |
+| --- | --- |
+| A CORS error in the browser console, or the Worker address redirects to a login page | The Worker's address is behind Cloudflare Access (Zero Trust). Exclude it or add a **Bypass** policy for it: browsers and the payment processor cannot sign in. Also check `ALLOWED_ORIGINS` in `wrangler.toml` lists the app's address, including the port. |
+| `Unterminated string in JSON` or "secret is incomplete" | `GOOGLE_SERVICE_ACCOUNT` was cut off when pasted. Set it from the file: `Get-Content -Raw key.json \| npx wrangler secret put GOOGLE_SERVICE_ACCOUNT` (PowerShell) or `... put GOOGLE_SERVICE_ACCOUNT < key.json`. Never commit `key.json` (it is git-ignored). |
+| `Firestore write failed (403)` | The service account needs the **Cloud Datastore User** role on the Firebase project, and its `project_id` must match `FIREBASE_PROJECT_ID`. |
+| `The payment service refused the checkout (403: Invalid api key)` | The key is not a **sandbox** key. The sandbox needs a key and an IPN secret from `account-sandbox.nowpayments.io` (a separate account), plus a payout currency and wallet set there. |
+| The payment stays "Waiting for payment" | The payment is not `finished` yet, or the callback was refused. In the NOWPayments dashboard check the payment's status and the IPN history: `401` = the IPN secret differs from `NOWPAYMENTS_IPN_SECRET`. |
+| Error page 1101 on a `workers.dev` address | A Cloudflare account or route problem, not the code: check the Worker's Logs and Domains & Routes in the dashboard, or use a custom domain. |
+
+Cloudflare's Git-connected build runs `npm run build` inside `workers/billing` (it type-checks the Worker; tests are excluded because they run from the repo root).
+
 ## Scripts
 
 | Command | What it does |
