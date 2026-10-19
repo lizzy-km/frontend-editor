@@ -18,6 +18,7 @@ export type Checkout = {
   reference: string
 }
 
+
 /** What is being bought: a plan for some months, or a page from the marketplace. */
 export type CheckoutOrder = { kind: 'plan'; planId: PlanId; months: number } | { kind: 'order'; listingId: string }
 
