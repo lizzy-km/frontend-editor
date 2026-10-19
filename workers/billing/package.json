@@ -7,6 +7,7 @@
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit",
+    "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json",
     "check": "tsc --noEmit && wrangler deploy --dry-run --outdir dist"
   },
   "dependencies": {
