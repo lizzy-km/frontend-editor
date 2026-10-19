@@ -1,7 +1,7 @@
 import { MAX_MONTHS, PLAN_PRICES_USD, money } from './catalog'
 import { checkoutOrder } from './checkoutOrder'
 import type { Deps } from './deps'
-import { corsHeaders, json, type Env } from './http'
+import { appUrlFor, corsHeaders, json, type Env } from './http'
 import { startPayment } from './startPayment'
 
 type Body = { kind?: string; planId?: string; months?: number; listingId?: string }
@@ -16,6 +16,7 @@ export async function handleCheckout(request: Request, env: Env, deps: Deps): Pr
   const uid = await deps.userOf(request)
   if (!uid) return json({ error: 'Please sign in again.' }, 401, cors)
   const body = (await request.json().catch(() => ({}))) as Body
+  env = { ...env, APP_URL: appUrlFor(request, env) } // people come back to the app address they started from
   if (body.kind === 'order') return checkoutOrder(env, deps, uid, body.listingId, cors)
   if (body.kind !== 'plan') return json({ error: 'Nothing to buy here.' }, 400, cors)
   const price = PLAN_PRICES_USD[body.planId ?? '']

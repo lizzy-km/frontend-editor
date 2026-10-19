@@ -1,5 +1,5 @@
 import type { Deps } from './deps'
-import { json, type Env } from './http'
+import { json, workerUrl, type Env } from './http'
 import { createInvoice } from './nowpayments'
 import type { Write } from './store'
 
@@ -15,7 +15,7 @@ export async function startPayment(env: Env, deps: Deps, purchase: Purchase, cor
   try {
     const invoice = await createInvoice(env, {
       orderId: paymentId, amountUsd: purchase.amountUsd, description,
-      callbackUrl: `${env.WORKER_URL}/webhook/nowpayments`, successUrl: `${env.APP_URL}${returnPath}${returnPath.includes('?') ? '&' : '?'}payment=${paymentId}`, cancelUrl: `${env.APP_URL}${returnPath}${returnPath.includes('?') ? '&' : '?'}payment=${paymentId}&cancelled=1`,
+      callbackUrl: `${workerUrl(env)}/webhook/nowpayments`, successUrl: `${env.APP_URL}${returnPath}${returnPath.includes('?') ? '&' : '?'}payment=${paymentId}`, cancelUrl: `${env.APP_URL}${returnPath}${returnPath.includes('?') ? '&' : '?'}payment=${paymentId}&cancelled=1`,
     }, deps.fetchFn)
     await deps.store.commit([{ path, data: { invoiceId: invoice.id, updatedAt: deps.now() }, merge: true }])
     return json({ checkoutUrl: invoice.url, reference: paymentId }, 200, cors)

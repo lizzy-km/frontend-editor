@@ -13,6 +13,21 @@ export type Env = {
   GOOGLE_SERVICE_ACCOUNT: string
 }
 
+const trimmed = (url: string) => url.trim().replace(/\/+$/, '')
+
+/** The address of this worker, without a trailing slash (the processor calls back here). */
+export const workerUrl = (env: Pick<Env, 'WORKER_URL'>) => trimmed(env.WORKER_URL)
+
+/**
+ * Where people come back to after paying: the app address that asked (when it is one of the allowed origins, so a local copy and the
+ * live site both work), else APP_URL. Never has a trailing slash.
+ */
+export function appUrlFor(request: Request, env: Pick<Env, 'ALLOWED_ORIGINS' | 'APP_URL'>): string {
+  const origin = request.headers.get('Origin') ?? ''
+  const allowed = env.ALLOWED_ORIGINS.split(',').map((item) => trimmed(item))
+  return allowed.includes(trimmed(origin)) && origin ? trimmed(origin) : trimmed(env.APP_URL.split(';')[0] ?? '')
+}
+
 /** CORS headers for the app's own origins only. */
 export function corsHeaders(request: Request, env: Pick<Env, 'ALLOWED_ORIGINS'>): Record<string, string> {
   const origin = request.headers.get('Origin') ?? ''
