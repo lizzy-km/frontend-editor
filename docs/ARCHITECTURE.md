@@ -179,6 +179,7 @@ run, inside a locked frame.
 
 - Development only: `router.tsx` adds the route behind `import.meta.env.DEV` (the build drops the branch and the lazy chunk),
   `DevDocsPage` also returns the not-found page when it is not DEV, and `RouteSeo` marks it `noindex`. Nothing links to it.
+- Tabs: Overview, Workflow (diagrams), Features (`docs/FEATURES.md`), Architecture, Code reference, Rules, History, README.
 - `docsFiles.ts` holds the `import.meta.glob` reads of the repo (docs, skills, sources, e2e specs, diagrams). Vite refuses
   to serve `.env*` files, so settings come from the declarations in `src/vite-env.d.ts` (keep a comment above each).
 - `markdown.tsx` (reader), `codeIndex.ts` (exports + the comment above each), `overviewData.ts` (routes, flags, settings,

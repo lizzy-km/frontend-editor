@@ -17,6 +17,11 @@ check('overview: numbers and the routes table', (await page.getByText('Source fi
 check('overview: the /dev route says development only', (await page.locator('tr', { hasText: '/dev' }).first().innerText()).includes('development only'))
 check('overview: feature flags and settings are listed', (await page.getByText('enable_oauth').isVisible()) && (await page.getByText('VITE_SITE_URL').isVisible()))
 
+// Features
+await page.getByRole('tab', { name: 'Features' }).click()
+await page.waitForTimeout(500)
+check('features: the per-feature reference opens', await page.getByRole('heading', { name: /Paste import and parsing/ }).first().isVisible())
+
 // Workflow
 await page.getByRole('tab', { name: 'Workflow' }).click()
 check('workflow: twelve diagrams (nine workflow, three ER)', (await page.getByRole('navigation', { name: 'Diagrams' }).getByRole('button').count()) === 12)

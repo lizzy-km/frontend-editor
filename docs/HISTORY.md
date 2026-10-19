@@ -3,6 +3,14 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/features-workflow — 2026-10-19
+- `docs/FEATURES.md`: a per-feature reference (57 features in five groups) with the same seven lines each: what it does, where in the
+  app, accepts, produces (output / redirect), needs, how it works (real functions and files in call order), and where to debug
+  (files, unit tests, e2e specs, symptom -> likely cause), plus a short quick debugging guide. It is also the **Features** tab of the
+  developer page (`/dev`).
+- Written by reading the source; every backticked file name and identifier was checked to exist. Behaviour was not re-run, so treat a
+  surprising line as a prompt to check the code, and fix the section in the same branch.
+
 ## feature/er-diagram — 2026-10-19
 - Three ER (entity-relationship) diagrams, in the hidden developer page (`/dev` → Workflow) and `docs/WORKFLOW.md`:
   *saved data* (Firestore collections and their links), *the page document* (boxes, styles, data sources, scripts, access) and
