@@ -9,13 +9,13 @@ import { WorkflowView } from './WorkflowView'
 import styles from './dev.module.css'
 
 const TABS = [
-  ['overview', 'Overview'], ['workflow', 'Workflow'], ['architecture', 'Architecture'], ['code', 'Code reference'],
+  ['overview', 'Overview'], ['workflow', 'Workflow'], ['features', 'Features'], ['architecture', 'Architecture'], ['code', 'Code reference'],
   ['rules', 'Rules'], ['history', 'History'], ['readme', 'README'],
 ] as const
 type Tab = (typeof TABS)[number][0]
 
 /** Which document a link inside a doc points at, as a tab ("ARCHITECTURE.md" → architecture). */
-const TAB_FOR_FILE: Record<string, Tab> = { 'ARCHITECTURE.md': 'architecture', 'HISTORY.md': 'history', 'WORKFLOW.md': 'workflow', 'README.md': 'readme' }
+const TAB_FOR_FILE: Record<string, Tab> = { 'ARCHITECTURE.md': 'architecture', 'HISTORY.md': 'history', 'WORKFLOW.md': 'workflow', 'FEATURES.md': 'features', 'README.md': 'readme' }
 
 /** The skills (rule files) of the project, by short name. */
 const skillNames = () => Object.keys(SKILLS).map((path) => path.split('/').slice(-2)[0]!)
@@ -47,6 +47,7 @@ export default function DevDocsPage() {
       <main className={styles.body}>
         {tab === 'overview' && <OverviewView />}
         {tab === 'workflow' && <WorkflowView />}
+        {tab === 'features' && <DocView key="features" load={loadDoc('FEATURES.md')} onNavigate={navigate} />}
         {tab === 'architecture' && <DocView key="architecture" load={loadDoc('ARCHITECTURE.md')} onNavigate={navigate} />}
         {tab === 'code' && <CodeReference />}
         {tab === 'rules' && (
