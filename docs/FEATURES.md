@@ -1046,6 +1046,23 @@ development server and are 404 in a production build. All money is handled by `w
   - Checkout errors while developing: the Worker adds `detail` to its error answers when `NOWPAYMENTS_SANDBOX` is not `false`; the README has a table of the usual ones (Cloudflare Access in front of the Worker, an incomplete `GOOGLE_SERVICE_ACCOUNT`, a missing Datastore role, a non-sandbox NOWPayments key).
   - Bought but nothing delivered -> the payment is not `finished` yet, or the order says `needsReview` (the seller's page was gone); look at `tweaks_orders/{id}.note`. Webhook answers 401 -> the IPN secret differs from `NOWPAYMENTS_IPN_SECRET`. Webhook answers 409 -> a document changed during the commit; the processor retries. Browse is empty with a console 403 -> the new `firestore.rules` are not deployed.
 
+### Finished examples
+- **What it does:** Opens one of four complete example websites (online shop, cafe, studio portfolio, members area) in the editor, ready to change and download.
+- **Where in the app:** The paste screen (Try it and a saved page): the fold "No idea yet? Start from a finished example" with an "Open this example" button on each card.
+- **Accepts (input):** a click on a card; nothing else.
+- **Produces (output / redirect):** a new `PageDoc` (a multi-page site) handed to `onOpen`, which opens the editor (the same path as pasted code); `track('open_showcase', { id, where })`.
+- **Needs:** nothing (no account, no network for the document; pictures and the shop's web fonts load from the internet; the shop's live data needs the API only after export).
+- **How it works:**
+  1. `ShowcasePicker` (`src/features/showcase/ShowcasePicker.tsx`) lists `SHOWCASES` (`catalog.ts`).
+  2. The button calls `item.build()`: each example's `index.ts` calls `buildSite(spec)` (`site.ts`) with its CSS, pages, data sources and access.
+  3. `buildSite`: parses home + footer, `toSite`, `addPage` for each page, `addSource` for each data source, marks the menu pages, adds the CSS of each widget found (`addWidgetCss`), `applyLayout` for the top bar and optionally `addAuthPages`.
+  4. The shop and agency also post-process (live category choices; reusable "Team member" component with two looks).
+  5. `PasteScreen` passes the document to `onOpen`; the editor opens it like any page.
+- **Debug:**
+  - Files: `src/features/showcase/*` (`site.ts`, `catalog.ts`, one folder per example).
+  - Tests: `showcase.test.ts` (the gate each example must pass), `site.test.ts`, `catalog.test.ts`; e2e `e2e/showcase.mjs`, `e2e/showcase-behavior.mjs`.
+  - A card opens an empty or broken site -> look at the example's `build()`; run `npx vitest run src/features/showcase` and read which check fails. A filter does nothing in Preview -> the list needs `data-ui-filterable="<name>"` and the filter `data-ui-for`/`data-ui-by` (see Search and filters). A picture is missing -> its https address no longer loads (the tests only check that it is an https address).
+
 ## Accounts and platform
 
 Developer reference for the account, storage, sharing, billing, analytics, docs and shipping features of Tweak.

@@ -2,6 +2,7 @@ import { useDeferredValue, useEffect, useMemo, useState, type ReactNode } from '
 import type { Where } from '@/features/analytics/events'
 import { track } from '@/features/analytics/track'
 import { AiPromptHelper } from '@/features/prompts/AiPromptHelper'
+import { ShowcasePicker } from '@/features/showcase/ShowcasePicker'
 import { preloadCodeEditor } from '@/shared/code/LazyCodeEditor'
 import type { PageDoc } from '@/features/editor/model/types'
 import { Button, Icon, type IconName } from '@/shared/ui'
@@ -84,6 +85,7 @@ export function PasteScreen({ onOpen, secondary, heading = 'Paste your code', wh
         )}
 
         <AiPromptHelper kind={kind} />
+        <ShowcasePicker onOpen={onOpen} where={where} />
         <ReactProjectOpener onOpen={onOpen} where={where} />
 
         <button type="button" className={styles.link} onClick={() => setSplit(!split)}>

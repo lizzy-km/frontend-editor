@@ -121,7 +121,7 @@ Cloudflare's Git-connected build runs `npm run build` inside `workers/billing` (
   ER (entity-relationship) diagrams of the saved data, the page document and the features on boxes.
 - **Developer docs in the app**: run `npm run dev` and open `/dev` (development only, never in a production build): the
   diagrams, architecture, a searchable code reference read from the source, the rules and the history.
-- `docs/FEATURES.md`: one section per feature (58 of them): what it does, what it accepts and produces, what it needs, how it works and where to debug.
+- `docs/FEATURES.md`: one section per feature (59 of them): what it does, what it accepts and produces, what it needs, how it works and where to debug.
 - `docs/ARCHITECTURE.md`: how the pieces fit together (page model, iframe
   renderer, Konva overlay, saving, data).
 - `docs/HISTORY.md`: what each feature branch added, and why.
@@ -199,6 +199,9 @@ the sample rows until you switch to the real API.
 - **Animation box** (and an Animation section on everything): fade, slide,
   zoom, flip or unblur on scroll, load, hover or in a loop, one by one if you
   like. The React download uses Motion.
+- **Finished examples** (paste screen → "No idea yet? Start from a finished example"): four whole websites (an online shop using
+  the Platzi Fake Store API, a cafe, a studio portfolio, a members area), each with several pages and the editor's real features: data lists,
+  search and filters, pop-ups, flags, forms, animations, reusable components, sign-in pages. Open one, change anything, download it.
 - **Reusable components**: make any box a component (Actions → Component), add copies from Add → Your components,
   and change it once to update every copy; a copy keeps what it changed itself and can show different data.
   Components have looks (variants) and options, can be edited on their own, and can be saved to **My library**
