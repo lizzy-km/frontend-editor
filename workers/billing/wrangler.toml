@@ -19,13 +19,11 @@ enabled = true
 
 [vars]
 FIREBASE_PROJECT_ID = "anynote-m"
-# ...
-[vars]
 ALLOWED_ORIGINS = "http://localhost:*"
 APP_URL = "http://localhost:*;https://tweak-web-editor.vercel.app/"
 FIREBASE_PROJECT_ID = "anynote-m"
 WORKER_URL = "https://tweak-billing.dolic.workers.dev"
-# ...
+
 
 # "true" = NOWPayments sandbox (no real money). Set "false" only when going live.
 NOWPAYMENTS_SANDBOX = "true"
