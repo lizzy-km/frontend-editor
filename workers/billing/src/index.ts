@@ -20,7 +20,9 @@ export default {
       if (request.method === 'POST' && url.pathname === '/webhook/nowpayments') return await handleWebhook(request, env, realDeps(env))
     } catch (error) {
       console.error('billing error', (error as Error).message)
-      return json({ error: 'Something went wrong. Please try again.' }, 500, corsHeaders(request, env))
+      // While testing (the processor's sandbox) the reason is sent along, so a failure can be found without opening the logs.
+      const detail = env.NOWPAYMENTS_SANDBOX === 'false' ? {} : { detail: (error as Error).message.slice(0, 300) }
+      return json({ error: 'Something went wrong. Please try again.', ...detail }, 500, corsHeaders(request, env))
     }
     return json({ error: 'Not found' }, 404, corsHeaders(request, env))
   },

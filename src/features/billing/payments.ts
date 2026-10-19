@@ -33,8 +33,8 @@ export async function callBilling<T>(path: string, body: unknown, deps: Deps = r
   const response = await deps.fetchFn(`${deps.url}${path}`, {
     method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body),
   }).catch(() => { throw new Error('The payment service could not be reached. Check your connection and try again.') })
-  const answer = (await response.json().catch(() => ({}))) as T & { error?: string }
-  if (!response.ok) throw new Error(answer.error ?? 'That did not work. Please try again.')
+  const answer = (await response.json().catch(() => ({}))) as T & { error?: string; detail?: string }
+  if (!response.ok) throw new Error(`${answer.error ?? 'That did not work. Please try again.'}${answer.detail ? ` (${answer.detail})` : ''}`)
   return answer
 }
 
