@@ -27,7 +27,25 @@ WORKER_URL = "https://tweak.bill.quix-dev.online"
 # "true" = NOWPayments sandbox (no real money). Set "false" only when going live.
 NOWPAYMENTS_SANDBOX = "true"
 
+# ...
+[observability]
+enabled = true
+head_sampling_rate = 1
+redact_query_string = false
+
 [observability.logs]
-enabled = false
+enabled = true
+head_sampling_rate = 1
 invocation_logs = true
+persist = true
+
+[observability.traces]
+enabled = false
+head_sampling_rate = 1
+persist = true
+
+[observability.issue_detection]
+enabled = false
+# ...
+
 
