@@ -15,7 +15,10 @@ export async function createInvoice(env: Pick<Env, 'NOWPAYMENTS_SANDBOX' | 'NOWP
       ipn_callback_url: request.callbackUrl, success_url: request.successUrl, cancel_url: request.cancelUrl,
     }),
   })
-  if (!response.ok) throw new Error(`The payment service refused the checkout (${response.status})`)
+  if (!response.ok) {
+    const said = ((await response.json().catch(() => ({}))) as { message?: string; code?: string }).message ?? ''
+    throw new Error(`The payment service refused the checkout (${response.status}${said ? `: ${said.slice(0, 160)}` : ''})`)
+  }
   const answer = (await response.json()) as { id?: string | number; invoice_url?: string }
   if (!answer.invoice_url || answer.id === undefined) throw new Error('The payment service sent no checkout address')
   return { id: String(answer.id), url: answer.invoice_url }

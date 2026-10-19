@@ -21,6 +21,8 @@ export async function startPayment(env: Env, deps: Deps, purchase: Purchase, cor
     return json({ checkoutUrl: invoice.url, reference: paymentId }, 200, cors)
   } catch (error) {
     await deps.store.commit([{ path, data: { status: 'failed', note: (error as Error).message.slice(0, 200), updatedAt: deps.now() }, merge: true }])
-    return json({ error: 'The payment service is not available right now. Please try again later.' }, 502, cors)
+    // While testing (the processor's sandbox) the reason is sent along.
+    const detail = env.NOWPAYMENTS_SANDBOX === 'false' ? {} : { detail: (error as Error).message.slice(0, 300) }
+    return json({ error: 'The payment service is not available right now. Please try again later.', ...detail }, 502, cors)
   }
 }
