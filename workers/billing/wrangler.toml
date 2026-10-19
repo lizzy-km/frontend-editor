@@ -19,8 +19,8 @@ enabled = true
 
 [vars]
 FIREBASE_PROJECT_ID = "anynote-m"
-ALLOWED_ORIGINS = "http://localhost:*"
-APP_URL = "http://localhost:*;https://tweak-web-editor.vercel.app/"
+ALLOWED_ORIGINS = "http://localhost:5174"
+APP_URL = "http://localhost:5174;https://tweak-web-editor.vercel.app/"
 WORKER_URL = "https://tweak-billing.dolic.workers.dev"
 
 
