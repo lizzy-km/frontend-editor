@@ -7,3 +7,8 @@ dist
 .DS_Store
 e2e/screenshots
 *-debug.log
+
+# Service-account keys must never be committed
+**/key.json
+**/*-key.json
+**/serviceAccount*.json
