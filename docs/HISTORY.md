@@ -3,6 +3,16 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/click-flags — 2026-10-19
+- **When clicked → Flag**: a button or link can turn a site flag on, off or switch it. Boxes set to "Only when these flags are on"
+  appear or hide straight away for that visitor, and the choice is remembered in their browser (`localStorage` `tweak:flags`).
+- How: `data-fe-flag` + `data-fe-flag-mode` (`model/flagClicks.ts`, set by `actions/flagActions.ts`). Preview, public view and
+  .html downloads: when a click changes a flag, `forVisitors` keeps boxes that depend on flags in the page and
+  `serialize/flagPlayer.ts` shows or hides them (starting from the flags the viewer already has). React download: `config/flags.ts` is now a
+  tiny store (`isOn`, `setFlag`, `useFlags`), `Show` re-draws on change, `popups/jsxPopups.clickAttrs` writes `setFlag("beta", "toggle")`,
+  and `needsAuth` is true when a click changes a flag (so the flags file exists).
+- Tests: `flagPlayer.test.ts` (player in jsdom), `popupExport.test.ts` (React output), `e2e/click-flags.mjs`.
+
 ## feature/component-library — 2026-10-16
 - **My library** (Components tab, signed in): *Save to my library* keeps a component (every look, plus the CSS it needs
   and stylesheet links) in your account. In any other page or site, *Add to this page* brings it in as a main component.
