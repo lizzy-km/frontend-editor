@@ -3,6 +3,16 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/billing-ui — 2026-10-20
+- **Plans page** (development only): the plan you have and when it ends, a months picker (1, 3, 12) and *Pay with crypto*, which starts a
+  checkout at the billing Worker and sends you to the payment page. Coming back (`/plans?payment=<id>`) shows how the payment is going in plain
+  words until it settles (Paid, Waiting, Failed, Expired, Needs a check), then refreshes the plan. *Your payments* lists past ones.
+- Billing and the marketplace are **development only**: `enable_billing` and `enable_marketplace` follow `import.meta.env.DEV`. Production
+  builds 404 `/plans` and `/market`; flip a flag to `true` in `config/features.config.ts` when it is stable.
+- Tests: `payments.test.ts`, `e2e/flags.mjs` (dev: pages exist; production build: hidden, see the header).
+- Not covered: the page itself in a browser (the Plans page needs sign-in, and the e2e runs have no Firebase), and a real sandbox payment
+  (needs your NOWPayments sandbox keys and a deployed worker).
+
 ## feature/billing-server — 2026-10-20
 - The money server: `workers/billing` (Cloudflare Worker) starts NOWPayments checkouts (sandbox by default) and receives their signed
   callback. A confirmed payment marks `tweaks_payments/{id}` paid and upgrades the plan (`plan`, `planUntil`, one month per payment,

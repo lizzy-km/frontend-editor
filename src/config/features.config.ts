@@ -17,10 +17,10 @@ export const features = {
   enable_gallery: true,
   /** Upload images to Cloudflare R2 (needs VITE_ASSETS_URL). */
   enable_uploads: Boolean(ASSETS_URL) && !assetsUrlIsBucket,
-  /** Paid plans with crypto checkout. Not built yet. */
-  enable_billing: false,
-  /** P2P buy/sell of projects. Not built yet. */
-  enable_marketplace: false,
+  /** Paid plans with crypto checkout. Development only until it is stable: change to `true` to switch it on in production. */
+  enable_billing: import.meta.env.DEV,
+  /** P2P buy/sell of projects. Development only until it is stable: change to `true` to switch it on in production. */
+  enable_marketplace: import.meta.env.DEV,
 } as const
 
 export type FeatureName = keyof typeof features
