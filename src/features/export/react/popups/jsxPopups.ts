@@ -1,5 +1,6 @@
 import { NAV_ATTR, SIGNOUT_ATTR, TOGGLE_ATTR } from '@/features/editor/model/layouts'
 import { CALL_ATTR } from '@/features/editor/model/dataLists'
+import { flagClickOf } from '@/features/editor/model/flagClicks'
 import { ASK_ATTR, CLOSE_ATTR, MODAL_ATTR, OPEN_ATTR } from '@/features/editor/model/popups'
 import { PARAMS_ATTR } from '../jsxExtras'
 import type { ElementNode } from '@/features/editor/model/types'
@@ -60,6 +61,8 @@ export function clickAttrs(ctx: JsxContext, node: ElementNode, go?: { value: str
   if (TOGGLE_ATTR in node.attrs) steps.push("document.body.classList.toggle('menu-open')")
   if (NAV_ATTR in node.attrs) steps.push("document.body.classList.remove('menu-open')")
   if (ui && SIGNOUT_ATTR in node.attrs) { ui.add('signOut'); steps.push('void signOut()') }
+  const flag = ui ? flagClickOf(node.attrs) : null
+  if (flag) { ui!.add('setFlag'); steps.push(`setFlag(${JSON.stringify(flag.flag)}, ${JSON.stringify(flag.mode)})`) }
   const nav = navProps(ctx, node)
   if (!steps.length && !ask) return nav
   const keys = (go && ctx.links) || call ? KEYS : ''
@@ -74,6 +77,7 @@ export function clickAttrs(ctx: JsxContext, node: ElementNode, go?: { value: str
 const IMPORTS: Record<string, (base: string) => string> = {
   Modal: (base) => `import Modal from '${base}/components/ui/Modal'`,
   signOut: (base) => `import { signOut } from '${base}/auth/signOut'`,
+  setFlag: (base) => `import { setFlag } from '${base}/config/flags'`,
   askFirst: (base) => `import { askFirst } from '${base}/components/ui/confirm'`,
 }
 /** The pop-up helpers share one file; only the ones a component uses are imported (strict TypeScript flags unused ones). */

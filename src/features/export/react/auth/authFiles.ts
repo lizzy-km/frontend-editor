@@ -1,4 +1,5 @@
 import { endpointsOf } from '@/features/editor/model/authApi'
+import { FLAG_ATTR } from '@/features/editor/model/flagClicks'
 import { formSettings } from '@/features/editor/model/forms'
 import { accessOf, conditionOf, hasCondition } from '@/features/editor/model/conditions'
 import { listPages } from '@/features/editor/model/pages'
@@ -15,11 +16,11 @@ export const AUTH_DEPS = { axios: '^1.12.0' }
 
 /** Does the project need sign-in? (Something is shown only to some visitors, or a form logs people in, registers them…) */
 export const needsAuth = (doc: PageDoc) =>
-  Object.values(doc.nodes).some((node) => isElement(node) && (hasCondition(conditionOf(node)) || (node.tag === 'form' && formSettings(node).submit !== 'send')))
+  Object.values(doc.nodes).some((node) => isElement(node) && (hasCondition(conditionOf(node)) || Boolean(node.attrs[FLAG_ATTR]) || (node.tag === 'form' && formSettings(node).submit !== 'send')))
 
 /** The site's flags plus any used on an element or page (so flags.ts lists every one). */
 const flagsOf = (doc: PageDoc) => [...new Set([...accessOf(doc).flags,
-  ...Object.values(doc.nodes).flatMap((node) => (isElement(node) ? conditionOf(node).flags : []))])]
+  ...Object.values(doc.nodes).flatMap((node) => (isElement(node) ? [...conditionOf(node).flags, ...(node.attrs[FLAG_ATTR] ? [node.attrs[FLAG_ATTR]] : [])] : []))])]
 
 /**
  * src/auth/* (types, session + tokens, API calls, mock, AuthProvider, useAuth,

@@ -407,6 +407,12 @@ run, inside a locked frame.
   `popups/uiTemplates.ts` has the ui files. The store file is `popup.ts`, not
   `modal.ts`, so it never differs from `Modal.tsx` only by case.
 
+## Flag clicks (`model/flagClicks.ts`, `serialize/flagPlayer.ts`)
+
+- A click changes a flag with `data-fe-flag="name"` + `data-fe-flag-mode="on|off|toggle"`. Static outputs: when the page has such a click,
+  `forViewer` keeps boxes that depend on flags (`data-fe-flags`) and the player shows or hides them, so the flag state is the player's.
+  React: `config/flags.ts` is the store; keep `Show`, the route guards (`isOn`) and `clickAttrs` (`setFlag`) in step with it.
+
 ## Sign-in pages (`model/authPages.ts`)
 
 - `AUTH_PAGES` are HTML templates built from the form helpers in

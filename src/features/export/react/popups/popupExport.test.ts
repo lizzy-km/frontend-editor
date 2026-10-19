@@ -35,3 +35,14 @@ describe('pop-up export', () => {
     expect(files['src/components/ui/Modal.tsx']).toBeUndefined()
   })
 })
+
+describe('flag clicks in the React download', () => {
+  it('a click calls setFlag, flags.ts holds the store, and Show re-draws when a flag changes', () => {
+    const files = project('<button data-fe-flag="beta" data-fe-flag-mode="toggle">Beta</button><section data-fe-flags="beta">New</section>')
+    expect(part(files)).toContain('setFlag("beta", "toggle")')
+    expect(part(files)).toContain("import { setFlag } from '../config/flags'")
+    expect(files['src/config/flags.ts']).toContain('export function setFlag')
+    expect(files['src/config/flags.ts']).toContain('"beta": false')
+    expect(files['src/auth/Show.tsx']).toContain('useFlags()')
+  })
+})

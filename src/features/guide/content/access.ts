@@ -26,6 +26,7 @@ export const ACCESS: Group = {
         { kind: 'figure', src: '/guide/art-roles-flags.svg', alt: 'Roles say who a person is; flags switch features on or off', caption: 'Roles say who a person is; flags switch features on or off' },
         { kind: 'p', text: 'A **role** says what kind of person is signed in (member, admin, editor…). **member** and **admin** are there from the start. Type a new name in the “Add a role…” box under **Who can see this** to add your own.' },
         { kind: 'p', text: 'A **flag** is a feature that is on or off for the whole site. Add one in the same place, then turn it on while testing with **Viewing as**.' },
+        { kind: 'p', text: 'Visitors can change a flag too: select a button or link, open **When clicked**, choose the **Flag**, then pick **Turn it on**, **Turn it off** or **Switch it**. Boxes set to “Only when these flags are on” appear or hide as soon as the button is clicked, and the choice is remembered in that visitor’s browser. Use it for a “Show more” panel, a dark-mode notice or a beta feature.' },
       ],
     },
     {

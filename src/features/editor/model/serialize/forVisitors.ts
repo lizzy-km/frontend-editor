@@ -1,11 +1,13 @@
 import { ANIMATE_ATTR, easingCss, EFFECTS, poseCss, REST } from '../animations'
-import { hiddenFor, VISITOR, type Viewer } from '../conditions'
+import { accessOf, FLAGS_ATTR, hiddenFor, VISITOR, type Viewer } from '../conditions'
+import { usesFlagClicks } from '../flagClicks'
 import { isPageNode } from '../pages'
 import type { Params } from '../routes'
 import { removeNode } from '../tree/treeOps'
 import { isElement, type PageDoc } from '../types'
 import { expandDataLists, expandRecords } from './expandLists'
 import { withClickedRows } from './clickedPlayer'
+import { withFlagClicks } from './flagPlayer'
 import { withForms } from './formPlayer'
 import { withLayouts } from './layoutPlayer'
 import { withPopups } from './popupPlayer'
@@ -79,9 +81,13 @@ function withAnimations(doc: PageDoc): PageDoc {
   return animated ? { ...doc, scripts: [...doc.scripts, { code: ANIMATION_SCRIPT, inHead: false }] } : doc
 }
 
+const allFlags = (doc: PageDoc) => Object.values(doc.nodes).flatMap((node) => (isElement(node) ? (node.attrs[FLAGS_ATTR] ?? '').split(',').filter(Boolean) : []))
+
 /** Leaves out what this viewer can't see (pages themselves stay: routing decides those). */
 function forViewer(doc: PageDoc, viewer: Viewer): PageDoc {
-  const hidden = hiddenFor(doc.nodes, viewer).filter((id) => !isPageNode(doc.nodes[id]))
+  // When clicks change flags, boxes that depend on flags stay in the page: the flag player shows and hides them.
+  const live = usesFlagClicks(doc.nodes) ? { ...viewer, flags: [...new Set([...accessOf(doc).flags, ...viewer.flags, ...allFlags(doc)])] } : viewer
+  const hidden = hiddenFor(doc.nodes, live).filter((id) => !isPageNode(doc.nodes[id]))
   if (!hidden.length) return doc
   let nodes = doc.nodes
   for (const id of hidden) if (nodes[id]) nodes = removeNode(nodes, id)
@@ -93,4 +99,7 @@ function forViewer(doc: PageDoc, viewer: Viewer): PageDoc {
  * viewer may see (downloads: a signed-out visitor), lists filled with their
  * data rows, and the animation, form, pop-up and layout players added.
  */
-export const forVisitors = (doc: PageDoc, viewer: Viewer = VISITOR, params: Params = {}): PageDoc => withWidgets(withLayouts(withClickedRows(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(stripComponents(doc), viewer)), params))))))))
+export function forVisitors(doc: PageDoc, viewer: Viewer = VISITOR, params: Params = {}): PageDoc {
+  const filled = withClickedRows(withPopups(withForms(withRecords(withAnimations(expandRecords(expandDataLists(forViewer(stripComponents(doc), viewer)), params))))))
+  return withWidgets(withLayouts(withFlagClicks(filled, viewer)))
+}
