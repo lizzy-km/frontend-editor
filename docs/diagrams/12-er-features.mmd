@@ -1,0 +1,51 @@
+erDiagram
+  NODE ||--o| PAGE_BOX : "data-fe-page (sites)"
+  NODE ||--o| LIST_BOX : "data-fe-list"
+  NODE ||--o| RECORD_BOX : "data-fe-record + row"
+  NODE ||--o| FORM_BOX : "form + data-fe-submit"
+  NODE ||--o| POPUP_BOX : "data-fe-modal"
+  NODE ||--o| WIDGET_BOX : "data-ui-*"
+  NODE ||--o| CLICK_ACTION : "attributes on the clicked box"
+  NODE ||--o| CONDITION : "who sees it"
+  NODE ||--o| ANIMATION : "data-fe-animate"
+
+  LIST_BOX }o--|| DATA_SOURCE : "reads"
+  LIST_BOX ||--|| CARD_DESIGN : "first child repeats"
+  RECORD_BOX }o--|| DATA_SOURCE : "one row"
+  POPUP_BOX }o--o| DATA_SOURCE : "shows the clicked item"
+  CLICK_ACTION }o--o| POPUP_BOX : "opens by name"
+  CLICK_ACTION }o--o| DATA_SOURCE : "updates one item (PATCH)"
+  CLICK_ACTION }o--o| FLAG : "turns on, off, switches"
+  CLICK_ACTION }o--o| PAGE_BOX : "goes to"
+  CONDITION }o--o{ FLAG : "needs flags on"
+  CONDITION }o--o{ ROLE : "needs a role"
+  WIDGET_BOX }o--o| LIST_BOX : "search and filter narrow it"
+
+  NODE ||--o| COMPONENT_MAIN : "data-fe-component"
+  COMPONENT_MAIN ||--o{ COMPONENT_COPY : "data-fe-instance"
+  COMPONENT_MAIN ||--o{ COMPONENT_MAIN : "looks share a name"
+  COMPONENT_MAIN ||--o{ COMPONENT_PART : "named options"
+  COMPONENT_COPY }o--|| COMPONENT_MAIN : "follows (data-fe-of)"
+  COMPONENT_MAIN }o--o| LIBRARY_ENTRY : "data-fe-library id@version"
+
+  CLICK_ACTION {
+    string open "data-fe-open"
+    string close "data-fe-close"
+    string ask "data-fe-ask"
+    string go "data-fe-go"
+    string flag "data-fe-flag + mode"
+    json update "data-fe-update"
+  }
+  COMPONENT_MAIN {
+    string name "data-fe-component"
+    string look "data-fe-variant"
+    string key "data-fe-key, same in every look"
+  }
+  COMPONENT_COPY {
+    string of "data-fe-of per box"
+    string choice "data-fe-record / row"
+  }
+  LIBRARY_ENTRY {
+    string id PK "tweaks_components"
+    number version
+  }

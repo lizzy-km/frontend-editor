@@ -79,6 +79,28 @@ screen, `robots.txt` and (when `VITE_SITE_URL` is set) `sitemap.xml`.
 Layers from the host down to the services. Features never reach into another feature's internals; everything the editor
 does goes through actions into the stores and the model, and the sandboxed frame, the exports and saving hang off that core.
 
+## 10. ER: saved data
+
+![ER: saved data](diagrams/10-er-storage.png)
+
+The four Firestore collections. A user owns pages and library components; a page is two documents with the same id
+(listable details, and the content itself); a public copy points at its original with `remixOf`.
+
+## 11. ER: the page document
+
+![ER: the page document](diagrams/11-er-page.png)
+
+What the `doc` string inside a page's content holds: one flat map of boxes (the only child list is `children`), their styles
+per screen size and attributes, plus data sources with fields, rows and an optional API, scripts, head tags and access.
+
+## 12. ER: features on boxes
+
+![ER: features on boxes](diagrams/12-er-features.png)
+
+Almost every feature is a set of attributes on a box. This shows what points at what: lists and records read a data source,
+clicks open pop-ups, go to pages, change flags or update one item of a source, conditions need flags and roles, and component
+copies follow their main component, which can link back to a library entry.
+
 ---
 
 **In the app:** with `npm run dev` running, open `/dev` for these diagrams (zoom, Mermaid source) next to the architecture

@@ -78,7 +78,8 @@ Put the Worker's URL in `.env` as `VITE_ASSETS_URL`.
 
 ## Project guide
 
-- `docs/WORKFLOW.md`: nine diagrams of how the app works, from the person's journey to the system layers, build and ship.
+- `docs/WORKFLOW.md`: twelve diagrams: how the app works, from the person's journey to the system layers, build and ship, plus three
+  ER (entity-relationship) diagrams of the saved data, the page document and the features on boxes.
 - **Developer docs in the app**: run `npm run dev` and open `/dev` (development only, never in a production build): the
   diagrams, architecture, a searchable code reference read from the source, the rules and the history.
 - `docs/ARCHITECTURE.md`: how the pieces fit together (page model, iframe

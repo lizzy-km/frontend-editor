@@ -1,0 +1,73 @@
+erDiagram
+  PAGE_DOC ||--o{ NODE : "nodes map, rootId = body"
+  PAGE_DOC ||--o{ DATA_SOURCE : "data"
+  PAGE_DOC ||--o{ PAGE_SCRIPT : "scripts"
+  PAGE_DOC ||--o{ HEAD_TAG : "headTags"
+  PAGE_DOC ||--o| ACCESS : "roles and flags"
+  PAGE_DOC ||--o| AUTH_API : "sign-in addresses"
+  NODE ||--o{ NODE : "children (the only child list)"
+  NODE ||--o{ STYLE_SET : "styles per screen size"
+  NODE ||--o{ ATTRIBUTE : "attrs"
+  DATA_SOURCE ||--|{ DATA_FIELD : "fields"
+  DATA_SOURCE ||--o{ DATA_ROW : "rows"
+  DATA_SOURCE ||--o| DATA_API : "api"
+
+  PAGE_DOC {
+    string title
+    string rootId FK
+    map htmlAttrs
+    string css "pasted CSS, kept as text"
+    string_list links "stylesheet URLs"
+  }
+  NODE {
+    string id PK
+    string kind "element or text"
+    string parentId FK
+    string tag "elements only"
+    string text "text nodes only"
+    boolean hidden
+  }
+  STYLE_SET {
+    string breakpoint "desktop, tablet, mobile"
+    map properties "CSS property to value"
+  }
+  ATTRIBUTE {
+    string name "plain HTML or data-fe-*"
+    string value
+  }
+  DATA_SOURCE {
+    string id PK
+    string name "code-safe, used in bindings"
+  }
+  DATA_FIELD {
+    string name
+    string type "text, longText, number, boolean, image, date, url"
+    string from "place in the API answer"
+  }
+  DATA_ROW {
+    map values "field name to value"
+  }
+  DATA_API {
+    string url "list address"
+    string itemUrl "one item, with :id"
+    string listPath
+    string pageParam
+    string authEnvVar "key lives in .env, never in the page"
+  }
+  PAGE_SCRIPT {
+    string src
+    string code
+    string type
+    boolean inHead
+  }
+  HEAD_TAG {
+    string tag "meta or link"
+    map attrs
+  }
+  ACCESS {
+    string_list roles
+    string_list flags
+  }
+  AUTH_API {
+    map paths "login, register, refresh..."
+  }
