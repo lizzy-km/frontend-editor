@@ -4,7 +4,9 @@ import { DIAGRAM_SOURCE, DIAGRAM_SVG } from './docsFiles'
 import styles from './dev.module.css'
 import view from './WorkflowView.module.css'
 
-export const DIAGRAMS = [
+export type Diagram = { id: string; title: string; text: string }
+
+export const DIAGRAMS: Diagram[] = [
   { id: '01-journey', title: 'The journey', text: 'What a person does, from the first visit to a download.' },
   { id: '02-editor', title: 'Inside the editor', text: 'How a click becomes an edit: actions, commit, stores, the sandboxed frame.' },
   { id: '03-model', title: 'The page model', text: 'What a page is made of and how features are marked on boxes.' },
@@ -19,13 +21,13 @@ export const DIAGRAMS = [
   { id: '12-er-features', title: 'ER: features on boxes', text: 'How lists, pop-ups, clicks, flags, components and the library relate to boxes and data.' },
 ]
 
-/** The workflow diagrams: pick one, zoom, open it full size, or read its Mermaid source. */
-export function WorkflowView() {
-  const [id, setId] = useState(DIAGRAMS[0]!.id)
+/** The workflow diagrams (the main list unless given another): pick one, zoom, open it full size, or read its Mermaid source. */
+export function WorkflowView({ diagrams = DIAGRAMS }: { diagrams?: Diagram[] }) {
+  const [id, setId] = useState(diagrams[0]!.id)
   const [zoom, setZoom] = useState(1)
   const [source, setSource] = useState<string | null>(null)
   const [showSource, setShowSource] = useState(false)
-  const current = DIAGRAMS.find((item) => item.id === id)!
+  const current = diagrams.find((item) => item.id === id)!
   const frame = useRef<HTMLDivElement>(null)
   const picture = useRef<HTMLImageElement>(null)
   /** Zoom so the picture shows at its own size. */
@@ -40,7 +42,7 @@ export function WorkflowView() {
   return (
     <div className={view.layout}>
       <nav className={view.list} aria-label="Diagrams">
-        {DIAGRAMS.map((item, index) => (
+        {diagrams.map((item, index) => (
           <button key={item.id} type="button" className={view.item} aria-current={item.id === id} onClick={() => { setId(item.id); setShowSource(false); setSource(null) }}>
             <b>{index + 1}</b>
             <span><strong>{item.title}</strong><small>{item.text}</small></span>

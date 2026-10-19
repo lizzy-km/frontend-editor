@@ -9,7 +9,7 @@ export function metaFor(pathname: string): SeoMeta {
   const route = seoRouteFor(pathname)
   if (route) return { title: route.title, description: route.description, path: route.path, index: route.index, image: SHARE_IMAGE }
   // The developer docs exist only in development; there they are a real (but never indexed) screen.
-  if (import.meta.env.DEV && pathname === '/dev') return { title: 'Developer docs — Tweak', description: DEFAULT_DESCRIPTION, path: pathname, index: false }
+  if (import.meta.env.DEV && (pathname === '/dev' || pathname === '/dev/payment')) return { title: 'Developer docs — Tweak', description: DEFAULT_DESCRIPTION, path: pathname, index: false }
   const known = NOINDEX_PREFIXES.some((prefix) => pathname.startsWith(prefix))
   return { title: known ? 'Tweak' : 'Page not found — Tweak', description: DEFAULT_DESCRIPTION, path: pathname, index: false }
 }

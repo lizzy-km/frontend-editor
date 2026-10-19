@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import NotFoundPage from '@/app/NotFoundPage'
 import { CodeReference } from './CodeReference'
 import { DocView } from './DocView'
@@ -40,6 +40,7 @@ export default function DevDocsPage() {
       <header className={styles.top}>
         <h1>Tweak developer docs</h1>
         <span className={styles.badge}>Development only</span>
+        <Link to="/dev/payment" className={styles.muted}>Payment and market docs →</Link>
         <nav className={styles.tabs} role="tablist" aria-label="Sections">
           {TABS.map(([id, label]) => <button key={id} type="button" role="tab" className={styles.tab} aria-selected={tab === id} onClick={() => open(id)}>{label}</button>)}
         </nav>

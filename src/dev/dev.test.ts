@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { declaration, indexFile } from './codeIndex'
+import { parseCatalog } from './payment/constants'
 import { parseMarkdown, slug } from './markdown'
 import { parseEnv, parseFlags, parseRoutes, parseScripts, parseSpec } from './overviewData'
 
@@ -84,5 +85,12 @@ describe('overview facts', () => {
     expect(parseSpec('e2e/forms.mjs', ['// Forms: rules.', 'check(1)', 'check(2)'].join('\n'))).toEqual({ name: 'forms', summary: 'Forms: rules.', checks: 2 })
     expect(parseScripts('{"scripts":{"dev":"vite"}}')).toEqual([['dev', 'vite']])
     expect(parseScripts('nope')).toEqual([])
+  })
+})
+
+describe('payment docs', () => {
+  it('reads the worker constants with the comment above each', () => {
+    const found = parseCatalog(['/** One paid month. */', 'export const PLAN_DAYS = 30', '', '/** Price range. */', 'export const LISTING_PRICE = { min: 1, max: 500 }', '', '/** Rounds. */', 'export const money = (amount: number) => amount'].join('\n'))
+    expect(found).toEqual([{ name: 'PLAN_DAYS', value: '30', note: 'One paid month.' }, { name: 'LISTING_PRICE', value: '{ min: 1, max: 500 }', note: 'Price range.' }])
   })
 })
