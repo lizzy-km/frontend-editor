@@ -2,6 +2,7 @@ import { createId } from '@/lib/ids'
 import { BIND_PREFIX, FROM_ATTR, ITEM_ATTR, bindingsOf, isListBox, listInfo, resolveBinding, rowsFor } from '../dataLists'
 import { GO_ATTR } from '../pages'
 import { OPEN_ATTR } from '../popups'
+import { UPDATE_ATTR } from '../updateClicks'
 import { isRecordBox, pickRow, recordInfo } from '../dataRecords'
 import { cloneSubtree } from '../tree/cloneSubtree'
 import { collectSubtreeIds } from '../tree/queries'
@@ -49,8 +50,8 @@ export function expandDataLists(doc: PageDoc): PageDoc {
     const rows = info ? rowsFor(info, doc.data) : []
     if (!info?.templateId || rows.length === 0) continue
     const cards: string[] = []
-    // Cards that open a pop-up say which item they are, so the pop-up can show it (see clickedPlayer).
-    const opensPopup = collectSubtreeIds(nodes, info.templateId).some((id) => isElement(nodes[id]) && OPEN_ATTR in (nodes[id] as ElementNode).attrs)
+    // Cards that open a pop-up or update their data say which item they are (see clickedPlayer, updatePlayer).
+    const opensPopup = collectSubtreeIds(nodes, info.templateId).some((id) => isElement(nodes[id]) && (OPEN_ATTR in (nodes[id] as ElementNode).attrs || UPDATE_ATTR in (nodes[id] as ElementNode).attrs))
     rows.forEach((row, index) => {
       const copy = cloneSubtree(nodes, info.templateId!)
       nodes = fillCard({ ...nodes, ...copy.nodes, [copy.topId]: { ...copy.nodes[copy.topId]!, parentId: box.id } }, copy.topId, row)
