@@ -1021,6 +1021,30 @@ Shared facts: `data-fe-*` attribute names live in `src/features/editor/model/reu
   - A one-record box shows design text -> no matching row for the `params` value (downloads rely on `recordPlayer` for "?id" boxes).
   - Nothing proves HTML output removes every other `data-fe-*` attribute; only React is documented to drop them.
 
+## Marketplace (development only)
+
+Billing and the marketplace are behind `enable_billing` and `enable_marketplace`, which follow `import.meta.env.DEV`: the screens exist on the
+development server and are 404 in a production build. All money is handled by `workers/billing`; see "Billing and payments" in ARCHITECTURE.md.
+
+### Marketplace: browse, buy, sell and earn
+- **What it does:** People list a page for sale; buyers browse, pay with crypto, and get their own private copy; sellers see orders, earnings (90 % of each sale) and can ask for a payout.
+- **Where in the app:** `/market` (Browse), `/market/:id` (a listing, Buy), `/market/sell`, `/market/orders`, `/market/earnings` (top bar of every marketplace screen: Browse, Sell a page, My orders, Earnings).
+- **Accepts (input):** a listing (`title` up to 100 letters, `description` up to 1000, `priceUsd` 1 to 500, visible or paused) for one of the seller's saved pages; a Buy click; a payout request (`wallet`, amount from $20 up to the balance).
+- **Produces (output / redirect):** `tweaks_listings` documents; Buy redirects to the processor's hosted checkout (`window.location.assign`), which returns to `/market/orders?payment=<id>`; after the confirmed payment the buyer has a new private project (and the order says "Delivered" with an "Open in the editor" link), the seller has a ledger line and a higher balance, the listing counts the sale. A payout request moves the amount from the balance to a payout record that a person pays by hand.
+- **Needs:** sign-in for Buy, Sell, Orders and Earnings; Firebase; the billing Worker (`VITE_BILLING_URL`, NOWPayments keys, the service account) and the deployed `firestore.rules`; `enable_marketplace`.
+- **How it works:**
+  1. Browse: `listActiveListings` (`where status == active`, sorted here) -> `shown(listings, search, sort)` in `marketplace/browse.ts`.
+  2. Sell: `ListingForm` -> `listingProblem` (`validate.ts`) -> `createListing` (rules check the project is the seller's, price 1-500, `salesCount` 0) / `updateListing` / `deleteListing` (only while nothing sold).
+  3. Buy: `ListingPage.buy` -> `startCheckout({ kind: 'order', listingId })` -> Worker `handleCheckout` -> `checkoutOrder` (listing active, price in range, seller's project exists, not your own page, not bought already) -> `startPayment` (order + pending payment, NOWPayments invoice).
+  4. Payment: NOWPayments calls `/webhook/nowpayments`; `handleWebhook` checks the signature and amount, then one atomic commit marks the payment paid and runs `fulfilOrder` (copy of the seller's content as a new project, counters, ledger, balance, `salesCount`, order delivered).
+  5. Return: `OrdersPage` shows `CheckoutStatus` until the payment settles, then reloads the orders.
+  6. Payout: `EarningsPage` -> `payoutProblem` -> `requestPayout` -> Worker `handlePayout` (holds the amount, creates `tweaks_payouts`, ledger line).
+- **Debug:**
+  - Files: `src/features/marketplace/*`, `src/features/workspace/api/marketListings.ts`, `marketMoney.ts`, `src/features/billing/payments.ts`, `workers/billing/src/{checkoutOrder,startPayment,fulfilOrder,payout,webhook}.ts`, `firestore.rules` (marketplace block).
+  - Tests: `src/features/marketplace/marketplace.test.ts`, `workers/billing/src/market.test.ts` (checkout, delivery, idempotence, missing seller page, payouts), `tests/rules/commerce.test.ts` (needs the emulator), `e2e/market.mjs` (screens with a mocked database), `e2e/flags.mjs` (hidden in production).
+  - Inspect: the Worker's logs (`npx wrangler tail`), `tweaks_payments` / `tweaks_orders` in the Firebase console (`status`, `needsReview`, `paymentStatus`), the NOWPayments dashboard (IPN history).
+  - Bought but nothing delivered -> the payment is not `finished` yet, or the order says `needsReview` (the seller's page was gone); look at `tweaks_orders/{id}.note`. Webhook answers 401 -> the IPN secret differs from `NOWPAYMENTS_IPN_SECRET`. Webhook answers 409 -> a document changed during the commit; the processor retries. Browse is empty with a console 403 -> the new `firestore.rules` are not deployed.
+
 ## Accounts and platform
 
 Developer reference for the account, storage, sharing, billing, analytics, docs and shipping features of Tweak.

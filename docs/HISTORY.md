@@ -3,6 +3,15 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/marketplace-ui — 2026-10-20
+- **Marketplace screens** (development only): *Browse* (search, sort by newest / most bought / price), a listing's page with *Buy with crypto*, *Sell a page*
+  (list one of your saved pages with a title, words and a price from $1 to $500; edit, pause, remove while nothing sold), *My orders* (pages bought, with a link
+  to your copy, and pages sold; progress of a payment shows here after paying) and *Earnings* (balance, sales history, payout requests).
+- `billing/payments.ts` got `callBilling` (one signed call to the Worker), order checkouts and `requestPayout`.
+- Tests: `marketplace.test.ts` (browse, listing and payout checks), `e2e/market.mjs` (screens with the database mocked; private screens ask to sign in).
+- Not covered: buying or selling end to end in a browser (needs accounts, the deployed billing Worker and real sandbox keys), and the rules tests (emulator).
+- Everything billing and marketplace stays behind `import.meta.env.DEV`; set the flags to `true` in `config/features.config.ts` when it is stable.
+
 ## feature/marketplace-server — 2026-10-20
 - The marketplace's money side, in `workers/billing`: buying a listing (`POST /checkout` `{ kind: "order", listingId }`) records an order at the
   listing's price with the 10 % fee fixed, then a confirmed payment hands the buyer a private copy of the seller's page, credits the seller
