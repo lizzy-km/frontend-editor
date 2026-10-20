@@ -30,6 +30,9 @@ its own `fix(...)`), and make sure each one passes `tsc` and `eslint`.
 - `src/features/<name>/`: the feature's pages, components, hooks, store and API.
 - Shared UI goes in `src/shared/ui`, framework-free helpers in `src/lib`.
 - A feature never imports another feature's internals, only its public functions or components.
+- A feature that collects, stores, sends or shares data about people (a new browser storage key, analytics event, third-party service, account field,
+  payment record) must update the Privacy Policy and, if it changes the rules, the Terms (`src/features/legal/`, and `LEGAL_UPDATED` in
+  `src/config/legal.config.ts`). `legal.test.ts` fails when a browser storage key is missing from the policy.
 - A toggleable or future feature gets a flag in `src/config/features.config.ts`
   (`enable_<name>`, with a comment). Future features ship with the flag `false`.
 

@@ -19,4 +19,12 @@ interface ImportMetaEnv {
   readonly VITE_SITE_URL?: string
   /** Address of the deployed billing Worker (workers/billing): starts checkouts for paid plans and purchases. Empty turns checkout off. */
   readonly VITE_BILLING_URL?: string
+  /** Who runs the service (the "we" of the Terms and the Privacy Policy). Set before launch; the pages show a placeholder while it is empty. */
+  readonly VITE_LEGAL_OPERATOR?: string
+  /** Where people write about their data, the terms or a copyright complaint. */
+  readonly VITE_LEGAL_EMAIL?: string
+  /** The operator's postal address (optional, but often required by law). */
+  readonly VITE_LEGAL_ADDRESS?: string
+  /** The country or state whose law governs the terms, e.g. "Singapore". */
+  readonly VITE_LEGAL_COUNTRY?: string
 }

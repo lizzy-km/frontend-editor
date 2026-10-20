@@ -110,7 +110,7 @@ export default function HomePage() {
       </main>
       <footer className={sections.footer}>
         <span>{APP_NAME} · build websites by clicking</span>
-        <nav><Link to="/try">Try it</Link><Link to="/gallery">Explore</Link><Link to="/guide">Guide</Link><Link to="/login">Sign in</Link></nav>
+        <nav><Link to="/try">Try it</Link><Link to="/gallery">Explore</Link><Link to="/guide">Guide</Link><Link to="/login">Sign in</Link><Link to="/terms">Terms</Link><Link to="/privacy">Privacy</Link></nav>
       </footer>
     </div>
   )

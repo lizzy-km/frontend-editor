@@ -102,6 +102,23 @@ While `NOWPAYMENTS_SANDBOX = "true"` the Worker adds a short reason to its error
 
 Cloudflare's Git-connected build runs `npm run build` inside `workers/billing` (it type-checks the Worker; tests are excluded because they run from the repo root).
 
+## Before you launch: the legal pages
+
+`/terms` (Terms of Use) and `/privacy` (Privacy Policy) are written for how the app really works, but they are a **starting point, not
+legal advice**: have a lawyer who knows your country read them, and check the numbers they state (how long data is kept, the refund rule, the
+liability cap) are what you really do. Fill in who you are in `.env`; until then the pages show visible `[… not set]` placeholders:
+
+```
+VITE_LEGAL_OPERATOR=Your company or name
+VITE_LEGAL_EMAIL=privacy@yourdomain.com
+VITE_LEGAL_COUNTRY=Singapore
+VITE_LEGAL_ADDRESS=Your postal address (optional)
+```
+
+When you change what the app collects, keeps in the browser, or shares, change the text in `src/features/legal/` and the date `LEGAL_UPDATED`
+in `src/config/legal.config.ts` (a test fails if a browser storage key is missing from the policy). Account deletion is done by email
+today; a delete button would be a good next step.
+
 ## Scripts
 
 | Command | What it does |
@@ -121,7 +138,7 @@ Cloudflare's Git-connected build runs `npm run build` inside `workers/billing` (
   ER (entity-relationship) diagrams of the saved data, the page document and the features on boxes.
 - **Developer docs in the app**: run `npm run dev` and open `/dev` (development only, never in a production build): the
   diagrams, architecture, a searchable code reference read from the source, the rules and the history.
-- `docs/FEATURES.md`: one section per feature (59 of them): what it does, what it accepts and produces, what it needs, how it works and where to debug.
+- `docs/FEATURES.md`: one section per feature (60 of them): what it does, what it accepts and produces, what it needs, how it works and where to debug.
 - `docs/ARCHITECTURE.md`: how the pieces fit together (page model, iframe
   renderer, Konva overlay, saving, data).
 - `docs/HISTORY.md`: what each feature branch added, and why.
