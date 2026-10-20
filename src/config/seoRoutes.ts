@@ -50,6 +50,16 @@ export const SEO_ROUTES: SeoRoute[] = [
     description: 'Browse pages and sites other people built with Tweak, and make your own copy of one to start from.',
     summary: { heading: 'Explore pages', text: 'Pages and sites made with Tweak. Open one, or make your own copy to start from.', links: [['Try Tweak', '/try'], ['Home', '/']] },
   },
+  {
+    path: '/terms', title: 'Terms of Use — Tweak', index: true, priority: 0.3, changefreq: 'yearly',
+    description: 'The rules for using Tweak: your account, what you own, what is not allowed, downloads, and what we are and are not responsible for.',
+    summary: { heading: 'Terms of Use', text: 'The rules for using Tweak in plain words: you keep what you make, you are responsible for what you publish, and the Service is provided as it is.', links: [['Privacy Policy', '/privacy'], ['Home', '/']] },
+  },
+  {
+    path: '/privacy', title: 'Privacy Policy — Tweak', index: true, priority: 0.3, changefreq: 'yearly',
+    description: 'What personal data Tweak collects, why, who handles it, how long it is kept, and the choices and rights you have.',
+    summary: { heading: 'Privacy Policy', text: 'What we collect, why, who else handles it, how long we keep it and what you can do about it, in plain words.', links: [['Terms of Use', '/terms'], ['Home', '/']] },
+  },
   { path: '/login', title: 'Sign in — Tweak', description: 'Sign in to your Tweak account to open your saved pages.', index: false },
   { path: '/signup', title: 'Create a free account — Tweak', description: 'Create a free Tweak account to save your pages, share links and download your work.', index: false },
   { path: '/reset', title: 'Reset your password — Tweak', description: 'Get an email to choose a new Tweak password.', index: false },

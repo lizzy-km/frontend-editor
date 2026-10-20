@@ -22,7 +22,7 @@ describe('the route list', () => {
   })
 
   it('indexes only the public screens and never the account or editor ones', () => {
-    expect(INDEXED_ROUTES.map((route) => route.path)).toEqual(['/', '/try', '/guide', '/guide/full', '/gallery'])
+    expect(INDEXED_ROUTES.map((route) => route.path)).toEqual(['/', '/try', '/guide', '/guide/full', '/gallery', '/terms', '/privacy'])
     for (const prefix of NOINDEX_PREFIXES) expect(metaFor(`${prefix}123`).index, prefix).toBe(false)
     expect(metaFor('/login').index).toBe(false)
     expect(metaFor('/nowhere')).toMatchObject({ index: false, title: expect.stringContaining('not found') })

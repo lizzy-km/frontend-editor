@@ -1063,6 +1063,22 @@ development server and are 404 in a production build. All money is handled by `w
   - Tests: `showcase.test.ts` (the gate each example must pass), `site.test.ts`, `catalog.test.ts`; e2e `e2e/showcase.mjs`, `e2e/showcase-behavior.mjs`.
   - A card opens an empty or broken site -> look at the example's `build()`; run `npx vitest run src/features/showcase` and read which check fails. A filter does nothing in Preview -> the list needs `data-ui-filterable="<name>"` and the filter `data-ui-for`/`data-ui-by` (see Search and filters). A picture is missing -> its https address no longer loads (the tests only check that it is an https address).
 
+### Terms of Use and Privacy Policy
+- **What it does:** Two public pages that tell people the rules for using the app and what happens to their data.
+- **Where in the app:** `/terms` and `/privacy`; links in the home page footer and under "Create account" on the sign-up page; each page has a table of contents and a link to the other.
+- **Accepts (input):** nothing from the visitor; the operator's details from `.env` (`VITE_LEGAL_OPERATOR`, `VITE_LEGAL_EMAIL`, `VITE_LEGAL_COUNTRY`, `VITE_LEGAL_ADDRESS`).
+- **Produces (output / redirect):** the formatted text with numbered sections; a dev-only note and visible `[… not set]` placeholders while a setting is empty; sections for paid plans and the marketplace only while those features are on; a static copy for crawlers (title, description, summary from `seoRoutes.ts`).
+- **Needs:** nothing else (no account, no network).
+- **How it works:**
+  1. `TermsPage` / `PrivacyPage` render `LegalDocument` with `TERMS` / `PRIVACY` (`src/features/legal/terms/index.ts`, `privacy/index.ts`).
+  2. `visibleSections` hides sections whose `when` feature is off (`features.enable_billing`, `features.enable_marketplace`).
+  3. `Rich` (`text.tsx`) fills `{tokens}` from `legal.config.ts` and renders **bold** and links (links inside the app use the router).
+  4. Plan limits, prices, fee and payout minimum are read from `PLANS` and the marketplace constants.
+- **Debug:**
+  - Files: `src/features/legal/*`, `src/config/legal.config.ts`, `src/config/seoRoutes.ts`.
+  - Tests: `src/features/legal/legal.test.ts` (complete sections, valid tokens and links, every browser storage key listed, companies named, feature sections); e2e `e2e/legal.mjs`.
+  - Placeholders show in production -> the `VITE_LEGAL_*` values were not set when the site was built. A test fails after adding a localStorage key -> add the key to the privacy policy's storage table. The Terms still mention payments after switching billing off -> check the flag value the build used.
+
 ## Accounts and platform
 
 Developer reference for the account, storage, sharing, billing, analytics, docs and shipping features of Tweak.

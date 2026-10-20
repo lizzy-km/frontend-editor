@@ -3,6 +3,17 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/legal-pages — 2026-10-20
+- **Terms of Use** (`/terms`) and **Privacy Policy** (`/privacy`): 20 and 15 numbered sections with a table of contents, written in plain words for how the app really
+  works (accounts, content ownership and the public-page licence, what is not allowed, page code and downloads, paid plans, the marketplace, liability, ending, copyright
+  complaints; what is collected, why and the legal reason, who handles it, transfers, browser storage, how long it is kept, rights, security, children, people who build sites).
+  Linked from the home footer and the sign-up page. Paid-plan and marketplace sections show only while those features are on.
+- Who "we" are comes from `VITE_LEGAL_OPERATOR / _EMAIL / _COUNTRY / _ADDRESS`; a missing one shows a visible placeholder. Plan limits, prices, the marketplace fee and payout minimum
+  are read from the code.
+- Tests: `legal.test.ts` (10: includes drift guards for browser storage keys and named companies), `e2e/legal.mjs` (pages, table of contents, links, phone width).
+- **Not legal advice**: the texts need a lawyer's read, the operator details, and a check of the periods and policies they state (retention, refunds, the liability cap, the
+  14-month analytics period). Closing an account is by email today.
+
 ## feature/showcase-examples — 2026-10-20
 - **Finished examples**: on the paste screen, *No idea yet? Start from a finished example* opens one of four whole websites in the editor:
   **Online shop** (Alder & Co.: products and categories from the Platzi Fake Store API `api.escuelajs.co`, search, category buttons from the categories data, a quick-look pop-up

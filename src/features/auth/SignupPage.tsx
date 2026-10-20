@@ -38,6 +38,7 @@ export default function SignupPage() {
         />
         {error && <p className={styles.error} role="alert">{error}</p>}
         <Button type="submit" variant="primary" size="large" full loading={busy}>Create account</Button>
+        <p className={styles.legal}>By creating an account you agree to the <Link to="/terms">Terms of Use</Link> and the <Link to="/privacy">Privacy Policy</Link>.</p>
       </form>
     </AuthCard>
   )

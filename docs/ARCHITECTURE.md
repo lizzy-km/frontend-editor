@@ -538,6 +538,16 @@ file per topic group, helpers in `kit.mjs`); every topic starts with a figure.
   (`requires`), data / filter / pop-up / link targets exist, https pictures with alt text, Preview output, and a React export for both routers.
   `e2e/showcase.mjs` opens each from the start screen; `e2e/showcase-behavior.mjs` uses their search, filters, pop-ups, tabs and flags in Preview.
 
+## Legal pages (`features/legal/`, `config/legal.config.ts`)
+
+- `/terms` and `/privacy` are public pages (in `seoRoutes.ts`, linked from the home footer and the sign-up page). The texts are DATA
+  (`terms/part*.ts`, `privacy/part*.ts`: sections of paragraphs, lists, tables and notes; **bold**, `[links](/path)` and the tokens `{operator}`,
+  `{email}`, `{address}`, `{country}` are filled from `legal.config.ts`, which reads `VITE_LEGAL_*`; an empty one shows a visible placeholder).
+- Numbers come from the code (`PLANS`, the listing price range, the marketplace fee, the minimum payout), so the Terms cannot drift from the app.
+  Sections for paid plans and the marketplace carry `when: 'billing' | 'marketplace'` and show only while those flags are on.
+- `legal.test.ts` guards drift: every browser storage key the app uses must appear in the privacy policy's table, the companies that handle data
+  are named, tokens and links are valid, and the sections switch with the flags. Update `LEGAL_UPDATED` with any change of meaning.
+
 ## Reusable components (`model/reuse/`)
 
 - A main component is a box with `data-fe-component="Name"`; a copy (instance) is a real copy of its boxes in the page:

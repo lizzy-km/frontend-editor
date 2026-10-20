@@ -1,0 +1,40 @@
+// Terms of Use and Privacy Policy: public pages with a table of contents, linked from the home page footer and the sign-up page.
+import { check, OUT, openPage } from './browser.mjs'
+
+const { browser, page, errors } = await openPage('/')
+await page.waitForTimeout(800)
+check('home: the footer links to the Terms and the Privacy Policy', (await page.getByRole('contentinfo').getByRole('link', { name: 'Terms' }).count()) === 1 && (await page.getByRole('contentinfo').getByRole('link', { name: 'Privacy' }).count()) === 1)
+
+await page.getByRole('contentinfo').getByRole('link', { name: 'Terms' }).click()
+await page.waitForTimeout(800)
+check('terms: the page opens with its title and date', (await page.getByRole('heading', { name: 'Terms of Use', level: 1 }).isVisible()) && (await page.getByText(/Last updated/).isVisible()))
+const toc = page.getByRole('navigation', { name: 'On this page' })
+check('terms: there is a table of contents with every section', (await toc.getByRole('link').count()) >= 12)
+await toc.getByRole('link', { name: 'What you must not do' }).click()
+await page.waitForTimeout(500)
+check('terms: a table-of-contents link jumps to its section', await page.locator('#use').isVisible())
+check('terms: sections are numbered and the privacy policy is linked', (await page.locator('h2').first().innerText()).startsWith('1.') && (await page.getByRole('link', { name: 'Privacy Policy' }).count()) >= 1)
+await page.screenshot({ path: `${OUT}legal-terms.png` })
+
+await page.getByRole('link', { name: 'Privacy Policy' }).first().click()
+await page.waitForTimeout(800)
+check('privacy: the page opens', await page.getByRole('heading', { name: 'Privacy Policy', level: 1 }).isVisible())
+check('privacy: it has the table of what is collected and of browser storage', (await page.locator('table').count()) >= 4 && (await page.getByText('tweak:try-draft').count()) >= 1)
+await page.screenshot({ path: `${OUT}legal-privacy.png` })
+
+await page.goto(page.url().replace('/privacy', '/signup'))
+await page.waitForTimeout(800)
+check('sign-up: says that creating an account means agreeing to both', (await page.getByRole('link', { name: 'Terms of Use' }).isVisible()) && (await page.getByRole('link', { name: 'Privacy Policy' }).isVisible()))
+await page.getByRole('link', { name: 'Terms of Use' }).click()
+await page.waitForTimeout(600)
+check('sign-up: the Terms link opens the Terms', page.url().endsWith('/terms'))
+
+await page.setViewportSize({ width: 390, height: 800 })
+await page.waitForTimeout(400)
+check('phone: no sideways scrolling on the Terms', await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1))
+await page.goto(page.url().replace('/terms', '/privacy'))
+await page.waitForTimeout(800)
+check('phone: no sideways scrolling on the Privacy Policy', await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1))
+const real = errors.filter((message) => !/Failed to load resource|favicon|firestore|identitytoolkit|googleapis/i.test(message))
+check('no console errors', real.length === 0, real.join(' | '))
+await browser.close()
