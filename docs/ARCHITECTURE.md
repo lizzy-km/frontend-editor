@@ -228,6 +228,12 @@ run, inside a locked frame.
 - `prompts.ts`: `PROMPT_PRESETS`, `buildPrompt(brief, presetId)` = the
   preset's group intro + brief + `PROMPT_RULES` (plus `SITE_RULES`, the several-pages
   part, when the paste screen's "website" option is chosen).
+- A third kind, `'react'` (the "A React project (TypeScript)" choice in the helper): `reactRules.ts` joins `reactRulesStack.ts` (answer format as a FILE TREE plus
+  `FILE: path` blocks, the stack with a reference package.json, the feature-based folders and the exact router / zod API details), `reactRulesApp.ts` (pages and
+  routing, a mock sign-in with demo accounts and `ProtectedRoute`, typed mock data with React Query hooks and loading / empty / error states, responsive and
+  accessible pages) and `reactRulesQuality.ts` (clean-code rules, design, README, final check). The stack and versions mirror the projects Tweak downloads
+  (`export/react/projectTemplates.ts`, `routerTemplates.ts`, `forms/formKit.ts`, `dataTemplates.ts`): `prompts.test.ts` fails when they drift. The answer does not open in the
+  editor (the importer only reads html, or React projects made by Tweak), so the helper says so in step 3. `switchBriefKind` adds or removes the kind-specific brief lines.
 - `promptRules.ts` must stay in step with the parser and the editor frame:
   if the editor learns or drops something (a breakpoint, a supported
   pattern), update the rules too.

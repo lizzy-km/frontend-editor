@@ -27,7 +27,7 @@ export type AnalyticsEvents = {
   /** A React project downloaded from Tweak was opened again (and how many of its files were changed outside Tweak). */
   react_project_open: { where: Where; changed: number }
   /** A ready-made AI prompt was copied (which one, and whether the brief was changed). */
-  prompt_copy: { preset: string; edited: boolean }
+  prompt_copy: { preset: string; edited: boolean; kind: 'page' | 'site' | 'react' }
 
   // Editing (one event per undo step, never the content)
   edit: { action: EditAction }

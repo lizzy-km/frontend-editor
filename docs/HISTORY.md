@@ -3,6 +3,16 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/react-prompt — 2026-10-21
+- **"A React project (TypeScript)"** in the AI prompt helper (paste screen): a third choice beside *A web page*. It copies a prompt that makes the AI write a complete Vite + React 19 +
+  TypeScript project: several pages with lazy routes, a working mock sign-in (login, register, forgot password, a protected account page, admin / member roles, demo accounts),
+  typed mock data with React Query hooks and loading / empty / error states, search and filters kept in the URL, forms with React Hook Form + Zod, mobile-first responsive and
+  accessible pages, a feature-based folder structure with an index.ts per feature, strict clean-code rules, a README, and a final self-check. The answer format is a file tree
+  plus one block per file (with a "CONTINUE FROM" rule when it runs long).
+- The stack and versions mirror Tweak's own React download, and `prompts.test.ts` fails if they drift. The page and website prompts are unchanged (they still produce one html
+  file that opens in the editor); the React answer does not open in the editor, and the helper says so.
+- Tests: `prompts.test.ts` (11), `e2e/prompts.mjs`. Not covered: running an AI's real answer: the prompt was not tried on a live AI, so expect to tune wording after a few real runs.
+
 ## feature/legal-pages — 2026-10-20
 - **Terms of Use** (`/terms`) and **Privacy Policy** (`/privacy`): 20 and 15 numbered sections with a table of contents, written in plain words for how the app really
   works (accounts, content ownership and the public-page licence, what is not allowed, page code and downloads, paid plans, the marketplace, liability, ending, copyright

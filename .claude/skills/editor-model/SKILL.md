@@ -72,7 +72,7 @@ that break things if you ignore them.
     into the body.
 18. **Test with real pages.** `e2e/fixtures/*.html` holds real AI output.
     When a pasted page misbehaves, add it there with a check in `e2e/`.
-19. **AI prompt rules** (`features/prompts/promptRules.ts`) describe what
+19. **AI prompt rules** (`features/prompts/promptRules.ts`; the React project ones are `reactRules*.ts` and must keep the same libraries and versions as `export/react`) describe what
     the parser and frame handle best (breakpoints 1024/640, sections with
     id + class, real text, enhance-only JS). Change them together with the
     editor.
