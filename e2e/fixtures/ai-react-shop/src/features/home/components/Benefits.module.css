@@ -1,0 +1,38 @@
+.section {
+  padding: var(--space-7) 0;
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+
+.item {
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--color-olive-soft);
+}
+
+.item p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.icon {
+  display: block;
+  margin-bottom: var(--space-3);
+  font-size: 1.8rem;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

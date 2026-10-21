@@ -16,8 +16,21 @@ export const REACT_RULES_QUALITY = `8. CLEAN CODE
 10. README.md (written in full as one of the files)
 - What the project is; the run commands (Node.js 20 or newer, npm install, npm run dev, npm run build); the two demo accounts; a map of the folders; how to switch to a real API (VITE_USE_MOCK=false, VITE_API_URL and the endpoints it expects); how to add a page and how to add a feature.
 
-11. BEFORE YOU ANSWER, CHECK
+11. SO THE PROJECT CAN BE OPENED IN TWEAK (keep these exactly)
+Tweak can open this project to change its pages by clicking: it runs the app in a locked frame, visits every page and turns what it sees into an editable site. For that to work:
+- src/main.tsx finds <div id="root">, calls createRoot(...).render(...) and renders <RouterProvider router={router} />. The router is created in src/app/router.tsx with createBrowserRouter (never BrowserRouter, never a hash router) and exported as "router".
+- The signed-in person is kept in localStorage under the exact key "tweak:session" as JSON: { "token": string, "user": { "id": string, "name": string, "email": string, "role": "member" | "admin" } }. The mock sign-in writes it on login and removes it on logout, and the auth provider reads it when the app starts, so a person who already has a session is signed in at once.
+- Every style comes from imported .css or .module.css files. No CSS-in-JS and no style sheets from a CDN, except the Google Fonts link in index.html.
+- The layout uses the semantic elements <header>, <main> and <footer> directly (one header with the logo and the menu, one footer). Menu links, cards and buttons that open another page are real links (<a> or Link / NavLink with a real path such as /shop/12), never an onClick that only calls navigate().
+- Use the <header> element only for the site header (inside cards and articles use a <div> or <hgroup>). Decorative pictures use alt=""; content pictures get a helpful alt text.
+- tsconfig.json includes only "src" (vite.config.ts is not type-checked).
+- Use only the libraries in the package.json above. No import.meta.glob, no dynamic code, no web workers. Pictures are https:// addresses, never imported files.
+- Mock mode is the default: with no .env file the app uses src/data and needs no network. Every page shows its real content shortly after it opens, without waiting for a click or a hover (menus and dialogs may open on click).
+- Members-only pages redirect a signed-out visitor to /login (a <Navigate to="/login" /> inside ProtectedRoute), and show their content to a signed-in person without further steps.
+
+12. BEFORE YOU ANSWER, CHECK
 - "npm install && npm run build" would pass: every file that is imported is in the tree, everything that is imported is exported, there are no type errors in strict mode, and no unused variables.
 - Every file in the FILE TREE appears below as "FILE: ..." and nothing is shortened.
 - Every link and navigation path matches a route; the protected page sends signed-out people to /login and back; the demo accounts work.
+- Every rule in section 11 is followed exactly (the router export, the "tweak:session" key, real links, semantic layout).
 - It works at 1440px, 1024px, 768px, 390px and 360px wide, and the code reads like it was written by a careful senior engineer.`

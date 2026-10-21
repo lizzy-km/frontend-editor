@@ -1,0 +1,12 @@
+.form {
+  margin-bottom: var(--space-5);
+}
+
+.applied {
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  font-weight: 500;
+}

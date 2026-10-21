@@ -3,6 +3,17 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/react-import — 2026-10-21
+- **Open a React project Tweak did not make**: on the start screen, "Open a React project" now also accepts any Vite + React project (for example one an AI wrote to the React prompt). Tweak compiles it in the browser
+  (Sucrase), runs it in a locked frame with its libraries from esm.sh, visits every page (the router's paths and the links it shows; a visitor first, then signed in for members-only pages) and turns the pages into a
+  Tweak site: the app's header and footer shared, a page per address, menu and members-only pages marked, the app's CSS and fonts kept. The look and sample content carry over, not the project's code.
+- **Animated progress screen** while it opens: a little browser that shows each address it visits (typing, scanning beam, shimmering page), the steps (reading, starting, visiting, signing in, building) ticking off,
+  pages popping in as chips (a lock for members-only ones), a striped progress bar, a timer and counters; it calms down under reduced motion.
+- The React prompt gained the rules the import relies on ("SO THE PROJECT CAN BE OPENED IN TWEAK": exported `createBrowserRouter`, the `tweak:session` key, real links, semantic layout) and a size rule (30 to 45 files),
+  after a helper wrote a real project from the prompt (222 files, builds clean: now `e2e/fixtures/ai-react-shop`). The helper's step 3 and the guide now say the project can be opened here.
+- Tests: `engine.test.ts`, `toDoc.test.ts`, `progressState.test.ts`, `e2e/react-import.mjs` (progress screen, 13 pages found in about 25 s, members-only pages, Pages panel, Preview).
+- Not covered: projects that do not follow the prompt's rules (other routers, `BrowserRouter`, sign-in stored elsewhere) open with fewer pages; pages are snapshots (forms and data hooks do nothing until rebuilt with Tweak's own features); needs internet.
+
 ## feature/react-ideas — 2026-10-21
 - The **React project** choice in the AI helper now has its own sample ideas, all real multi-page apps with sign-in and members-only areas (the page ideas such as a cafe or a wedding are not shown for it): **Shops & marketplaces** (online
   shop, handmade marketplace, food ordering, local classifieds, plant shop with subscriptions), **Booking & services** (clinic, hotel, gym classes, event tickets, bike rental), **Learning & community** (online courses, job board,

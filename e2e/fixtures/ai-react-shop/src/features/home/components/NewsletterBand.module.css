@@ -1,0 +1,33 @@
+.band {
+  padding: var(--space-7) 0;
+  background: var(--color-olive);
+  color: #fff;
+}
+
+.inner {
+  display: grid;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.inner h2 {
+  color: #fff;
+}
+
+.inner p {
+  margin: 0;
+}
+
+.form {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+  }
+}

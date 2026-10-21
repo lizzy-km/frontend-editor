@@ -1,0 +1,17 @@
+.section {
+  padding: var(--space-7) 0;
+  background: var(--color-sand);
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.heading h2 {
+  margin: 0;
+}

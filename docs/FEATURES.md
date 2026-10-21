@@ -67,7 +67,7 @@ Paths are relative to `D:\Q_P\frontend-editor`. `editor/` below means `src/featu
 
 ### AI prompt helper
 - **What it does:** Lets someone with no code pick a page idea, edit a short description, and copy a ready prompt to paste into ChatGPT, Claude or Gemini.
-- **Third choice (React project):** a switch at the top of the helper (with its own 21 ideas that are whole apps: shops, booking, learning and community, dashboards, each with sign-in, protected pages and roles), "A web page" (opens in the editor) or "A React project (TypeScript)", builds a different prompt: a multi-page React + TypeScript project (feature folders, mock sign-in, typed mock data, responsive, clean code) that the AI writes as a file tree plus one block per file. It does not open in the editor. Rules: `reactRules*.ts`; checked against Tweak's own React download by `reactPrompt.test.ts`; e2e `e2e/prompts.mjs`.
+- **Third choice (React project):** a switch at the top of the helper (with its own 21 ideas that are whole apps: shops, booking, learning and community, dashboards, each with sign-in, protected pages and roles), "A web page" (opens in the editor) or "A React project (TypeScript)", builds a different prompt: a multi-page React + TypeScript project (feature folders, mock sign-in, typed mock data, responsive, clean code) that the AI writes as a file tree plus one block per file. It opens in the editor (see "Open a React project that Tweak did not make") when it follows the prompt's import rules. Rules: `reactRules*.ts`; checked against Tweak's own React download by `reactPrompt.test.ts`; e2e `e2e/prompts.mjs`.
 - **Where in the app:** Paste screen, the folded section "No code yet? Get a page from an AI in 3 steps" (idea chips by group, "Your page (change anything)" box, "Rules for the AI", "Copy prompt", "Open ChatGPT / Claude / Gemini" links).
 - **Accepts (input):** A preset id (chip), the edited brief text, and the paste screen's kind (`page` or `site`, passed as `kind` to `AiPromptHelper`).
 - **Produces (output / redirect):** The prompt text on the clipboard (`navigator.clipboard.writeText`), toast "Prompt copied - paste it into your AI tool" or an error toast "Couldn't copy...". Analytics `prompt_copy` (`preset`, `edited`). Links open in a new tab. Nothing is saved or sent anywhere else.
@@ -1063,6 +1063,22 @@ development server and are 404 in a production build. All money is handled by `w
   - Files: `src/features/showcase/*` (`site.ts`, `catalog.ts`, one folder per example).
   - Tests: `showcase.test.ts` (the gate each example must pass), `site.test.ts`, `catalog.test.ts`; e2e `e2e/showcase.mjs`, `e2e/showcase-behavior.mjs`.
   - A card opens an empty or broken site -> look at the example's `build()`; run `npx vitest run src/features/showcase` and read which check fails. A filter does nothing in Preview -> the list needs `data-ui-filterable="<name>"` and the filter `data-ui-for`/`data-ui-by` (see Search and filters). A picture is missing -> its https address no longer loads (the tests only check that it is an https address).
+
+### Open a React project that Tweak did not make
+- **What it does:** Opens a Vite + React project (for example one an AI wrote to the React prompt) in the editor: Tweak runs it, visits every page and turns the pages into a Tweak site you can change by clicking.
+- **Where in the app:** The paste screen (Try it and a saved page): "Already have a React project?" -> **Open a .zip** or **Choose a folder**; then "Open it as a Tweak site", an animated progress screen, a result with the pages found, and **Open in the editor**.
+- **Accepts (input):** a .zip or folder with package.json (React), index.html and src/main.tsx; the router created with `createBrowserRouter`; the signed-in person kept under the localStorage key `tweak:session` (to see members-only pages). node_modules, dist and pictures are skipped.
+- **Produces (output / redirect):** a `PageDoc` site: first page with the app's header and footer as the shared layout, one page per address (a changing address like /shop/:id keeps one example), the pages in the header menu listed in the menu, members-only pages private, the app's CSS as page CSS and its fonts as links. Notes about what could not be read (pictures, `import.meta.glob`, pages that did not open). Pages are a snapshot: the project's own code does not carry over.
+- **Needs:** internet (React and the project's libraries load from esm.sh); a project that follows the prompt's "SO THE PROJECT CAN BE OPENED IN TWEAK" rules; no account.
+- **How it works:**
+  1. `ReactProjectOpener.load` reads the files; with no `.tweak` snapshot and `detectReactApp` ok it shows `AppProjectImport`.
+  2. `importReactApp` (lazy) -> `compileProject` (Sucrase, import resolution, library list) -> `crawlApp`.
+  3. `crawlApp` starts the app in a locked frame (`startRunner`: import map, module system, memory router), visits routes and links (`goto`, wait until calm, `capture`), repeats signed in for pages that redirected to the login.
+  4. `crawlToDoc` builds the site (`toSite`, `addPage`, menu and private marks, CSS, fonts); `ImportProgress` shows the events while it runs.
+- **Debug:**
+  - Files: `src/features/importReact/*` (`compile.ts`, `externals.ts`, `runner.ts`, `runner/runtime.js`, `crawl.ts`, `toDoc.ts`, `importApp.ts`), `src/features/import/AppProjectImport.tsx`, `ImportProgress.tsx`, `progressState.ts`.
+  - Tests: `importReact/engine.test.ts`, `toDoc.test.ts`, `import/progressState.test.ts`; e2e `e2e/react-import.mjs` (opens the sample app in `e2e/fixtures/ai-react-shop`: progress screen, 13 pages, members-only pages, Pages panel, Preview), `react-import-debug.mjs` (prints the status text).
+  - "Failed to resolve module specifier" -> a library is missing from the import map (`externals.ts`). Stuck at "Starting your app" -> a library did not load (offline?) or the app threw at start: the message is shown. Few pages found -> links are not real `<a>` links, or the router is not `createBrowserRouter`. No members-only pages -> the session key is not `tweak:session`. Menu shows the wrong page highlighted -> the active state was captured from the home page.
 
 ### Terms of Use and Privacy Policy
 - **What it does:** Two public pages that tell people the rules for using the app and what happens to their data.

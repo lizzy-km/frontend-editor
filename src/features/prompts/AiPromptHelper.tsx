@@ -93,7 +93,7 @@ export function AiPromptHelper({ kind: pageKind = 'page' }: { kind?: PromptKind 
           ))}
         </div>
         {kind === 'react'
-          ? <p className={styles.step}><b>3.</b> The AI answers with a list of files. Save each one at its path in a new folder, then run <code>npm install</code> and <code>npm run dev</code> (needs Node.js 20 or newer). This kind of project does not open in Tweak.</p>
+          ? <p className={styles.step}><b>3.</b> The AI answers with a list of files. Save each one at its path in a new folder. Then open that folder here (<b>Open a React project</b>, below the paste box) to change its pages by clicking, or run it on your computer with <code>npm install</code> and <code>npm run dev</code> (needs Node.js 20 or newer).</p>
           : <p className={styles.step}><b>3.</b> Copy the AI’s whole answer and paste it into the box above.</p>}
       </div>
     </details>

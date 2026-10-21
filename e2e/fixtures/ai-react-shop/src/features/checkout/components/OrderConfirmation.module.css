@@ -1,0 +1,28 @@
+.box {
+  max-width: 620px;
+  margin: var(--space-6) auto var(--space-8);
+  padding: var(--space-7) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-olive-soft);
+  text-align: center;
+}
+
+.tick {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--space-4);
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-olive);
+  color: #fff;
+  font-size: 2rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}

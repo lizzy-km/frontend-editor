@@ -51,7 +51,7 @@ check('React prompt carries the chosen app', react.includes('Loomly') && react.i
 check('React prompt asks for a multi-page React + TypeScript project', react.includes('multi-page React + TypeScript web app') && react.includes('PART 2 — OUTPUT RULES FOR A REACT + TYPESCRIPT PROJECT'))
 check('React prompt has the stack, folders, sign-in and mock data rules', ['react-router', 'src/features/<name>/', 'ProtectedRoute', 'VITE_USE_MOCK', 'admin@example.com'].every((text) => react.includes(text)))
 check('React prompt is not the single html page rules', !react.includes('ONE html code block') && !react.includes('PART 3'))
-check('React choice: step 3 says it does not open in Tweak', await page.getByText('does not open in Tweak').isVisible())
+check('React choice: step 3 says the project can be opened here', await page.getByText('Open a React project').first().isVisible())
 await page.getByRole('radio', { name: /A web page/ }).click()
 check('back to a web page: the brief loses the React-only line', !(await brief.inputValue()).includes('Features it needs'))
 check('no console errors', errors.length === 0, errors.join(' | '))

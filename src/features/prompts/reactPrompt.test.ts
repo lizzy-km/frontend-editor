@@ -25,7 +25,7 @@ describe('the React project prompt', () => {
       'FILE TREE', 'FILE: path', 'CONTINUE FROM', 'src/features/<name>/', 'src/shared/ui/', 'createBrowserRouter', 'lazy',
       'ProtectedRoute', 'admin@example.com / admin123', 'VITE_USE_MOCK', 'react-hook-form', 'zod', '@tanstack/react-query',
       'EmptyState', 'ErrorState', 'Mobile first', 'min-width: 640px', 'prefers-reduced-motion', 'strict', 'no "any"', 'README.md', 'BEFORE YOU ANSWER',
-      'npm install && npm run build', 'react-router/dom', 'z.email()',
+      'npm install && npm run build', 'react-router/dom', 'z.email()', 'SO THE PROJECT CAN BE OPENED IN TWEAK', 'tweak:session', 'createBrowserRouter (never BrowserRouter', 'SIZE: the whole answer', 'src/shared/lib/session.ts', 'useSyncExternalStore', 'no import cycles',
     ]) expect(react, topic).toContain(topic)
   })
 

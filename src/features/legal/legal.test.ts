@@ -51,7 +51,7 @@ describe('what the texts say matches what the app does', () => {
     const walk = (dir: string) => {
       for (const name of readdirSync(dir)) {
         const path = join(dir, name)
-        if (statSync(path).isDirectory()) { if (name !== 'export' && name !== 'serialize') walk(path); continue } // sites people publish keep their own keys
+        if (statSync(path).isDirectory()) { if (!['export', 'serialize', 'importReact'].includes(name)) walk(path); continue } // sites people publish keep their own keys
         if (!/\.(ts|tsx)$/.test(name) || /\.test\./.test(name)) continue
         for (const match of readFileSync(path, 'utf8').matchAll(/(?:KEY|STORAGE_KEY|HINT_KEY)\s*=\s*'([^']+)'/g)) keys.add(match[1]!)
       }

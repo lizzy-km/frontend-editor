@@ -1,0 +1,37 @@
+.band {
+  padding: var(--space-7) 0;
+  background: var(--color-olive);
+  color: #fff;
+}
+
+.inner {
+  display: grid;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.inner h2 {
+  color: #fff;
+}
+
+.inner p {
+  margin: 0;
+  max-width: 60ch;
+}
+
+.inner .button {
+  justify-self: start;
+  border-color: #fff;
+  color: #fff;
+}
+
+.inner .button:hover {
+  background: rgb(255 255 255 / 16%);
+  color: #fff;
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: 1fr auto;
+  }
+}

@@ -1,0 +1,22 @@
+.badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.processing {
+  background: #fdf0d2;
+  color: #7a4b00;
+}
+
+.shipped {
+  background: #dce8f7;
+  color: #1c4373;
+}
+
+.delivered {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}

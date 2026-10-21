@@ -1,0 +1,18 @@
+.section {
+  padding: var(--space-5) 0 var(--space-8);
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.notice {
+  margin: 0;
+  color: var(--color-success);
+  font-weight: 500;
+}

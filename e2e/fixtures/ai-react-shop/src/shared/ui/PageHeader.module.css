@@ -1,0 +1,31 @@
+.band {
+  padding: var(--space-7) 0 var(--space-6);
+  background: var(--color-sand);
+  border-bottom: 1px solid var(--color-sand-deep);
+}
+
+.eyebrow {
+  margin-bottom: var(--space-2);
+  color: var(--color-olive);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-bottom: var(--space-2);
+}
+
+.intro {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-lg);
+}
+
+@media (min-width: 1024px) {
+  .band {
+    padding: var(--space-8) 0 var(--space-7);
+  }
+}

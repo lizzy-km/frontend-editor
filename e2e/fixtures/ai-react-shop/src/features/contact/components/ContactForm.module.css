@@ -1,0 +1,10 @@
+.thanks {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-success-soft);
+}
+
+.thanks h2 {
+  color: var(--color-success);
+  font-size: var(--text-xl);
+}

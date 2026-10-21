@@ -2,8 +2,10 @@ import { useRef, useState } from 'react'
 import type { Where } from '@/features/analytics/events'
 import { track } from '@/features/analytics/track'
 import { readSnapshot } from '@/features/export/react/snapshot'
+import { detectReactApp } from '@/features/importReact/projectFiles'
 import type { PageDoc } from '@/features/editor/model/types'
 import { Button, Icon } from '@/shared/ui'
+import { AppProjectImport } from './AppProjectImport'
 import { readFolder, readZip } from './readProject'
 import styles from './PasteScreen.module.css'
 
@@ -19,6 +21,8 @@ export function ReactProjectOpener({ onOpen, where }: { onOpen: (doc: PageDoc) =
   const [busy, setBusy] = useState(false)
   const [problem, setProblem] = useState('')
   const [waiting, setWaiting] = useState<Waiting | null>(null)
+  // A React project that Tweak did not make: it can still be opened by running it (importReact).
+  const [foreign, setForeign] = useState<Record<string, string> | null>(null)
 
   const open = (doc: PageDoc, changed: number) => {
     track('react_project_open', { where, changed })
@@ -26,10 +30,11 @@ export function ReactProjectOpener({ onOpen, where }: { onOpen: (doc: PageDoc) =
   }
 
   const load = async (read: () => Promise<Record<string, string>>) => {
-    setBusy(true); setProblem(''); setWaiting(null)
+    setBusy(true); setProblem(''); setWaiting(null); setForeign(null)
     try {
-      const result = readSnapshot(await read())
-      if (!result.ok) setProblem(result.problem)
+      const files = await read()
+      const result = readSnapshot(files)
+      if (!result.ok) { if (detectReactApp(files).ok) setForeign(files); else setProblem(result.problem) }
       else if (result.changed.length) setWaiting({ doc: result.doc, changed: result.changed })
       else open(result.doc, 0)
     } catch (error) {
@@ -41,7 +46,7 @@ export function ReactProjectOpener({ onOpen, where }: { onOpen: (doc: PageDoc) =
 
   return (
     <div className={styles.opener}>
-      <p><strong>Already have a React project from Tweak?</strong> Open it again to keep editing by clicking.</p>
+      <p><strong>Already have a React project?</strong> Open it to keep editing by clicking: one Tweak made opens exactly; any other Vite + React project is opened by running it.</p>
       <div className={styles.openerRow}>
         <Button icon="upload" disabled={busy} onClick={() => zipInput.current?.click()}>Open a .zip</Button>
         <Button icon="layers" variant="ghost" disabled={busy} onClick={() => folderInput.current?.click()}>Choose a folder</Button>
@@ -51,6 +56,7 @@ export function ReactProjectOpener({ onOpen, where }: { onOpen: (doc: PageDoc) =
         onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void load(() => readZip(file)) }} />
       <input ref={folderInput} type="file" hidden aria-label="React project folder" {...{ webkitdirectory: '' }}
         onChange={(event) => { const list = event.target.files; if (list?.length) void load(() => readFolder(list)) }} />
+      {foreign && <AppProjectImport files={foreign} onOpen={(doc) => open(doc, 0)} onCancel={() => setForeign(null)} />}
       {problem && <p className={styles.problem} role="alert"><Icon name="help" size={16} /> {problem}</p>}
       {waiting && (
         <div className={styles.note} role="alert">
