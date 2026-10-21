@@ -1,0 +1,6 @@
+.status {
+  min-height: 1.6em;
+  margin: var(--space-3) 0 0;
+  color: var(--color-success);
+  font-weight: 500;
+}

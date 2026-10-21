@@ -1,0 +1,23 @@
+.wrap {
+  max-width: 520px;
+  padding: var(--space-6) 0 var(--space-8);
+}
+
+.card {
+  box-shadow: var(--shadow-md);
+}
+
+.body {
+  padding: var(--space-5);
+}
+
+.footer {
+  margin-top: var(--space-5);
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .body {
+    padding: var(--space-6);
+  }
+}

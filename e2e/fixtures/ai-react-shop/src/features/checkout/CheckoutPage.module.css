@@ -1,0 +1,13 @@
+.layout {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-5) 0 var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr 420px;
+    align-items: start;
+    gap: var(--space-8);
+  }
+}

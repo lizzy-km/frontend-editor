@@ -136,6 +136,9 @@ that break things if you ignore them.
     `propagate` inside `useDocStore.commit`, as a three-way merge against the previous document, so edit actions need no
     special code. Never nest components; any new output path must go through `stripComponents` (or `forVisitors`).
 
+29. **Running a project's own code (`features/importReact`)** happens only in a hidden iframe with `sandbox="allow-scripts"` and NEVER allow-same-origin (same as rule 6): it gets storage of its own inside the frame
+    and talks to the editor only through `runner.ts` messages. What comes back is HTML, CSS and links, never code, and it goes through the normal paste importer.
+
 ## Adding a new kind of edit
 Write a function in `features/editor/actions/` that calls `updateNodes` or
 `updateDoc`, then add a test in `model/*.test.ts` if it adds new tree logic.

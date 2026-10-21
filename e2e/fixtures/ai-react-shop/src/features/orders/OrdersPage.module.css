@@ -1,0 +1,10 @@
+.section {
+  padding-bottom: var(--space-8);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 860px;
+  padding-top: var(--space-5);
+}

@@ -1,0 +1,10 @@
+.error {
+  color: var(--color-danger);
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}

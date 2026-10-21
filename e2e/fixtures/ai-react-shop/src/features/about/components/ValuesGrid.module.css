@@ -1,0 +1,26 @@
+.section {
+  padding: var(--space-7) 0;
+  background: var(--color-sand);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.body {
+  padding: var(--space-5);
+}
+
+.body p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+  }
+}

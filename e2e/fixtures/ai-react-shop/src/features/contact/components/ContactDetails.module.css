@@ -1,0 +1,14 @@
+.box {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-sand);
+}
+
+.title {
+  margin-bottom: var(--space-1);
+  font-size: var(--text-lg);
+}
+
+.box p {
+  overflow-wrap: anywhere;
+}

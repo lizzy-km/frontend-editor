@@ -232,8 +232,7 @@ run, inside a locked frame.
   `FILE: path` blocks, the stack with a reference package.json, the feature-based folders and the exact router / zod API details), `reactRulesApp.ts` (pages and
   routing, a mock sign-in with demo accounts and `ProtectedRoute`, typed mock data with React Query hooks and loading / empty / error states, responsive and
   accessible pages) and `reactRulesQuality.ts` (clean-code rules, design, README, final check). The stack and versions mirror the projects Tweak downloads
-  (`export/react/projectTemplates.ts`, `routerTemplates.ts`, `forms/formKit.ts`, `dataTemplates.ts`): `reactPrompt.test.ts` fails when they drift. The answer does not open in the
-  editor (the importer only reads html, or React projects made by Tweak), so the helper says so in step 3. `switchBriefKind` adds or removes the kind-specific brief lines.
+  (`export/react/projectTemplates.ts`, `routerTemplates.ts`, `forms/formKit.ts`, `dataTemplates.ts`): `reactPrompt.test.ts` fails when they drift. The answer opens in the editor through `features/importReact` (next section) when it follows the "SO THE PROJECT CAN BE OPENED IN TWEAK" rules. `switchBriefKind` adds or removes the kind-specific brief lines.
 - React project IDEAS are different from page ideas: `reactGroups.ts` (`REACT_PROMPT_GROUPS`: Shops & marketplaces, Booking & services, Learning & community,
   Dashboards & tools, each with a blank start) holds whole apps written with `presets/appBrief.ts` (`appBrief`: purpose, users and roles, numbered pages with addresses, features,
   data with sample counts, look, fonts, details) in `presets/apps*.ts` (21 ideas). Each already has its own pages and features lines, so `briefFor(id, 'react')` uses it as it is. The helper keeps a
@@ -558,6 +557,24 @@ file per topic group, helpers in `kit.mjs`); every topic starts with a figure.
   Sections for paid plans and the marketplace carry `when: 'billing' | 'marketplace'` and show only while those flags are on.
 - `legal.test.ts` guards drift: every browser storage key the app uses must appear in the privacy policy's table, the companies that handle data
   are named, tokens and links are valid, and the sections switch with the flags. Update `LEGAL_UPDATED` with any change of meaning.
+
+## Opening React projects Tweak did not make (`features/importReact`, `import/AppProjectImport.tsx`)
+
+- Tweak's own React downloads reopen exactly from `.tweak/project.json` (`export/react/snapshot.ts`). Any other Vite + React project (for example one an AI wrote to the React prompt)
+  is opened by RUNNING it: `ReactProjectOpener` sees there is no snapshot, `detectReactApp` (`projectFiles.ts`) says it is a React app, and `AppProjectImport` offers "Open it as a Tweak site".
+- `compile.ts` turns every file under `src/` into plain JavaScript with Sucrase (TypeScript, JSX, CommonJS; `import.meta.env` becomes `__env`), keeps CSS, CSS Modules and JSON, and records for every
+  import where it points (`resolveImport`: alias `@/`, relative paths, extensions, index files) or which library it is. `externals.ts` maps libraries to esm.sh addresses at the version the project asks for,
+  with one shared React (`?external=react,react-dom`).
+- `runner.ts` + `runner/runtime.js` start the app in a hidden iframe with `sandbox="allow-scripts"` only (never allow-same-origin, like the editor frame): an import map for the libraries, a tiny module
+  system, in-frame storage instead of the real one, a memory router in place of `createBrowserRouter` (starting at the path we want, so `window.__router` can navigate), CSS Modules with unique class
+  names. Messages: `goto`, `status` (how much the page changed), `capture` (the page's HTML, styles, links, router paths). `capture()` waits until the page stops changing.
+- `crawl.ts` visits the router's paths and the links it finds (one example page per changing address like `/shop/:id`, at most 30 pages), as a visitor first. A page that sends a visitor to the login
+  is members-only: it is visited again after the frame is started with a session saved under `tweak:session` (a convention of the React prompt). `toDoc.ts` makes one Tweak site: the first page with the
+  app's `<header>` and `<footer>` as the shared layout (`toSite`), a page for every other address (`addPage`), the pages in the header's menu, members-only pages marked, the app's stylesheets as the page
+  CSS and its fonts as links. `importApp.ts` ties it together and reports `ImportEvent`s; `import/progressState.ts` and `ImportProgress.tsx` turn them into the animated progress screen (little browser,
+  steps, pages popping in, progress bar; calm under `prefers-reduced-motion`).
+- What carries over: the look and the sample content of each page. What does not: the project's own code (sign-in, data hooks, forms, active menu state). A download from Tweak is a new Tweak project.
+- Libraries load from esm.sh at import time, so the import needs internet.
 
 ## Reusable components (`model/reuse/`)
 

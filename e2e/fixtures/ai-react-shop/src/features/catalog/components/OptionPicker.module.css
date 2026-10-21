@@ -1,0 +1,60 @@
+.group {
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.option {
+  position: relative;
+}
+
+.input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pill {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  transition:
+    background-color var(--duration) ease,
+    border-color var(--duration) ease,
+    color var(--duration) ease;
+}
+
+.input:hover + .pill {
+  border-color: var(--color-olive);
+}
+
+.input:checked + .pill {
+  border-color: var(--color-olive);
+  background: var(--color-olive);
+  color: #fff;
+}
+
+.input:focus-visible + .pill {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}

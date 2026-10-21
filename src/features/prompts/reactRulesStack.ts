@@ -37,6 +37,7 @@ The result is a complete, runnable, multi-page web app (Vite + React + TypeScrip
 1. ANSWER FORMAT
 - Reply with ONLY these three things, in this order: (a) a line "FILE TREE" followed by ONE text code block listing every file of the project; (b) every file, each written as a line "FILE: path/from/the/project/root" followed by ONE code block (with its language) holding the COMPLETE file; (c) a final "RUN IT" block with the commands.
 - No explanations, notes or alternatives between the files. Never write "...", "// rest unchanged", "same as before" or "add more here". Every file in the tree appears in full below it.
+- SIZE: the whole answer has to fit in a few chat messages, so keep the project compact: aim for 30 to 45 files in total, no more than 12 pages, and make a few well-made files rather than many tiny ones (one CSS Module per feature page or per shared component is enough). When space is short, drop optional extras before dropping a required page, the sign-in or the README.
 - Keep each file focused and under about 150 lines; split larger ones. If you run out of room, finish the file you are writing completely, end with the line "CONTINUE FROM: <next file path>" and stop; continue exactly there when asked.
 - Forward slashes in paths. Text files only: pictures are https:// addresses, never files.
 
@@ -50,7 +51,8 @@ ${REACT_PACKAGE_JSON}
 
 3. FOLDER STRUCTURE (by feature, not by file type)
   src/main.tsx                    mounts the app
-  src/app/                        router.tsx, providers.tsx (QueryClient, auth), layouts/RootLayout.tsx, Header.tsx, Footer.tsx
+  src/app/                        router.tsx, providers.tsx (QueryClient, auth)
+  src/app/layouts/                RootLayout.tsx, Header.tsx, Footer.tsx (the shared layout: always here)
   src/features/<name>/            one folder per part of the product (for example catalog, auth, contact, home)
       <Name>Page.tsx              the page: thin, only puts components together
       components/                 the feature's own components (one per file)
@@ -63,5 +65,6 @@ ${REACT_PACKAGE_JSON}
   src/api/client.ts               the axios client and the USE_MOCK switch
   src/data/                       typed mock data, one file per list
   src/styles/                     tokens.css (variables), global.css (reset, base)
-- A feature imports another feature only through its index.ts; shared/ never imports from features/; pages never fetch data themselves.
+- A feature imports another feature only through its index.ts; shared/ never imports from features/; pages never fetch data themselves. If two features need each other, move the shared part into shared/ or into the feature that owns the data, so there are no import cycles.
+- State shared between pages that is not sign-in (a cart, favourites) lives in a small store in src/shared/lib built on useSyncExternalStore and localStorage (its own key), with a hook in src/shared/hooks: no extra library. The session helpers (read, write, clear "tweak:session") live in src/shared/lib/session.ts so both the auth feature and the axios client can use them.
 - One component per file, PascalCase file names; hooks start with "use"; every feature has an index.ts that exports only what others need.`

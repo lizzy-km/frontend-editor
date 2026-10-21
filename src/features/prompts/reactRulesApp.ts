@@ -1,7 +1,7 @@
 /** Part 2 of the React prompt, middle third: the pages, sign-in, the mock data, and responsive and accessible pages. */
 export const REACT_RULES_APP = `4. PAGES AND ROUTING
 - Build the pages named in Part 1 (in that order). If none are given, make 6 to 9 that suit the subject: Home, a list page with search and filters, a detail page at a dynamic address (for example /products/:id), About, Contact, Log in, Create account, Forgot password, an Account page (signed-in only) and a Not found page.
-- All routes live in src/app/router.tsx. Every page is lazy loaded (the "lazy: () => import(...)" route property). A shared RootLayout gives every page the same header (logo, NavLink navigation with an active style, Log in / Sign up buttons that become the person's name and a Log out button when signed in, a menu button on phones), an <Outlet /> and the footer.
+- All routes live in src/app/router.tsx. Every page is lazy loaded with the lazy route property written exactly as in section 2 (lazy: async () => ({ Component: (await import(...)).default })). A shared RootLayout gives every page the same header (logo, NavLink navigation with an active style, Log in / Sign up buttons that become the person's name and a Log out button when signed in, a menu button on phones), an <Outlet /> and the footer.
 - Scroll to the top when the page changes. Set a useful document title on every page (a small useDocumentTitle hook). Add an errorElement to the root route and a "*" route for the Not found page.
 - Every page has exactly one h1, is complete, and has real, specific copy for this business or person: no lorem ipsum, no "Your text here". Home has a big hero, highlights and a clear next step; other pages start with a smaller title band.
 
