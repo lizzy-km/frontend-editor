@@ -16,6 +16,8 @@ function zipFolder(folder, target) {
     }
   }
   walk(folder)
+  // Text that only LOOKS like an import must not break the import (it once asked a CDN for a library called " type=").
+  files['my-shop/src/zz-trap.ts'] = new TextEncoder().encode('export const trap = [\'Read more from " type=" here\', \'import " x" later\', "from \'Google Fonts\'"]\n')
   mkdirSync(OUT, { recursive: true })
   writeFileSync(target, zipSync(files))
 }

@@ -48,7 +48,7 @@ export function compileProject(files: Files): Compiled | { error: string } {
       if (/import\.meta\.glob/.test(source)) warnings.push(`${path} uses import.meta.glob, which is not supported.`)
       for (const spec of importsOf(source)) {
         const target = resolveImport(path, spec, files)
-        if (isBareSpecifier(spec)) externals.add(spec)
+        if (isBareSpecifier(spec)) externals.add(spec.trim())
         else deps[spec] = target && typeOf(target) ? target : ''
         if (!isBareSpecifier(spec) && !deps[spec]) warnings.push(`${path} imports "${spec}", which was left out (pictures and other files are not read).`)
       }

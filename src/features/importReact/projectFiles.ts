@@ -4,7 +4,7 @@ export type Files = Record<string, string>
 const SCRIPT_EXT = ['.tsx', '.ts', '.jsx', '.js']
 const ENTRIES = ['src/main.tsx', 'src/main.jsx', 'src/index.tsx', 'src/index.jsx', 'src/main.ts', 'src/main.js']
 
-export const isBareSpecifier = (spec: string) => !spec.startsWith('.') && !spec.startsWith('/') && !spec.startsWith('@/') && !spec.startsWith('~/')
+export const isBareSpecifier = (spec: string) => !spec.includes("=") && !spec.includes("?") && !spec.includes(")") && !spec.startsWith('.') && !spec.startsWith('/') && !spec.startsWith('@/') && !spec.startsWith('~/')
 
 /** Joins and cleans a path ("src/a/../b.ts" -> "src/b.ts"). */
 export function normalizePath(path: string): string {
@@ -30,10 +30,16 @@ export function resolveImport(from: string, spec: string, files: Files): string 
   return null
 }
 
+/** A real library name ("react", "@scope/pkg", "react-router/dom") or a path ("./a", "@/a", "../b"): no spaces, "=", quotes or tags, so text that only looks like an import is ignored. */
+export function isPlausibleSpecifier(spec: string): boolean {
+  if (/[\s=<>'"`{}()]/.test(spec) || spec.length > 214) return false
+  return isBareSpecifier(spec) ? /^(@[a-z0-9~._-]+\/)?[a-z0-9~._-]+(\/[\w.~-]+)*$/i.test(spec) : true
+}
+
 /** The import specifiers a source file uses: `import x from "a"`, `import "a"`, `export … from "a"` and `import("a")`. */
 export function importsOf(source: string): string[] {
   const found = new Set<string>()
-  for (const match of source.matchAll(/(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*)(['"])([^'"\n]+)\1/g)) found.add(match[2]!)
+  for (const match of source.matchAll(/(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*)(['"])([^'"\n]+)\1/g)) if (isPlausibleSpecifier(match[2]!)) found.add(match[2]!)
   return [...found]
 }
 

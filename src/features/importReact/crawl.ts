@@ -56,6 +56,7 @@ export async function crawlApp(compiled: Compiled, dependencies: Record<string, 
       if (path !== '/' || signedIn) await runner.goto(path)
       const snap = await runner.capture()
       for (const style of snap.styles) styles.add(style)
+      for (const problem of snap.errors) if (warnings.length < 6 && !warnings.includes(problem)) warnings.push(problem)
       routes = snap.routes.length > routes.length ? snap.routes : routes
       const final = pathOf(snap.path)
       if (final !== pathOf(path)) { if (!signedIn && LOGIN.test(final)) protectedPaths.add(pathOf(path)); return snap.links.length ? { ...snap, html: '' } : null }

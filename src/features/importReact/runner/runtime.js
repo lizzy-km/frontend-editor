@@ -24,7 +24,10 @@ try {
   // Libraries (from the CDN), each as { __esModule, default, …named } so both import styles work.
   const wrap = (namespace) => Object.assign(Object.create(null), namespace, { __esModule: true })
   const ext = {}
-  for (const spec of cfg.externals) ext[spec] = wrap(await import(spec))
+  // A library that cannot be loaded is noted and skipped: the app only fails if it really uses it.
+  for (const spec of cfg.externals) {
+    try { ext[spec] = wrap(await import(spec)) } catch (error) { errors.push(`The library "${spec}" could not be loaded: ${error && error.message ? error.message : error}`) }
+  }
   const React = ext.react
 
   // The app asks for a browser router; there is no address bar here, so it gets a router that starts where we say.
