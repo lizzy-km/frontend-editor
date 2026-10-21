@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { track } from '@/features/analytics/track'
 import { Button, Icon, toast } from '@/shared/ui'
-import { briefFor, buildPrompt, PROMPT_GROUPS, PROMPT_PRESETS, rulesFor, switchBriefKind, type PromptKind } from './prompts'
+import { briefFor, buildPrompt, PROMPT_GROUPS, PROMPT_PRESETS, REACT_PROMPT_GROUPS, REACT_PROMPT_PRESETS, rulesFor, switchBriefKind, type PromptKind } from './prompts'
 import styles from './AiPromptHelper.module.css'
 
 /** Where people usually paste the prompt. Plain links, opened in a new tab. */
@@ -17,22 +17,26 @@ const AI_TOOLS = [
  */
 export function AiPromptHelper({ kind: pageKind = 'page' }: { kind?: PromptKind }) {
   // "A web page" opens in this editor; "A React project" is a project of many files that runs on your own computer.
+  // Each has its own ideas and its own description, so switching back and forth keeps what was typed.
   const [output, setOutput] = useState<'html' | 'react'>('html')
   const kind: PromptKind = output === 'react' ? 'react' : pageKind
-  const [presetId, setPresetId] = useState(PROMPT_PRESETS[1]!.id)
-  const [brief, setBrief] = useState(() => briefFor(PROMPT_PRESETS[1]!.id, kind))
+  const [htmlIdea, setHtmlIdea] = useState({ id: PROMPT_PRESETS[1]!.id, brief: briefFor(PROMPT_PRESETS[1]!.id, pageKind) })
+  const [reactIdea, setReactIdea] = useState({ id: REACT_PROMPT_PRESETS[1]!.id, brief: briefFor(REACT_PROMPT_PRESETS[1]!.id, 'react') })
   const [copied, setCopied] = useState(false)
+  const idea = output === 'react' ? reactIdea : htmlIdea
+  const setIdea = output === 'react' ? setReactIdea : setHtmlIdea
+  const groups = output === 'react' ? REACT_PROMPT_GROUPS : PROMPT_GROUPS
+  const presetId = idea.id
+  const brief = idea.brief
+  const setBrief = (text: string) => setIdea((current) => ({ ...current, brief: text }))
 
-  const choose = (id: string) => {
-    setPresetId(id)
-    setBrief(briefFor(id, kind))
-  }
+  const choose = (id: string) => setIdea({ id, brief: briefFor(id, kind) })
 
-  // Switching what is made (one page, website, React project) adds or removes the lines only that kind needs, keeping what was typed.
-  const [seenKind, setSeenKind] = useState(kind)
-  if (seenKind !== kind) {
-    setSeenKind(kind)
-    setBrief((current) => switchBriefKind(current, kind))
+  // Switching between one page and a website adds or removes the pages line, keeping what was typed.
+  const [seenKind, setSeenKind] = useState(pageKind)
+  if (seenKind !== pageKind) {
+    setSeenKind(pageKind)
+    setHtmlIdea((current) => ({ ...current, brief: switchBriefKind(current.brief, pageKind) }))
   }
 
   const copy = async () => {
@@ -57,8 +61,8 @@ export function AiPromptHelper({ kind: pageKind = 'page' }: { kind?: PromptKind 
           <button type="button" role="radio" aria-checked={output === 'html'} className={styles.chip} onClick={() => setOutput('html')}>A web page <small>opens in this editor</small></button>
           <button type="button" role="radio" aria-checked={output === 'react'} className={styles.chip} onClick={() => setOutput('react')}>A React project (TypeScript) <small>runs on your computer</small></button>
         </div>
-        <p className={styles.step}><b>1.</b> Pick an idea close to yours, then change the description below in your own words.</p>
-        {PROMPT_GROUPS.map((group) => (
+        <p className={styles.step}><b>1.</b> {output === 'react' ? 'Pick an app close to yours' : 'Pick an idea close to yours'}, then change the description below in your own words.</p>
+        {groups.map((group) => (
           <div key={group.id} className={styles.group}>
             <p className={styles.groupLabel}>{group.label}</p>
             <div className={styles.chips} role="radiogroup" aria-label={group.label}>
@@ -71,7 +75,7 @@ export function AiPromptHelper({ kind: pageKind = 'page' }: { kind?: PromptKind 
             </div>
           </div>
         ))}
-        <label className={styles.briefLabel} htmlFor="ai-brief">Your page (change anything)</label>
+        <label className={styles.briefLabel} htmlFor="ai-brief">{output === 'react' ? 'Your app (change anything)' : 'Your page (change anything)'}</label>
         <textarea id="ai-brief" className={styles.brief} value={brief} spellCheck
           onChange={(event) => setBrief(event.target.value)} />
         <details className={styles.rules}>

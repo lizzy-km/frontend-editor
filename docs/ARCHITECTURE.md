@@ -232,8 +232,13 @@ run, inside a locked frame.
   `FILE: path` blocks, the stack with a reference package.json, the feature-based folders and the exact router / zod API details), `reactRulesApp.ts` (pages and
   routing, a mock sign-in with demo accounts and `ProtectedRoute`, typed mock data with React Query hooks and loading / empty / error states, responsive and
   accessible pages) and `reactRulesQuality.ts` (clean-code rules, design, README, final check). The stack and versions mirror the projects Tweak downloads
-  (`export/react/projectTemplates.ts`, `routerTemplates.ts`, `forms/formKit.ts`, `dataTemplates.ts`): `prompts.test.ts` fails when they drift. The answer does not open in the
+  (`export/react/projectTemplates.ts`, `routerTemplates.ts`, `forms/formKit.ts`, `dataTemplates.ts`): `reactPrompt.test.ts` fails when they drift. The answer does not open in the
   editor (the importer only reads html, or React projects made by Tweak), so the helper says so in step 3. `switchBriefKind` adds or removes the kind-specific brief lines.
+- React project IDEAS are different from page ideas: `reactGroups.ts` (`REACT_PROMPT_GROUPS`: Shops & marketplaces, Booking & services, Learning & community,
+  Dashboards & tools, each with a blank start) holds whole apps written with `presets/appBrief.ts` (`appBrief`: purpose, users and roles, numbered pages with addresses, features,
+  data with sample counts, look, fonts, details) in `presets/apps*.ts` (21 ideas). Each already has its own pages and features lines, so `briefFor(id, 'react')` uses it as it is. The helper keeps a
+  separate chosen idea and description per output, so switching between "A web page" and "A React project" keeps what was typed. `reactIdeas.test.ts` checks every idea is a real app (at least 8 pages,
+  Log in, a protected area, 4+ features, 3+ data lists, demo accounts, roles).
 - `promptRules.ts` must stay in step with the parser and the editor frame:
   if the editor learns or drops something (a breakpoint, a supported
   pattern), update the rules too.

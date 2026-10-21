@@ -34,11 +34,20 @@ check('portfolio prompt uses the portfolio intro', portfolio.includes('portfolio
 check('AI links open in a new tab', (await page.getByRole('link', { name: /Open ChatGPT/ }).getAttribute('target')) === '_blank')
 // A React project (TypeScript): the third choice
 await page.getByRole('radio', { name: /A React project/ }).click()
-check('React choice: the brief asks for the features it needs', (await brief.inputValue()).includes('Features it needs'))
-await page.getByRole('radiogroup', { name: 'Business & services' }).getByRole('radio', { name: /Cafe|Café|Restaurant/i }).first().click()
+const brief_text = await page.getByLabel('Your app (change anything)').inputValue()
+check('React choice: the brief asks for the features it needs', brief_text.includes('Features it needs'))
+const reactGroups = ['Shops & marketplaces', 'Booking & services', 'Learning & community', 'Dashboards & tools']
+const reactCounts = []
+for (const group of reactGroups) reactCounts.push(await page.getByRole('radiogroup', { name: group }).getByRole('radio').count())
+check('React choice: ideas are whole apps in 4 groups (shops, booking, learning, tools)', reactCounts.every((count) => count >= 6), reactCounts.join(' + '))
+check('React choice: the page ideas (cafe, wedding…) are not offered', (await page.getByRole('radio', { name: /Wedding/ }).count()) === 0)
+check('React choice: the description is an app (pages, sign-in, data)', ['Pages, in menu order', 'Log in', 'Data it works with', 'demo accounts'].every((text) => brief_text.includes(text)))
+await page.getByRole('radiogroup', { name: 'Shops & marketplaces' }).getByRole('radio', { name: /Handmade marketplace/ }).click()
+check('React choice: choosing an idea fills its own description', (await page.getByLabel('Your app (change anything)').inputValue()).includes('Loomly'))
 await page.getByRole('button', { name: 'Copy prompt' }).click()
 await page.waitForTimeout(300)
 const react = await page.evaluate(() => navigator.clipboard.readText())
+check('React prompt carries the chosen app', react.includes('Loomly') && react.includes('working sign-in, protected pages and realistic mock data'))
 check('React prompt asks for a multi-page React + TypeScript project', react.includes('multi-page React + TypeScript web app') && react.includes('PART 2 — OUTPUT RULES FOR A REACT + TYPESCRIPT PROJECT'))
 check('React prompt has the stack, folders, sign-in and mock data rules', ['react-router', 'src/features/<name>/', 'ProtectedRoute', 'VITE_USE_MOCK', 'admin@example.com'].every((text) => react.includes(text)))
 check('React prompt is not the single html page rules', !react.includes('ONE html code block') && !react.includes('PART 3'))
