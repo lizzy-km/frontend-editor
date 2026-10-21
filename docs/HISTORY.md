@@ -3,6 +3,11 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/upload-animation — 2026-10-21
+- Choosing a .zip or a folder in "Already have a React project?" now shows an animation while it is read: files drop into a bouncing box, a striped bar fills, the file being read scrolls by, and a folder also shows
+  "12 of 80 files". It stays at least about a second so small projects do not flash it. Calm under reduced motion. `readZip` / `readFolder` report progress through an optional callback (`ReadProgress`).
+- Tests: `readProject.test.ts`, `e2e/react-import.mjs` (animation appears, names the file, goes away).
+
 ## fix/react-import-specifiers — 2026-10-21
 - Opening a React project failed with "Failed to fetch dynamically imported module: https://esm.sh/%20type=": text in a project file that only looked like an import (for example a sentence containing `from " type="`)
   was taken for a library name. Now only real library names and paths count (`isPlausibleSpecifier`: no spaces, `=`, quotes or tags), a library the project does not list in its package.json is not loaded, and a library that

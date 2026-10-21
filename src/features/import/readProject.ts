@@ -8,6 +8,9 @@ const BINARY = /\.(png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|eot|mp4|webm|mp3|z
 
 const wanted = (path: string) => !SKIPPED.test(path) && !BINARY.test(path)
 
+/** How far reading has come: `done` of `total` (bytes for a .zip, files for a folder) and the file being read now. */
+export type ReadProgress = { done: number; total: number; current: string }
+
 /** Drops the folder every path starts with ("my-site-react/…"), so paths match the project's own. */
 function withoutTopFolder(files: ExportFiles, force: boolean): ExportFiles {
   const paths = Object.keys(files)
@@ -22,11 +25,14 @@ function withoutTopFolder(files: ExportFiles, force: boolean): ExportFiles {
  * need (node_modules, .git, dist, pictures…) are never opened, so a zip that still contains
  * node_modules loads as fast as a clean one.
  */
-export async function readZip(file: File): Promise<ExportFiles> {
+export async function readZip(file: File, onProgress?: (progress: ReadProgress) => void): Promise<ExportFiles> {
   const found: Record<string, Uint8Array[]> = {}
   let failure: Error | null = null
+  let current = ''
+  let read = 0
   const unzip = new Unzip((entry) => {
     if (entry.name.endsWith('/') || !wanted(entry.name)) return
+    current = entry.name
     const chunks: Uint8Array[] = []
     let size = 0
     entry.ondata = (error, chunk, last) => {
@@ -42,7 +48,9 @@ export async function readZip(file: File): Promise<ExportFiles> {
   const reader = file.stream().getReader()
   for (;;) {
     const { done, value } = await reader.read()
+    read += value?.length ?? 0
     unzip.push(value ?? new Uint8Array(0), done)
+    onProgress?.({ done: read, total: file.size, current })
     if (failure) throw failure
     if (done) break
   }
@@ -56,11 +64,17 @@ export async function readZip(file: File): Promise<ExportFiles> {
 }
 
 /** The text files of a chosen folder, by path (the folder's own name is removed). */
-export async function readFolder(list: FileList): Promise<ExportFiles> {
+export async function readFolder(list: FileList, onProgress?: (progress: ReadProgress) => void): Promise<ExportFiles> {
   const picked = [...list].filter((file) => {
     const path = file.webkitRelativePath || file.name
     return wanted(path) && file.size <= MAX_FILE_BYTES
   })
-  const entries = await Promise.all(picked.map(async (file) => [file.webkitRelativePath || file.name, await file.text()] as const))
+  let done = 0
+  const entries = await Promise.all(picked.map(async (file) => {
+    const path = file.webkitRelativePath || file.name
+    const text = await file.text()
+    onProgress?.({ done: ++done, total: picked.length, current: path })
+    return [path, text] as const
+  }))
   return withoutTopFolder(Object.fromEntries(entries), true)
 }

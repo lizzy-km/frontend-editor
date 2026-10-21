@@ -1071,7 +1071,7 @@ development server and are 404 in a production build. All money is handled by `w
 - **Produces (output / redirect):** a `PageDoc` site: first page with the app's header and footer as the shared layout, one page per address (a changing address like /shop/:id keeps one example), the pages in the header menu listed in the menu, members-only pages private, the app's CSS as page CSS and its fonts as links. Notes about what could not be read (pictures, `import.meta.glob`, pages that did not open). Pages are a snapshot: the project's own code does not carry over.
 - **Needs:** internet (React and the project's libraries load from esm.sh); a project that follows the prompt's "SO THE PROJECT CAN BE OPENED IN TWEAK" rules; no account.
 - **How it works:**
-  1. `ReactProjectOpener.load` reads the files; with no `.tweak` snapshot and `detectReactApp` ok it shows `AppProjectImport`.
+  1. `ReactProjectOpener.load` reads the files (showing `UploadProgress`, fed by the `onProgress` callback of `readZip` / `readFolder`); with no `.tweak` snapshot and `detectReactApp` ok it shows `AppProjectImport`.
   2. `importReactApp` (lazy) -> `compileProject` (Sucrase, import resolution, library list) -> `crawlApp`.
   3. `crawlApp` starts the app in a locked frame (`startRunner`: import map, module system, memory router), visits routes and links (`goto`, wait until calm, `capture`), repeats signed in for pages that redirected to the login.
   4. `crawlToDoc` builds the site (`toSite`, `addPage`, menu and private marks, CSS, fonts); `ImportProgress` shows the events while it runs.
