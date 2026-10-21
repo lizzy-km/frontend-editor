@@ -25,7 +25,7 @@ export const START: Group = {
           'Paste the whole answer your AI gave you into the big box. Tweak picks the code out of it. You can also drop an .html file on the box.',
           'Press **Open in editor**. Your page appears, ready to click.',
         ] },
-        { kind: 'p', text: 'No code yet? Press **Start with a blank page**, **Try an example page**, or open **No code yet? Get a page from an AI in 3 steps**: pick an idea (a bakery, a wedding, a portfolio…), edit the description in your own words, copy the prompt into your AI, and paste the answer back.' },
+        { kind: 'p', text: 'No code yet? Press **Start with a blank page**, **Try an example page**, or open **No code yet? Get a page from an AI in 3 steps**: pick an idea (a bakery, a wedding, a portfolio…), edit the description in your own words, copy the prompt into your AI, and paste the answer back. A developer? Switch the helper to **A React project (TypeScript)**: the AI then writes a complete multi-page React project (sign-in, sample data, responsive, tidy folders) as a list of files that you save and run on your computer. That kind does not open in Tweak.' },
         { kind: 'figure', src: '/guide/art-examples.svg', alt: 'Start from a finished example: a shop, a cafe, a studio or a members area', caption: 'Start from a finished example: a shop, a cafe, a studio or a members area' },
         { kind: 'p', text: 'Not sure where to begin? Open **No idea yet? Start from a finished example** under the paste box and press **Open this example**. You get a whole website that already works, and every part of it can be changed:' },
         { kind: 'list', items: [
