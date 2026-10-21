@@ -3,13 +3,21 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## feature/react-ideas — 2026-10-21
+- The **React project** choice in the AI helper now has its own sample ideas, all real multi-page apps with sign-in and members-only areas (the page ideas such as a cafe or a wedding are not shown for it): **Shops & marketplaces** (online
+  shop, handmade marketplace, food ordering, local classifieds, plant shop with subscriptions), **Booking & services** (clinic, hotel, gym classes, event tickets, bike rental), **Learning & community** (online courses, job board,
+  recipe community, Q and A forum, news magazine with writers) and **Dashboards & tools** (team task manager, finance tracker, CRM, real estate, workout tracker, helpdesk), plus a blank start per group.
+- Each idea lists its roles, 8 to 11 pages with addresses, the features (protected pages, forms, role-only pages), the data with sample counts, the look, fonts and details (prices, rules, demo account roles).
+- The helper keeps a separate idea and description per output, so switching between a web page and a React project keeps what was typed.
+- Tests: `reactIdeas.test.ts` (every idea is a real app), `reactPrompt.test.ts`, `prompts.test.ts`, `e2e/prompts.mjs` (groups, ideas, the prompt carries the chosen app).
+
 ## feature/react-prompt — 2026-10-21
 - **"A React project (TypeScript)"** in the AI prompt helper (paste screen): a third choice beside *A web page*. It copies a prompt that makes the AI write a complete Vite + React 19 +
   TypeScript project: several pages with lazy routes, a working mock sign-in (login, register, forgot password, a protected account page, admin / member roles, demo accounts),
   typed mock data with React Query hooks and loading / empty / error states, search and filters kept in the URL, forms with React Hook Form + Zod, mobile-first responsive and
   accessible pages, a feature-based folder structure with an index.ts per feature, strict clean-code rules, a README, and a final self-check. The answer format is a file tree
   plus one block per file (with a "CONTINUE FROM" rule when it runs long).
-- The stack and versions mirror Tweak's own React download, and `prompts.test.ts` fails if they drift. The page and website prompts are unchanged (they still produce one html
+- The stack and versions mirror Tweak's own React download, and `reactPrompt.test.ts` fails if they drift. The page and website prompts are unchanged (they still produce one html
   file that opens in the editor); the React answer does not open in the editor, and the helper says so.
 - Tests: `prompts.test.ts` (11), `e2e/prompts.mjs`. Not covered: running an AI's real answer: the prompt was not tried on a live AI, so expect to tune wording after a few real runs.
 
