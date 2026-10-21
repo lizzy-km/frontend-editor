@@ -21,7 +21,8 @@ export function externalUrl(spec: string, dependencies: Record<string, string>):
 /** The libraries every React app needs even if its code never names them (the runner starts it with them). */
 export const ALWAYS = ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime']
 
-/** The import map for the runner: each library name to its address. */
+/** The import map for the runner: each library name to its address. A name the project does not list in its package.json is not loaded (it would be a typo or text that only looks like an import). */
 export function importMap(externals: string[], dependencies: Record<string, string>): Record<string, string> {
-  return Object.fromEntries([...new Set([...ALWAYS, ...externals])].map((spec) => [spec, externalUrl(spec, dependencies)]))
+  const declared = (spec: string) => ALWAYS.includes(spec) || splitSpecifier(spec).name in dependencies
+  return Object.fromEntries([...new Set([...ALWAYS, ...externals])].filter(declared).map((spec) => [spec, externalUrl(spec, dependencies)]))
 }

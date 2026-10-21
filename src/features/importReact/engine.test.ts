@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { compileProject, readIndexHtml, transpile } from './compile'
 import { ALWAYS, externalUrl, importMap, splitSpecifier } from './externals'
-import { detectReactApp, importsOf, normalizePath, resolveImport, type Files } from './projectFiles'
+import { detectReactApp, importsOf, isPlausibleSpecifier, normalizePath, resolveImport, type Files } from './projectFiles'
 import { runnerDocument } from './runner'
 
 const PROJECT: Files = {
@@ -30,6 +30,19 @@ describe('finding files', () => {
   it('lists the imports of a file in every form', () => {
     const source = "import a from 'a'\nimport { b } from \"b\"\nimport 'c.css'\nexport { d } from 'd'\nconst e = await import('e')\nconst f = require('f')"
     expect(importsOf(source).sort()).toEqual(['a', 'b', 'c.css', 'd', 'e', 'f'])
+  })
+
+  it('ignores text that only looks like an import (a library name has no spaces, equals signs or tags)', () => {
+    const source = [
+      `const a = 'Download from " type="'`,
+      `const b = 'import " x"'`,
+      "const c = require('a=b')",
+      "import real from 'react'",
+      "import rel from './ok'",
+    ].join('\n')
+    expect(importsOf(source).sort()).toEqual(['./ok', 'react'])
+    for (const good of ['react', 'react-router/dom', '@hookform/resolvers/zod', '@/app/router', './a', '../b/c', 'zod']) expect(isPlausibleSpecifier(good), good).toBe(true)
+    for (const bad of [' type=', 'a b', 'x=y', '<div>', 'a"b', '', '@/a b']) expect(isPlausibleSpecifier(bad), bad).toBe(false)
   })
 
   it('knows a React app from something else', () => {
@@ -86,6 +99,8 @@ describe('libraries and the runner page', () => {
     expect(externalUrl('react-router/dom', dependencies)).toBe('https://esm.sh/react-router@^7.9.0/dom?external=react,react-dom')
     expect(externalUrl('zod', {})).toBe('https://esm.sh/zod?external=react,react-dom')
     expect(Object.keys(importMap(['react-router'], dependencies)).sort()).toEqual([...ALWAYS, 'react-router'].sort())
+    expect(Object.keys(importMap(['react-router', 'Google', 'type='], dependencies))).not.toContain('Google')
+    expect(importMap(['zod'], { zod: '^4.1.0' }).zod).toBe('https://esm.sh/zod@^4.1.0?external=react,react-dom')
   })
 
   it('builds a page that cannot be broken out of by the project\'s own text', () => {

@@ -3,6 +3,12 @@
 One entry per feature branch, newest first. Each branch is merged into `main`
 with `--no-ff`, so `git log --first-parent main` shows one merge per feature.
 
+## fix/react-import-specifiers — 2026-10-21
+- Opening a React project failed with "Failed to fetch dynamically imported module: https://esm.sh/%20type=": text in a project file that only looked like an import (for example a sentence containing `from " type="`)
+  was taken for a library name. Now only real library names and paths count (`isPlausibleSpecifier`: no spaces, `=`, quotes or tags), a library the project does not list in its package.json is not loaded, and a library that
+  cannot be loaded is noted as a warning instead of stopping the import (the app only fails if it really uses it). Errors the app itself reports while running are listed in the result's notes.
+- Tests: `engine.test.ts` (look-alike text, plausible names, undeclared libraries), `e2e/react-import.mjs` now adds a file full of look-alike text to the sample project.
+
 ## feature/react-import — 2026-10-21
 - **Open a React project Tweak did not make**: on the start screen, "Open a React project" now also accepts any Vite + React project (for example one an AI wrote to the React prompt). Tweak compiles it in the browser
   (Sucrase), runs it in a locked frame with its libraries from esm.sh, visits every page (the router's paths and the links it shows; a visitor first, then signed in for members-only pages) and turns the pages into a
